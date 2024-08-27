@@ -1,7 +1,12 @@
 from database.db import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_manager, UserMixin
 
-class Usuario(db.Model):
+@login_manager.user_loader
+def get_user(usuario_id):
+    return Usuario.query.filter_by(id=usuario_id)
+
+class Usuario(db.Model, UserMixin):
     codigo = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(50), nullable=True, unique=True)
     nomeCompleto = db.Column(db.String(50))
