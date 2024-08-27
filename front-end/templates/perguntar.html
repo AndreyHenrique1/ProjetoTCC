@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fazer uma Pergunta</title>
+</head>
+<body>
+    <h1>Fazer uma Pergunta</h1>
+    <form action="{{ url_for('pergunta_route.perguntar') }}" method="POST">
+        <label for="titulo">Título:</label>
+        <input type="text" name="titulo" id="titulo" required>
+        <br>
+        <label for="descricao">Descrição:</label>
+        <textarea name="descricao" id="descricao" required></textarea>
+        <br>
+        <button type="submit">Enviar Pergunta</button>
+    </form>
+</body>
+</html>

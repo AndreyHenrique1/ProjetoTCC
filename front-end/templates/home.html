@@ -6,9 +6,25 @@
     <title>Home</title>
 </head>
 <body>
-    <h1>Olá mundo!!!</h1>
+    <h1>Bem-vindo à Plataforma de Perguntas e Respostas!</h1>
 
-    <a href="Cadastrar">Clique aqui para se cadastrar</a>
-    <a href="Login">Clique aqui para se cadastrar</a>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('cadastrar_route.cadastrar') }}">Cadastrar</a></li>
+            <li><a href="{{ url_for('login_route.login') }}">Login</a></li>
+            <li><a href="{{ url_for('pergunta_route.perguntar') }}">Fazer uma Pergunta</a></li>
+        </ul>
+    </nav>
+
+    <h2>Perguntas Recentes</h2>
+    <ul>
+        {% for pergunta in perguntas %}
+            <li>
+                <strong>{{ pergunta.titulo }}</strong><br>
+                {{ pergunta.descricao }}<br>
+                <em>{{ pergunta.data_criacao }}</em>
+            </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
