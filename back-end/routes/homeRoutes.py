@@ -4,20 +4,20 @@ from firebase_admin import credentials, db
 
 home_route = Blueprint('home', __name__, template_folder='../../front-end/templates')
 
-# Inicialize o Firebase Admin SDK
-cred = credentials.Certificate("firebase-credentials.json")
+"""# Inicialize o Firebase Admin SDK
+cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://projeto-tcc-255b4-default-rtdb.firebaseio.com/'
 })
 
 # Referência para o banco de dados
-ref = db.reference('/')
+ref = db.reference('/')"""
 
 @home_route.route('/')
 def home():
     return render_template("home.html")
 
-@home_route.route('/perguntas', methods=['POST'])
+"""@home_route.route('/perguntas', methods=['POST'])
 def criar_pergunta():
     dados = request.json
     nova_pergunta_ref = ref.child('perguntas').push(dados)
@@ -54,4 +54,4 @@ def deletar_pergunta(id):
         pergunta_ref.delete()
         return jsonify({"success": True}), 200
     else:
-        return jsonify({"error": "Pergunta não encontrada"}), 404
+        return jsonify({"error": "Pergunta não encontrada"}), 404"""
