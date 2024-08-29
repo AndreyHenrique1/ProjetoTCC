@@ -1,6 +1,7 @@
 from database.db import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_manager, UserMixin
+from extensions import login_manager
 
 @login_manager.user_loader
 def get_user(usuario_id):
