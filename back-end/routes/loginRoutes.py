@@ -10,11 +10,9 @@ def login():
         email = request.form['email']
         senha = request.form['senha']
 
-        usuario = Usuario.query.filter_by(email=email, senha=senha).first()
+        usuario = Usuario.query.filter_by(email=email).first()
 
         if not usuario or not usuario.verificar_senha(senha):
-            print(f'Usuário encotrado: {usuario}')
-            print(f'Senha encontrada: {senha}')
             return redirect(url_for('login.login'))       
         
         login_user(usuario)
@@ -25,4 +23,4 @@ def login():
 @login_route.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('home.home'))

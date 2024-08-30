@@ -6,13 +6,22 @@
     <title>Home</title>
 </head>
 <body>
-    <h1>Bem-vindo à Plataforma de Perguntas e Respostas!</h1>
+    {% if current_user.is_authenticated %}
+        <h1>Bem-vindo {{ current_user.nomeUsuario }} à Plataforma de Perguntas e Respostas!</h1>
+        {% else %}
+            <h1>Bem-vindo à Plataforma de Perguntas e Respostas!</h1>
+    {% endif %}
 
     <nav>
         <ul>
             <li><a href="{{ url_for('cadastrar.cadastrar') }}">Cadastrar</a></li>
             <li><a href="{{ url_for('login.login') }}">Login</a></li>
             <li><a href="{{ url_for('pergunta_route.perguntar') }}">Fazer uma Pergunta</a></li>
+            {% if current_user.is_authenticated %}
+            <li>
+                    <a href="{{ url_for('login.logout') }}">Sair dessa conta</a>
+            </li>
+            {% endif %}
         </ul>
     </nav>
 
