@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fazer uma Pergunta</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 </head>
 <body>
     <h1>Fazer uma Pergunta</h1>
@@ -12,9 +14,46 @@
         <input type="text" name="titulo" id="titulo" required>
         <br>
         <label for="descricao">Descrição:</label>
-        <textarea name="descricao" id="descricao" required></textarea>
+        <div id="editor-container" style="height: 300px;"></div>
+        <input type="hidden" name="descricao" id="descricao">
         <br>
         <button type="submit">Enviar Pergunta</button>
     </form>
+    
+    <h2>Visualização em tempo-real:</h2>
+    <div id="Visualização-tempoReal"></div>
+
+    <script>
+        var quill = new Quill('#editor-container', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image', 'code-block'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            },
+        });
+
+        function updatePreview() {
+            var content = quill.root.innerHTML;
+            document.querySelector('#preview-container').innerHTML = content;
+        }
+
+        // Atualizar visualização em tempo real
+        quill.on('text-change', updatePreview);
+
+        // Atualizar visualização ao carregar a página
+        updatePreview();
+
+        // Ao enviar o formulário, insira o conteúdo do editor no campo hidden
+        document.querySelector('form').onsubmit = function() {
+            document.querySelector('#descricao').value = quill.root.innerHTML;
+        };
+    </script>
 </body>
 </html>

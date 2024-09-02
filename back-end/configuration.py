@@ -11,9 +11,7 @@ def configure_all(app):
     configure_db(app)
     login_manager.init_app(app)
     app.config['SECRET_KEY'] = 'dergvfgf1234'
-    UPLOAD_FOLDER = 'static/uploads'
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limite de 16MB para upload de arquivos
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 def configure_routes(app):
     app.register_blueprint(home_route)

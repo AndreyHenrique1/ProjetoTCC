@@ -1,0 +1,7 @@
+/*Container de visualização em tempo real da pergunta do usuário*/
+#Visualização-tempoReal {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 20px;
+    background: #f9f9f9;
+}

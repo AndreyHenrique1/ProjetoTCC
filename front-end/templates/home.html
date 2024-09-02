@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
 </head>
+
 <body>
     {% if current_user.is_authenticated %}
-        <h1>Bem-vindo {{ current_user.nomeUsuario }} à Plataforma de Perguntas e Respostas!</h1>
-        {% else %}
-            <h1>Bem-vindo à Plataforma de Perguntas e Respostas!</h1>
+    <h1>Bem-vindo {{ current_user.nomeUsuario }} à Plataforma de Perguntas e Respostas!</h1>
+    {% else %}
+    <h1>Bem-vindo à Plataforma de Perguntas e Respostas!</h1>
     {% endif %}
 
     <nav>
         <ul>
-            <li><a href="{{ url_for('cadastrar.cadastrar') }}">Cadastrar</a></li>
-            <li><a href="{{ url_for('login.login') }}">Login</a></li>
-            <li><a href="{{ url_for('pergunta_route.perguntar') }}">Fazer uma Pergunta</a></li>
             {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('pergunta_route.perguntar') }}">Fazer uma Pergunta</a></li>
             <li>
-                    <a href="{{ url_for('login.logout') }}">Sair dessa conta</a>
+                <a href="{{ url_for('login_route.logout') }}">Sair dessa conta</a>
             </li>
+            {% else %}
+            <li><a href="{{ url_for('cadastrar_route.cadastrar') }}">Cadastrar</a></li>
+            <li><a href="{{ url_for('login_route.login') }}">Login</a></li>
             {% endif %}
         </ul>
     </nav>
-
+    <div c-container="{{ url_for('pergunta_route.listar_perguntas')}}">
     <h2>Perguntas Recentes</h2>
     <ul>
         {% for pergunta in perguntas %}
-            <li>
-                <strong>{{ pergunta.titulo }}</strong><br>
-                {{ pergunta.descricao }}<br>
-                <em>{{ pergunta.data_criacao }}</em>
-            </li>
+        <li>
+            <strong>{{ pergunta.titulo }}</strong><br>
+            {{ pergunta.descricao | safe }}<br>
+            <em>{{ pergunta.data_criacao.strftime('%Y-%m-%d %H:%M:%S') }}</em>
+        </li>
         {% endfor %}
     </ul>
+    </div>
 </body>
 </html>
