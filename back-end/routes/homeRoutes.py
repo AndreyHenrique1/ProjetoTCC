@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify, render_template, Blueprint
+import firebase_admin
+from firebase_admin import credentials, db
 from database.db import db
 from models.pergunta import Pergunta
 
