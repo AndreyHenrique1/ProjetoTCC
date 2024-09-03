@@ -22,7 +22,7 @@ def perguntar():
 
     return render_template('perguntar.html')
 
-@pergunta_route.route('/')
+@pergunta_route.route('/Teste')
 def listar_perguntas():
     perguntas = Pergunta.query.order_by(Pergunta.data_criacao.desc()).all()
     return render_template('home.html', perguntas=perguntas)
