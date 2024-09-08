@@ -23,9 +23,11 @@ class Usuario(db.Model, UserMixin):
         self.senha = generate_password_hash(senha)
         self.quantidadePontos = quantidadePontos
 
+    # Verifica se a senha fornecida corresponde ao hash armazenado
     def verificar_senha(self, senha):
         return check_password_hash(self.senha, senha)
 
+    # Retorna o ID do usuário como string (necessário para o Flask-Login)
     def get_id(self):
         return str(self.codigo)  
 

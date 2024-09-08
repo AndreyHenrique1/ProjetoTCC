@@ -1,15 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fazer uma Pergunta</title>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .category-option {
+            display: flex;
+            align-items: center;
+        }
+
+        .category-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+    </style>
 </head>
+
 <body>
     <h1>Fazer uma Pergunta</h1>
     <form action="{{ url_for('pergunta_route.perguntar') }}" method="POST">
+        <label>Categoria</label>
+        <select class="form-select" aria-label="Default select example" id="categorias" name="categorias" required>
+            <option value="" disabled selected>Escolha uma categoria</option>
+            {% for categoria in categorias %}
+            <option value="{{ categoria.codigo }}">
+                {{ categoria.nome }} - {{ categoria.descricao }}
+            </option>
+            {% endfor %}
+        </select>
+        <br>
         <label for="titulo">Título:</label>
         <input type="text" name="titulo" id="titulo" required>
         <br>
@@ -19,7 +45,7 @@
         <br>
         <button type="submit">Enviar Pergunta</button>
     </form>
-    
+
     <h2>Visualização em tempo-real:</h2>
     <div id="Visualização-tempoReal"></div>
 
@@ -33,7 +59,7 @@
                     [{ 'color': [] }, { 'background': [] }],
                     [{ 'align': [] }],
                     ['link', 'image', 'code-block'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                     ['clean']
                 ]
             },
@@ -41,7 +67,7 @@
 
         function updatePreview() {
             var content = quill.root.innerHTML;
-            document.querySelector('#preview-container').innerHTML = content;
+            document.querySelector('#Visualização-tempoReal').innerHTML = content;
         }
 
         // Atualizar visualização em tempo real
@@ -51,9 +77,14 @@
         updatePreview();
 
         // Ao enviar o formulário, insira o conteúdo do editor no campo hidden
-        document.querySelector('form').onsubmit = function() {
+        document.querySelector('form').onsubmit = function () {
             document.querySelector('#descricao').value = quill.root.innerHTML;
         };
     </script>
+
+    <!--Bootstrap-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </body>
 </html>

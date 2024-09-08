@@ -27,17 +27,16 @@
             {% endif %}
         </ul>
     </nav>
-    <div c-container="{{ url_for('pergunta_route.listar_perguntas')}}">
+
     <h2>Perguntas Recentes</h2>
     <ul>
         {% for pergunta in perguntas %}
         <li>
-            <strong>{{ pergunta.titulo }}</strong><br>
-            {{ pergunta.descricao | safe }}<br>
-            <em>{{ pergunta.data_criacao.strftime('%Y-%m-%d %H:%M:%S') }}</em>
+            <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}">
+                <strong>{{ pergunta.titulo }}</strong>
+            </a>
         </li>
         {% endfor %}
     </ul>
-    </div>
 </body>
 </html>

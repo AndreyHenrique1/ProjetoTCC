@@ -10,11 +10,15 @@ def login():
         email = request.form['email']
         senha = request.form['senha']
 
+        # Busca o usuário no banco de dados com base no email fornecido
         usuario = Usuario.query.filter_by(email=email).first()
 
+        # Verifica se o usuário existe e se a senha fornecida é correta
         if not usuario or not usuario.verificar_senha(senha):
-            return redirect(url_for('login_route.login'))       
-        
+            # Se o login falhar, renderiza a página de login com uma mensagem de erro
+            return render_template("login.html", erro="E-mail ou senha incorretos.")
+
+        # Caso o login seja bem-sucedido
         login_user(usuario)
         return redirect(url_for('home.home'))
 
