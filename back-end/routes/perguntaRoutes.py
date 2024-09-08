@@ -33,3 +33,4 @@ def pergunta_detalhe(pergunta_id):
     pergunta = Pergunta.query.get_or_404(pergunta_id)
     # Renderiza o template 'pergunta_detalhe.html' e passa a pergunta encontrada como contexto.
     return render_template('pergunta_detalhe.html', pergunta=pergunta)
+
