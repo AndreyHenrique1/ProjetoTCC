@@ -14,5 +14,25 @@
     </div>
     <p><em>{{ pergunta.data_criacao.strftime('%Y-%m-%d %H:%M:%S') }}</em></p>
     <a href="{{ url_for('home.home') }}">Voltar para a home</a>
+
+    <h2>Respostas</h2>
+    <ul>
+        {% for resposta in respostas %}
+        <li>{{ resposta.conteudo }} - <em>{{ resposta.usuario.nomeUsuario }}</em></li>
+        {% else %}
+        <p>Não há respostas ainda. Seja o primeiro a responder!</p>
+        {% endfor %}
+    </ul>
+
+    {% if current_user.is_authenticated %}
+    <h3>Deixe sua Resposta</h3>
+    <form action="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}" method="POST">
+        <label for="resposta">Sua Resposta:</label>
+        <textarea name="conteudo_resposta" id="resposta" rows="5" required></textarea><br>
+        <button type="submit">Enviar Resposta</button>
+    </form>
+    {% else %}
+    <p><a href="{{ url_for('login_route.login') }}">Faça login para responder a pergunta.</a></p>
+    {% endif %}
 </body>
 </html>
