@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from database.db import db
 from models.pergunta import Pergunta
-from models.resposta import Resposta  # Importe o modelo de Resposta
+from models.comentariosPerguntas import comentariosPerguntas 
 from models.categoria import Categoria
 from flask_login import current_user
 
@@ -39,14 +39,14 @@ def pergunta_detalhe(pergunta_id):
         
         if conteudo_resposta:
             # Cria uma nova resposta e salva no banco de dados
-            nova_resposta = Resposta(conteudo=conteudo_resposta, pergunta_id=pergunta_id, usuario_id=current_user.codigo)
+            nova_resposta = comentariosPerguntas(conteudo=conteudo_resposta, pergunta_id=pergunta_id, usuario_id=current_user.codigo)
             db.session.add(nova_resposta)
             db.session.commit()
 
             return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta_id))
 
     # Consultar todas as respostas associadas à pergunta
-    respostas = Resposta.query.filter_by(pergunta_id=pergunta_id).all()
+    respostas = comentariosPerguntas.query.filter_by(pergunta_id=pergunta_id).all()
 
     # Renderiza o template 'pergunta_detalhe.html' e passa a pergunta e as respostas encontradas como contexto
     return render_template('pergunta_detalhe.html', pergunta=pergunta, respostas=respostas)

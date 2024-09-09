@@ -13,7 +13,7 @@ class Pergunta(db.Model):
     codUsuario = db.Column(db.Integer, ForeignKey('usuario.codigo'))
     codCategoria = db.Column(db.Integer, ForeignKey('categorias.codigo'))  
 
-    # Relacionamento com a tabela Categoria
+    # Relacionamento com a tabela Categoria e Usuário
     categoria_relacionado = relationship('Categoria', backref='perguntas')
     usuario_relacionado = relationship('Usuario', backref='usuario')
 
