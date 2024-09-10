@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blogs</title>
+</head>
+<body>
+    <h1>Postagens do Blog</h1>
+    <a href="{{ url_for('blog_route.criar_blog') }}">Criar Novo Blog</a>
+
+    <ul>
+        {% for blog in blogs %}
+        <li>
+            <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}">
+                <strong>{{ blog.titulo }}</strong> - {{ blog.data_criacao.strftime('%Y-%m-%d') }}
+            </a>
+            <p>Categoria: {{ blog.categoria_relacionada.nome }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
