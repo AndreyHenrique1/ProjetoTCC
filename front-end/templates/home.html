@@ -31,8 +31,6 @@
         </nav>
     </header>
     
-    
-
     <!-- Codigo de base
     <header>
         {% if current_user.is_authenticated %}
@@ -52,6 +50,8 @@
             </ul>
         </nav>
     </header>-->
+
+    <li><a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_cinza">Perguntar</a></li>
 
     <form method="GET" action="{{ url_for('home.home') }}">
         <label for="categoria">Filtrar por Categoria:</label>
