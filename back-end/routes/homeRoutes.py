@@ -7,8 +7,12 @@ home_route = Blueprint('home', __name__, template_folder='../../front-end/templa
 
 @home_route.route('/')
 def home():
-    # Obtém as categorias e perguntas do banco e envia para a home
+    categoria_id = request.args.get('categoria')
     categorias = Categoria.query.all()
-    perguntas = Pergunta.query.order_by(Pergunta.data_criacao.desc()).all()
-    return render_template('home.html', perguntas=perguntas, categorias=categorias)
+    
+    if categoria_id:
+        perguntas = Pergunta.query.filter_by(codCategoria=categoria_id).order_by(Pergunta.data_criacao.desc()).all()
+    else:
+        perguntas = Pergunta.query.order_by(Pergunta.data_criacao.desc()).all()
 
+    return render_template('home.html', perguntas=perguntas, categorias=categorias)
