@@ -55,20 +55,9 @@
 
         <br><br><br>
 
-    <form method="GET" action="{{ url_for('home.home') }}">
-        <label for="categoria">Filtrar por Categoria:</label>
-        <select id="categoria" name="categoria">
-            <option value="">Todas as Categorias</option>
-            {% for categoria in categorias %}
-            <option value="{{ categoria.codigo }}">{{ categoria.nome }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Filtrar</button>
-    </form>
-
     <h2>Blog</h2>
     <p><a href="{{ url_for('blog_route.listar_blogs') }}">Ver postagens do Blog</a></p>
-    
+
     <!-- Perguntas realizadas pelos usuários -->
     <h2>Perguntas Recentes</h2>
     <ul>
