@@ -8,17 +8,18 @@
     <!--Link do CSS-->
     <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
 </head>
+
 <body>
     <header>
         <div class="logo">
-            <img src="logo.png" alt="Logo do site"> 
+            <img src="logo.png" alt="Logo do site">
         </div>
-        
+
         <form class="barra_pesquisa" action="{{ url_for('home.home') }}" method="GET">
             <input type="text" placeholder="Pesquisar...">
             <button type="submit" class="btn_cinza" style="margin-left: 15px;">Buscar</button>
         </form>
-    
+
         <nav>
             <ul>
                 {% if current_user.is_authenticated %}
@@ -30,28 +31,29 @@
             </ul>
         </nav>
     </header>
-    
-    <!-- Codigo de base
-    <header>
-        {% if current_user.is_authenticated %}
-        <h1>Bem-vindo {{ current_user.nomeUsuario }} à Plataforma de Perguntas e Respostas!</h1>
-        {% else %}
-        <h1>Bem-vindo à Plataforma de Perguntas e Respostas!</h1>
-        {% endif %}
-        <nav>
-            <ul>
-                {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('pergunta_route.perguntar') }}">Fazer uma Pergunta</a></li>
-                <li><a href="{{ url_for('login_route.logout') }}">Sair dessa conta</a></li>
-                {% else %}
-                <li><a href="{{ url_for('cadastrar_route.cadastrar') }}">Cadastrar</a></li>
-                <li><a href="{{ url_for('login_route.login') }}">Login</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>-->
 
-    <li><a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_cinza">Perguntar</a></li>
+    <main>
+        <!--Pesquisar por categorias (Filtro)-->
+        <form method="GET" action="{{ url_for('home.home') }}" id="filter-form">
+            <select id="categoria" name="categoria" class="btn_filtro" onchange="this.form.submit()">
+                <option value="">Pesquisar por categorias</option>
+                {% for categoria in categorias %}
+                <option value="{{ categoria.codigo }}" {% if request.args.get('categoria')==categoria.codigo|string
+                    %}selected{% endif %}>
+                    {{ categoria.nome }}
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <br>
+
+        <!--Se o usuário estiver logado-->
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_azul">Adicionar pergunta</a>
+        {% endif %}
+
+        <br><br><br>
 
     <form method="GET" action="{{ url_for('home.home') }}">
         <label for="categoria">Filtrar por Categoria:</label>
@@ -67,15 +69,22 @@
     <h2>Blog</h2>
     <p><a href="{{ url_for('blog_route.listar_blogs') }}">Ver postagens do Blog</a></p>
     
+    <!-- Perguntas realizadas pelos usuários -->
     <h2>Perguntas Recentes</h2>
     <ul>
         {% for pergunta in perguntas %}
-        <li>
-            <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}">
-                <strong>{{ pergunta.titulo }}</strong>
-            </a>
-        </li>
+        <div class="container_perguntas">
+            <ul>
+                <li class="pergunta-item">
+                    <div class="img_usuario"></div>
+                    <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}">
+                        <strong class="titulo_pergunta">{{ pergunta.titulo }}</strong>
+                    </a>
+                </li>
+            </ul>
+        </div>
         {% endfor %}
-    </ul>
+    </main>
 </body>
+
 </html>
