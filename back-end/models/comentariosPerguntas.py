@@ -1,7 +1,6 @@
 from database.db import db
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
 
 class comentariosPerguntas(db.Model):
     __tablename__ = 'comentariosperguntas'
@@ -11,5 +10,5 @@ class comentariosPerguntas(db.Model):
     codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
 
     # Relacionamento com a tabela Usuário 
-    usuario_relacionado = db.relationship('Usuario', backref='cometariosPerguntas', lazy=True)
-    pergunta_relacionado = db.relationship('Pergunta', backref='perguntas', lazy=True)
+    usuario_relacionado = db.relationship('Usuario', backref='comentariosPerguntas', lazy=True)
+    pergunta_relacionado = db.relationship('Pergunta', backref='comentarios', lazy=True)
