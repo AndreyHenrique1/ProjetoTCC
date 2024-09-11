@@ -27,6 +27,9 @@
         <br>
         <a href="{{ url_for('home.home') }}">Voltar para a home</a>
         <br>
+        {% if current_user.codigo == pergunta.codUsuario %}
+        <a href="{{ url_for('pergunta_route.editar_pergunta', pergunta_id=pergunta.codigo) }}">Editar pergunta</a>
+        {% endif %}
         {% if current_user.is_authenticated %}
         <h3>Deixe seu Comentário</h3>
         <form action="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}" method="POST">
@@ -40,12 +43,22 @@
         {% endif %}
         <h2>Comentários</h2>
         <ul>
-            {% for comentario in comentarios %}
-            <li>{{ comentario.comentario }} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em></li>
+            {% if comentarios %}
+                {% for comentario in comentarios %}
+                    <li>
+                        {{ comentario.comentario }} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em>
+                        {% if current_user.codigo == comentario.codUsuario %}
+                            <form action="{{ url_for('pergunta_route.excluir_comentario', comentario_id=comentario.codigo) }}" method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');" style="display:inline;">
+                                <button type="submit">Excluir</button>
+                            </form>
+                        {% endif %}
+                    </li>
+                {% endfor %}
             {% else %}
-            <p>Não há comentários ainda. Seja o primeiro a comentar!</p>
-            {% endfor %}
+                <p>Não há comentários ainda. Seja o primeiro a comentar!</p>
+            {% endif %}
         </ul>
+
     </main>
 </body>
 </html>
