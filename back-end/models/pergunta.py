@@ -7,7 +7,7 @@ class Pergunta(db.Model):
     __tablename__ = 'perguntas'
     codigo = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(50), nullable=False)
-    descrição = db.Column(db.String(1000), nullable=False) 
+    descricao = db.Column(db.String(1000), nullable=False) 
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
     codCategoria = db.Column(db.Integer, db.ForeignKey('categorias.codigo'), nullable=False)
