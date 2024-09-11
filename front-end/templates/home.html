@@ -52,26 +52,26 @@
 
         <!--Se o usuário estiver logado-->
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_azul">Adicionar pergunta</a>
+            <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_azul">Adicionar pergunta</a>
         {% endif %}
 
         <br><br><br>
 
-    <!-- Perguntas realizadas pelos usuários -->
-    <h2>Perguntas Recentes</h2>
-    <ul>
-        {% for pergunta in perguntas %}
-        <div class="container_perguntas">
-            <ul>
-                <li class="pergunta-item">
-                    <div class="img_usuario"></div>
-                    <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}">
-                        <strong class="titulo_pergunta">{{ pergunta.titulo }}</strong>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        {% endfor %}
+        <!-- Campo de perguntas realizadas pelos usuários -->
+        <ul>
+            {% for pergunta in perguntas %}
+            <div class="container_perguntas">
+                <ul>
+                    <li class="pergunta-item">
+                        <div class="img_usuario"></div>
+                        <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}"class="links">
+                            <strong>{{ pergunta.titulo }}</strong>
+                                <p>{{ pergunta.descricao[:80] | safe }}{% if pergunta.descricao|length > 100 %}...{% else %}...{% endif %}</p> <p>Leia mais</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            {% endfor %}
     </main>
 </body>
 

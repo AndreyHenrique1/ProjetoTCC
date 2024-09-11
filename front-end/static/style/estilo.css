@@ -13,7 +13,7 @@ body {
     --cor0: #ffffff;
     --cor1: #D9D9D9;
     --cor2: #0074D9;
-    --cor3: #014178;
+    --cor3: #014580;
     --cor4: #a4a4a4;
 
     --fonte-padrao: Arial, Verdana, Helvetica, sans-serif;
@@ -227,6 +227,27 @@ nav ul {
 .container_perguntas ul li:last-child {
     border-bottom: none; 
 }
+
+/* Parte de clicavel de acesso a página exclusiva de perguntas*/
+.links {
+    display: flex;
+    color: black;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 3px;
+    flex-direction: column;
+}
+
+.links:hover {
+    text-decoration: underline;
+}
+
+.links > p {
+    display: contents;
+    font-size: 14px;
+}
+
+
 
 
 
