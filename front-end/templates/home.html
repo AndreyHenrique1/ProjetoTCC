@@ -22,7 +22,7 @@
                 <i class="bi bi-list" id="btn-exp"></i>
             </div>
             <div class="logo">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo do site">
+                <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}"alt="Logo do site">
             </div>
         </div>
     
@@ -135,6 +135,7 @@
         <!--Se o usuário estiver logado-->
         {% if current_user.is_authenticated %}
         <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_azul">Adicionar pergunta</a>
+        <a href="{{ url_for('login_route.logout') }}" class="btn_cinza">Sair da conta</a>
         {% endif %}
 
         <br><br><br>
