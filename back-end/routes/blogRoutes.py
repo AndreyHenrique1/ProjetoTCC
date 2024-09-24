@@ -11,8 +11,14 @@ blog_route = Blueprint('blog_route', __name__)
 # Rota para listar todos os blogs
 @blog_route.route('/blogs')
 def listar_blogs():
-    blogs = Blog.query.order_by(Blog.data_criacao.desc()).all()
-    return render_template('listar_blogs.html', blogs=blogs)
+    categoria_id = request.args.get('categoria')
+    categorias = Categoria.query.all()
+    
+    if categoria_id:
+        blogs = Blog.query.filter_by(codCategoria=categoria_id).order_by(Blog.data_criacao.desc()).all()
+    else:
+        blogs = Blog.query.order_by(Blog.data_criacao.desc()).all()
+    return render_template('listar_blogs.html', blogs=blogs, categorias=categorias)
 
 # Rota para exibir os detalhes de um blog específico
 @blog_route.route('/blogs/<int:blog_id>')
@@ -27,7 +33,7 @@ def criar_blog():
     if request.method == 'POST':
         titulo = request.form['titulo']
         descricao = request.form['descricao']
-        codCategoria = request.form['categoria']
+        codCategoria = request.form['categorias']
         codUsuario = current_user.codigo
 
         # Cria uma nova postagem de blog e salva no banco de dados
