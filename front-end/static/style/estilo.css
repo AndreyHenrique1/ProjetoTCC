@@ -149,6 +149,7 @@ main {
     height: 65px; 
     padding-left: 30px;
     justify-content: center;
+    cursor: pointer;
 }
 
 /*Imagens em geral*/
@@ -168,6 +169,7 @@ main {
     object-fit: cover; /* Faz com que a imagem preencha o elemento sem distorção */
     background-color: var(--cor4);
     margin-right: 50px;
+    cursor: pointer;
 }
 
 

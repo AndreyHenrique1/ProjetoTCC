@@ -26,7 +26,9 @@
                 <i class="bi bi-list" id="btn-exp"></i>
             </div>
             <div class="logo">
-                <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
+                <a href="{{ url_for('home.home') }}">
+                    <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
+                </a>  
             </div>
         </div>
 
@@ -35,9 +37,14 @@
             {% if current_user.is_authenticated %}
             <i class="bi bi-search" style="font-size: 25px;"></i>
             <i class="bi bi-bell-fill" style="font-size: 25px;"></i>
-            <div class="img_usuario">
-                <!--Coloque aqui a foto do usuario-->
-            </div>
+
+            <!--Foto do usuário-->
+            <a href="{{ url_for('usuario_route.usuario') }}">
+                <div class="img_usuario">
+                    <!--Coloque aqui a foto do usuario-->
+                </div>
+            </a>
+            
             {% else %}
             <li><a href="{{ url_for('cadastrar_route.cadastrar') }}" class="btn_cinza">Cadastrar</a></li>
             <li><a href="{{ url_for('login_route.login') }}" class="btn_cinza">Entrar</a></li>
