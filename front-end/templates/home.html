@@ -29,14 +29,18 @@
                 <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
             </div>
         </div>
-    
+
         <!-- Ícones e imagem de usuário à direita -->
         <div class="header-right">
             {% if current_user.is_authenticated %}
                 <i class="bi bi-search" style="font-size: 25px;"></i>
                 <i class="bi bi-bell-fill" style="font-size: 25px;"></i>
                 <div class="img_usuario">
-                    <!--Coloque aqui a foto do usuario-->
+                    <!-- Adicionar o redirecionamento para o perfil do usuário -->
+                    <a href="{{ url_for('usuario_route.perfil') }}">Perfil</a>
+                    <img src="{{ current_user.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}" 
+                    alt="Foto de perfil" width="150" height="150" class="rounded-circle mb-3">
+                    </a>
                 </div>
             {% else %}
                 <li><a href="{{ url_for('cadastrar_route.cadastrar') }}" class="btn_cinza">Cadastrar</a></li>

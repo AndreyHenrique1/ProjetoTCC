@@ -17,10 +17,17 @@
     <main class="centralizar">
         <div class="formulario">
             <!-- Formulário da tela de cadastro de usuário -->
-            <form action="" method="POST" onsubmit="return validarFormulario()">
+            <form action="{{ url_for('cadastrar_route.cadastrar') }}" method="POST" enctype="multipart/form-data" onsubmit="return validarFormulario()">
                 <h1>Seja bem-vindo!!!</h1>
                 <p>Cadastra-se para entrar na maior comunidade de programadores!!!</p>
-                
+
+                <!-- Campo de foto de perfil -->
+                <div class="mb-1">
+                    <label for="imagem">Selecione sua foto de perfil:</label>
+                    <input type="file" name="imagem" id="imagem" accept="image/*" class="form-control" required>
+                </div>
+                <br>
+
                 <!-- Campo de e-mail -->
                 <div class="mb-1" style="margin-top: 30px;">
                     <input type="email" class="form-control" id="email" name="email" placeholder="E-mail" required>
@@ -29,13 +36,13 @@
                     </div>
                 </div>
                 <br>
-                
+
                 <!-- Campo de nome completo -->
                 <div class="mb-1">
                     <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto" placeholder="Nome completo (Opcional)">
                 </div>
                 <br>
-                
+
                 <!-- Campo de nome de usuário -->
                 <div class="mb-1">
                     <input type="text" class="form-control" id="nomeUsuario" name="nomeUsuario" placeholder="Nome de usuário" required>
@@ -44,7 +51,7 @@
                     </div>
                 </div>
                 <br>
-                
+
                 <!-- Campo de senha -->
                 <div class="mb-1">
                     <input type="password" class="form-control" id="senha" name="senha" placeholder="Senha" required>
@@ -56,7 +63,7 @@
 
                 <!-- Link para login -->
                 <p>Já possui uma conta? <a href="{{ url_for('login_route.login') }}">Clique aqui para entrar</a></p>
-                
+
                 <!-- Botão de envio -->
                 <input type="submit" value="Criar conta" class="btn_azul">
             </form>
@@ -64,7 +71,7 @@
             <div class="retangulo">
                 <h1>DevSolve</h1>
                 <p>A solução está a um Dev de distância</p>
-                <div class="img"><img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}"alt="Logo do site"></div>
+                <div class="img"><img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site"></div>
             </div>
         </div>
     </main>
@@ -76,10 +83,10 @@
             var email = document.getElementById("email").value;
             var nomeUsuario = document.getElementById("nomeUsuario").value;
             var senha = document.getElementById("senha").value;
-    
+
             var regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             var erros = false;
-    
+
             // Validação do e-mail
             if (!regexEmail.test(email)) {
                 document.getElementById("email").classList.add("is-invalid");
@@ -89,7 +96,7 @@
                 document.getElementById("email").classList.remove("is-invalid");
                 document.getElementById("emailErro").innerText = "";
             }
-    
+
             // Validação do nome de usuário
             if (nomeUsuario.length < 3) {
                 document.getElementById("nomeUsuario").classList.add("is-invalid");
@@ -99,7 +106,7 @@
                 document.getElementById("nomeUsuario").classList.remove("is-invalid");
                 document.getElementById("nomeUsuarioErro").innerText = "";
             }
-    
+
             // Validação da senha
             if (senha.length < 6) {
                 document.getElementById("senha").classList.add("is-invalid");
@@ -109,7 +116,7 @@
                 document.getElementById("senha").classList.remove("is-invalid");
                 document.getElementById("senhaErro").innerText = "";
             }
-    
+
             return !erros;
         }
 
