@@ -21,18 +21,13 @@ def perfil():
 # Rota para atualizar o nome de usuário
 @usuario_route.route('/atualizar_nome', methods=['POST'])
 @login_required
-def atualizar_nome():
+def editar_perfil():
     novo_nome = request.form.get('nomeUsuario')
     if novo_nome:
         current_user.nomeUsuario = novo_nome
         db.session.commit()
         flash('Nome de usuário atualizado com sucesso!')
-    return redirect(url_for('usuario_route.perfil'))
 
-# Rota para upload de foto de perfil
-@usuario_route.route('/upload_foto_perfil', methods=['POST'])
-@login_required
-def upload_foto_perfil():
     if 'imagem' not in request.files:
         flash('Nenhuma imagem selecionada.')
         return redirect(url_for('usuario_route.perfil'))
@@ -57,7 +52,5 @@ def upload_foto_perfil():
     except Exception as e:
         db.session.rollback()
         flash(f"Erro ao fazer upload da imagem: {str(e)}")
-        
-    return redirect(url_for('usuario_route.perfil'))
 
-    
+    return redirect(url_for('usuario_route.perfil'))

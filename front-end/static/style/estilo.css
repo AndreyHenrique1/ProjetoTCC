@@ -262,7 +262,6 @@ nav ul {
     cursor: pointer; 
     font-size: 16px; 
     transition: background-color 0.3s ease; 
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.253);
     text-decoration: none;
 }
 
@@ -345,6 +344,11 @@ nav ul {
 
 .card .card-title:hover > h5 {
     text-decoration: underline; 
+}
+
+/*H1 da página de perfil, h1 centralizado*/
+h1 {
+    text-align: center;
 }
 
 
