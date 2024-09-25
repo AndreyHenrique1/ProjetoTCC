@@ -153,22 +153,6 @@
                 <p class="text-muted">Você ainda não escreveu nenhum blog.</p>
                 {% endfor %}
             </ul>
-            <!-- Minhas Respostas/Comentários -->
-            <h2>Minhas Respostas e Comentários</h2>
-            <ul class="list-group">
-                {% for resposta in respostas %}
-                <li class="list-group-item">
-                    <strong>Comentário:</strong> {{ resposta.comentario }}<br>
-                    <small class="text-muted">Comentado na pergunta:
-                        <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=resposta.codPergunta) }}">
-                            {{ resposta.pergunta_relacionada.titulo }}
-                        </a> - Publicado em {{ resposta.data_criacao.strftime('%d/%m/%Y') }}
-                    </small>
-                </li>
-                {% else %}
-                <p class="text-muted">Você ainda não respondeu a nenhuma pergunta ou comentou em blogs.</p>
-                {% endfor %}
-            </ul>
         </div>
     </main>
 
