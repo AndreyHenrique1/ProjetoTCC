@@ -23,6 +23,7 @@ def configure_routes(app):
     app.register_blueprint(cadastrar_route)
     app.register_blueprint(login_route)
     app.register_blueprint(pergunta_route)
+    app.register_blueprint(usuario_route)
     app.register_blueprint(blog_route)
     app.register_blueprint(usuario_route)
     

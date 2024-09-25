@@ -65,6 +65,7 @@ header {
     left: 0;
     overflow: hidden;
     transition: .5s;
+    z-index: 1000;
 }
 
 .menu-lateral:hover {
@@ -148,6 +149,7 @@ main {
     height: 65px; 
     padding-left: 30px;
     justify-content: center;
+    cursor: pointer;
 }
 
 /*Imagens em geral*/
@@ -167,6 +169,7 @@ main {
     object-fit: cover; /* Faz com que a imagem preencha o elemento sem distorção */
     background-color: var(--cor4);
     margin-right: 50px;
+    cursor: pointer;
 }
 
 
@@ -221,7 +224,7 @@ nav ul {
     color: var(--cor0);
 }
 
-.btn_azul {
+.btn_roxo {
     background-color: var(--cor2); 
     color: var(--cor0); 
     border: none; 
@@ -234,7 +237,7 @@ nav ul {
     text-decoration: none;
 }
 
-.btn_azul:hover {
+.btn_roxo:hover {
     background-color: var(--cor3); 
 }
 
@@ -327,6 +330,25 @@ nav ul {
     font-size: 14px;
     text-decoration: none;
 }
+
+
+/*Cards do blog*/
+.card {
+    width: 300px;
+    min-height: 400px;
+}
+
+.card .card-title {
+    color: black; 
+    text-decoration: none; 
+}
+
+.card .card-title:hover > h5 {
+    text-decoration: underline; 
+}
+
+
+
 
 
 

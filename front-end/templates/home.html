@@ -26,7 +26,9 @@
                 <i class="bi bi-list" id="btn-exp"></i>
             </div>
             <div class="logo">
-                <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
+                <a href="{{ url_for('home.home') }}">
+                    <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
+                </a>  
             </div>
         </div>
 
@@ -97,7 +99,7 @@
         <!--Pesquisar por categorias (Filtro)-->
         <form method="GET" action="{{ url_for('home.home') }}" id="filter-form">
             <select id="categoria" name="categoria" class="btn_filtro" onchange="this.form.submit()">
-                <option value="">Pesquisar por categorias</option>
+                <option value="">Filtrar por categorias</option>
                 {% for categoria in categorias %}
                 <option value="{{ categoria.codigo }}" {% if request.args.get('categoria')==categoria.codigo|string
                     %}selected{% endif %}>
@@ -111,8 +113,7 @@
 
         <!--Se o usuário estiver logado-->
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_azul">Adicionar pergunta</a>
-        <a href="{{ url_for('login_route.logout') }}" class="btn_cinza">Sair da conta</a>
+        <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_roxo">Adicionar pergunta</a>
         {% endif %}
 
         <br><br><br>

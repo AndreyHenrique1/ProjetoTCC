@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuário - DevSolve</title>
+
+    <!--Link do CSS-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
+
+</head>
+<body>
+    <h1>Tela do usuário</h1>
+    <br>
+    <a href="{{ url_for('login_route.logout') }}" class="btn_cinza">Sair da conta</a>
+    <br><br><br>
+    <p>Aqui irá aparecer a quantidade de pontos, perguntas feitas, respotas feitas...</p>
+</body>
+</html>
