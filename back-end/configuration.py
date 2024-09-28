@@ -15,6 +15,7 @@ def configure_all(app):
     configure_routes(app)
     configure_db(app)
     login_manager.init_app(app)
+    configure_cloudinary()
     app.config['SECRET_KEY'] = 'dergvfgf1234'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -27,7 +28,7 @@ def configure_routes(app):
     app.register_blueprint(blog_route)
 
 def configure_db(app):
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:''@localhost/projetotcc'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost:3308/projetotcc'
     db.init_app(app)
 
 def configure_cloudinary():

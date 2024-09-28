@@ -17,6 +17,9 @@
     <!--Icones-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <!--Link do favicoon-->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
+        type="image/x-icon">
 </head>
 
 <body>
@@ -89,15 +92,15 @@
             <br>
             <!-- Alterar Imagem de Perfil -->
             <div class="text-center mb-2 position-relative">
-                <img src="{{ current_user.foto_perfil }}" alt="Foto de Perfil" width="150" height="150"
-                    class="rounded-circle">
+                <img src="{{ current_user.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}" 
+                     alt="Foto de Perfil" width="150" height="150" class="rounded-circle">
                 <!-- Ícone de Edição -->
-                <button type="button" class="btn btn-link position-absolute"
-                    style="bottom: 20px; left: 53%;" data-bs-toggle="modal"
-                    data-bs-target="#exampleModal">
+                <button type="button" class="btn btn-link position-absolute" style="bottom: 20px; left: 53%;" 
+                        data-bs-toggle="modal" data-bs-target="#exampleModal">
                     <i class="fas fa-pencil-alt" style="font-size: 18px; color: black;"></i>
                 </button>
             </div>
+            
 
             <!-- Modal de edição de usuário -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
@@ -158,26 +161,6 @@
                 <p class="text-muted">Você ainda não escreveu nenhum blog.</p>
                 {% endfor %}
             </ul>
-<<<<<<< HEAD
-
-            <!-- Minhas Respostas/Comentários -->
-            <h2>Minhas Respostas e Comentários</h2>
-            <ul class="list-group">
-                {% for resposta in respostas %}
-                <li class="list-group-item">
-                    <strong>Comentário:</strong> {{ resposta.comentario }}<br>
-                    <small class="text-muted">Comentado na pergunta:
-                        <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=resposta.codPergunta) }}">
-                            {{ resposta.pergunta_relacionada.titulo }}
-                        </a> - Publicado em {{ resposta.data_criacao.strftime('%d/%m/%Y') }}
-                    </small>
-                </li>
-                {% else %}
-                <p class="text-muted">Você ainda não respondeu a nenhuma pergunta ou comentou em blogs.</p>
-                {% endfor %}
-            </ul>
-=======
->>>>>>> d3d0ae5d8d5dbb79a0cfb8c5cc1b5d77e5272f83
         </div>
     </main>
 

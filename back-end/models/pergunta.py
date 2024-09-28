@@ -15,6 +15,7 @@ class Pergunta(db.Model):
     # Relacionamento com a tabela Categoria e Usuário
     categoria_relacionado = relationship('Categoria', backref='perguntas')
     usuario_relacionado = relationship('Usuario', backref='usuario')
+    usuario = relationship("Usuario", back_populates="perguntas")
 
     def __repr__(self):
         return f'<Pergunta {self.titulo}>'

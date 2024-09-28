@@ -32,105 +32,111 @@
     </header>
 
     <main>
-        <div class="p-2 flex-fill"><img src="{{ current_user.foto_perfil }}" alt="Foto de Perfil" width="200"
-                height="150" class="rounded-circle">
-            <p><strong>{{ current_user.nomeUsuario }}</strong></p>
-            <p><em>{{ pergunta.data_criacao.strftime('%d-%m-%y') }}</em></p>
-
-            {% if current_user.codigo == pergunta.codUsuario %}
-            <!--<a href="{{ url_for('pergunta_route.editar_pergunta', pergunta_id=pergunta.codigo) }}" style="color:black;">
-                <i class="bi bi-pencil-square" style="font-size: 25px;"></i>
-            </a>-->
-
-            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                style="color: black;">
-                <i class="bi bi-pencil-square" style="font-size: 25px;"></i>
-            </button>
-
-            <!--Modal de editar pergunta-->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <!--Titulo da modal-->
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar pergunta</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!--Formulario de editar pergunta-->
-                            <form action="{{ url_for('pergunta_route.editar_pergunta', pergunta_id=pergunta.codigo) }}">
-                                <input type="text" name="titulo" id="titulo" class="form-control"
-                                    value="{{ pergunta.titulo }}"><br>
-                                <textarea name="descricao" id="descricao" rows="5">
-                                    {{ pergunta.descricao }}
-                                </textarea>
-                                <br>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
-                            <button type="button" class="btn_roxo">Salvar alterações</button>
-                        </div>
-                    </div>
+        <div class="d-flex align-items-center justify-content-between">
+            <!-- Esquerda: Foto, Nome e Data -->
+            <div class="d-flex align-items-center">
+                <div class="p-2">
+                    <img src="{{ pergunta.usuario.foto_perfil if pergunta.usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}" alt="Foto de Perfil" width="70" height="70"
+                        class="rounded-circle">
+                </div>
+                <div class="p-2">
+                    <p class="mb-0"><strong>{{ pergunta.usuario.nomeUsuario }}</strong></p>
+                    <p class="mb-0"><em>{{ pergunta.data_criacao.strftime('%d-%m-%y') }}</em></p>
                 </div>
             </div>
 
-            <br>
+            <!-- Direita: Ícones de edição e exclusão -->
+            <div class="d-flex align-items-center p-2">
+                {% if current_user.codigo == pergunta.codUsuario %}
+                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                    style="color: black;">
+                    <i class="bi bi-pencil-square" style="font-size: 25px;"></i>
+                </button>
 
-            <i class="bi bi-trash" style="color:black; font-size: 25px;"></i>
-            {% endif %}
+                <!--Modal de editar pergunta-->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar pergunta</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form
+                                    action="{{ url_for('pergunta_route.editar_pergunta', pergunta_id=pergunta.codigo) }}">
+                                    <input type="text" name="titulo" id="titulo" class="form-control"
+                                        value="{{ pergunta.titulo }}"><br>
+                                    <textarea name="descricao" id="descricao"
+                                        rows="5">{{ pergunta.descricao }}</textarea>
+                                    <br>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
+                                <button type="button" class="btn_roxo">Salvar alterações</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <!--Titulo da pergunta do usuário-->
-            <h1>{{ pergunta.titulo }}</h1>
-            <br>
-
-            <!--Descrição da pergunta do usuário-->
-            <div>
-                {{ pergunta.descricao | safe }}
-            </div>
-            <br>
-
-            <!--Cadastrar Usuários-->
-            {% if current_user.is_authenticated %}
-            <h3>Deixe seu Comentário</h3>
-            <form action="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}" method="POST">
-                <label for="comentario"></label>
-                <br>
-                <div id="editor-container" style="height: 300px;"></div>
-                <input type="hidden" name="conteudo_comentario" id="comentario">
-                <br>
-                <button type="submit" class="btn_roxo" style="margin-bottom: 20px;">Enviar Comentário</button>
-            </form>
-
-            <!--Caso o usuário não estiver logado-->
-            {% else %}
-            <p><a href="{{ url_for('login_route.login') }}">Faça login para comentar.</a></p>
-            {% endif %}
-
-            <!--Aparecer na tela os comentarios-->
-            <h2>Comentários</h2>
-            <ul>
-                {% if comentarios %}
-                {% for comentario in comentarios %}
-                <br>
-                <li>
-                    {{ comentario.comentario | safe}} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em>
-                    {% if current_user.codigo == comentario.codUsuario %}
-
-                    <!--Caso o usuário queira excluir seu comentario-->
-                    <form action="{{ url_for('pergunta_route.excluir_comentario', comentario_id=comentario.codigo) }}"
-                        method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');"
-                        style="display:inline;">
-                        <button type="submit">Excluir</button>
-                    </form>
-                    {% endif %}
-                </li>
-                {% endfor %}
-                {% else %}
-                <p>Não há comentários ainda. Seja o primeiro a comentar!</p>
+                <!-- Ícone de excluir -->
+                <i class="bi bi-trash" style="color:black; font-size: 25px; margin-left: 10px;"></i>
                 {% endif %}
-            </ul>
+            </div>
+        </div>
+
+        <!--Titulo da pergunta do usuário-->
+        <h1 style="margin-top: 50px;">{{ pergunta.titulo }}</h1>
+        <br>
+
+        <!--Descrição da pergunta do usuário-->
+        <div>
+            {{ pergunta.descricao | safe }}
+        </div>
+        <br>
+
+        <!--Cadastrar Usuários-->
+        {% if current_user.is_authenticated %}
+        <h3>Deixe seu Comentário</h3>
+        <form action="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}" method="POST">
+            <label for="comentario"></label>
+            <br>
+            <div id="editor-container" style="height: 300px;"></div>
+            <input type="hidden" name="conteudo_comentario" id="comentario">
+            <br>
+            <button type="submit" class="btn_roxo" style="margin-bottom: 20px;">Enviar Comentário</button>
+        </form>
+
+        <!--Caso o usuário não estiver logado-->
+        {% else %}
+        <p><a href="{{ url_for('login_route.login') }}">Faça login para comentar.</a></p>
+        {% endif %}
+
+        <!--Aparecer na tela os comentarios-->
+        <h2>Comentários</h2>
+        <ul>
+            {% if comentarios %}
+            {% for comentario in comentarios %}
+            <br>
+            <li>
+                {{ comentario.comentario | safe}} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em>
+                {% if current_user.codigo == comentario.codUsuario %}
+
+                <!--Caso o usuário queira excluir seu comentario-->
+                <form action="{{ url_for('pergunta_route.excluir_comentario', comentario_id=comentario.codigo) }}"
+                    method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');"
+                    style="display:inline;">
+                    <button type="submit">Excluir</button>
+                </form>
+                {% endif %}
+            </li>
+            {% endfor %}
+            {% else %}
+            <p>Não há comentários ainda. Seja o primeiro a comentar!</p>
+            {% endif %}
+        </ul>
     </main>
 
     <script>

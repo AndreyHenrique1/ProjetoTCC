@@ -167,7 +167,6 @@ main {
     width: 50px; 
     height: 50px; 
     object-fit: cover; /* Faz com que a imagem preencha o elemento sem distorção */
-    background-color: var(--cor4);
     margin-right: 50px;
     cursor: pointer;
 }
@@ -346,10 +345,7 @@ nav ul {
     text-decoration: underline; 
 }
 
-/*H1 da página de perfil, h1 centralizado*/
-h1 {
-    text-align: center;
-}
+
 
 
 
