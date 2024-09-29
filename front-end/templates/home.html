@@ -36,8 +36,21 @@
         <!-- Ícones e imagem de usuário à direita -->
         <div class="header-right">
             {% if current_user.is_authenticated %}
-            <i class="bi bi-search" style="font-size: 25px;"></i>
-            <i class="bi bi-bell-fill" style="font-size: 25px;"></i>
+
+            <!--Barra de pesquisa-->
+            <form action="" method="POST" class="pesquisar">
+                <input type="search" name="pesquisar" id="inputPesquisar" placeholder="O que você procura?" autocomplete="on">
+
+                <label for="inputPesquisar">
+                    <span class="icon"></span>
+                </label>
+            </form>
+
+            <!--Icone de mensagens-->
+            <div class="notificacao">
+                <i class="bi bi-bell-fill" style="font-size: 25px;"></i>
+            </div>
+
             <div class="img_usuario">
                 <!-- Adicionar o redirecionamento para o perfil do usuário -->
                 <a href="{{ url_for('usuario_route.perfil') }}">
