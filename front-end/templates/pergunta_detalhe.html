@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pergunta.titulo }}</title>
+    <!--Link do CSS-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
+
+    <!--Link do bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!--Link do favicoon-->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
+        type="image/x-icon">
+
+    <!--Link do quilljs, editor de texto online-->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="{{ url_for('home.home') }}">
+                <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="d-flex align-items-center justify-content-between">
+            <!-- Esquerda: Foto, Nome e Data -->
+            <div class="d-flex align-items-center">
+                <div class="p-2">
+                    <img src="{{ pergunta.usuario.foto_perfil if pergunta.usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                        alt="Foto de Perfil" width="70" height="70" class="rounded-circle">
+                </div>
+                <div class="p-2">
+                    <p class="mb-0"><strong>{{ pergunta.usuario.nomeUsuario }}</strong></p>
+                    <p class="mb-0"><em>{{ pergunta.data_criacao.strftime('%d-%m-%y') }}</em></p>
+                </div>
+            </div>
+
+            <!-- Direita: Ícones de edição e exclusão -->
+            <div class="d-flex align-items-center p-2">
+                <!--Somente para quer for o dono da pergunta-->
+                {% if current_user.codigo == pergunta.codUsuario %}
+                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                    style="color: black;">
+                    <i class="bi bi-pencil-square" style="font-size: 25px;"></i>
+                </button>
+
+                <!--Modal de editar pergunta-->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar pergunta</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form
+                                    action="{{ url_for('pergunta_route.editar_pergunta', pergunta_id=pergunta.codigo) }}"
+                                    method="POST">
+                                    <input type="text" name="titulo" id="titulo" class="form-control"
+                                        value="{{ pergunta.titulo }}"><br>
+                                    <div id="editor-edicao" style="height: 300px;">{{ pergunta.descricao | safe }}</div>
+                                    <input type="hidden" name="descricao" id="descricao">
+                                    <br>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn_roxo">Salvar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ícone de excluir -->
+                <form action="{{ url_for('pergunta_route.excluir_pergunta', pergunta_id=pergunta.codigo) }}"
+                    method="POST" style="display:inline;">
+                    <button type="submit" style="border: none; background: none;">
+                        <i class="bi bi-trash" style="color:black; font-size: 25px; margin-left: 10px;"></i>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <!--Titulo da pergunta do usuário-->
+        <h1 style="margin-top: 50px;">{{ pergunta.titulo }}</h1>
+        <br>
+
+        <!--Descrição da pergunta do usuário-->
+        <div>
+            {{ pergunta.descricao | safe }}
+        </div>
+        <br>
+
+        <!--Cadastrar usuários para que possa colocar comentarios-->
+        {% if current_user.is_authenticated %}
+        <h3>Deixe seu Comentário</h3>
+        <form action="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}" method="POST">
+            <label for="comentario"></label>
+            <br>
+            <div id="editor-comentario" style="height: 300px;"></div>
+            <input type="hidden" name="conteudo_comentario" id="comentario">
+            <br>
+            <button type="submit" class="btn_roxo" style="margin-bottom: 20px;">Enviar Comentário</button>
+        </form>
+
+        <!--Caso o usuário não estiver logado-->
+        {% else %}
+        <a href="{{ url_for('login_route.login') }}" class="btn_roxo">Faça login para comentar.</a>
+        {% endif %}
+        
+        <!--Aparecer na tela os comentarios-->
+        <h2 style="margin-top: 20px;">Comentários</h2>
+        <ul>
+            {% if comentarios %}
+            {% for comentario in comentarios %}
+            <br>
+            <li>
+                {{ comentario.comentario | safe}} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em>
+                {% if current_user.codigo == comentario.codUsuario %}
+
+                <!--Caso o usuário queira excluir seu comentario-->
+                <form action="{{ url_for('pergunta_route.excluir_comentario', comentario_id=comentario.codigo) }}"
+                    method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');"
+                    style="display:inline;">
+                    <button type="submit">Excluir</button>
+                </form>
+                {% endif %}
+            </li>
+            {% endfor %}
+            {% else %}
+            <p>Não há comentários ainda. Seja o primeiro a comentar!</p>
+            {% endif %}
+        </ul>
+    </main>
+
+    <script>
+        // Inicialização do editor Quill para os comentários
+        var quillComentario = new Quill('#editor-comentario', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image', 'code-block'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            },
+        });
+
+        // Inicialização do editor Quill para a edição
+        var quillEdicao = new Quill('#editor-edicao', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image', 'code-block'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            },
+        });
+
+        // Função para lidar com o envio dos formulários
+        document.querySelectorAll('form').forEach(form => {
+            form.onsubmit = function () {
+                if (form.querySelector('#comentario')) {
+                    form.querySelector('#comentario').value = quillComentario.root.innerHTML;
+                }
+                if (form.querySelector('#descricao')) {
+                    form.querySelector('#descricao').value = quillEdicao.root.innerHTML;
+                }
+            };
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
