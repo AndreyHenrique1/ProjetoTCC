@@ -1,5 +1,6 @@
 from database.db import db
 from datetime import datetime
+from sqlalchemy.orm import relationship
 
 class Blog(db.Model):
     __tablename__ = 'blog'
@@ -10,7 +11,13 @@ class Blog(db.Model):
     codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
     codCategoria = db.Column(db.Integer, db.ForeignKey('categorias.codigo'), nullable=False)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    fotoCapa_blog = db.Column(db.Text, nullable=True)
 
     # Relacionamento com usuário e categoria
     usuario_relacionado = db.relationship('Usuario', backref='blogs', lazy=True)
     categoria_relacionada = db.relationship('Categoria', backref='blogs', lazy=True)
+    usuario = relationship("Usuario", back_populates="blogs")
+
+   
+
+   

@@ -5,6 +5,7 @@ from models.comentariosBlog import comentariosBlog
 from models.categoria import Categoria
 from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
+import cloudinary.uploader
 
 blog_route = Blueprint('blog_route', __name__)
 
@@ -36,7 +37,32 @@ def criar_blog():
         codCategoria = request.form['categorias']
         codUsuario = current_user.codigo
 
-        # Cria uma nova postagem de blog e salva no banco de dados
+        # Verifique se o arquivo está presente na requisição
+        if 'imagem' not in request.files:
+            flash('Nenhuma imagem selecionada.')
+            return redirect(request.url)
+
+        imagem = request.files['imagem']
+
+        # Valide o arquivo enviado
+        if imagem.filename == '':
+            flash('Arquivo inválido.')
+            return redirect(request.url)
+
+        
+        # Faça o upload da imagem para o Cloudinary
+        upload_result = cloudinary.uploader.upload(imagem, folder="fotos_perfil")
+        url_imagem = upload_result.get('secure_url')
+
+        # Atualize a imagem de capa do blog do usuário
+        if url_imagem:
+            current_user.fotoCapa_blog = url_imagem
+            db.session.commit()
+
+        else:
+            flash('Erro ao obter a URL da imagem.')
+
+        # Crie uma nova postagem de blog e salve no banco de dados
         novo_blog = Blog(titulo=titulo, descricao=descricao, codUsuario=codUsuario, codCategoria=codCategoria)
         db.session.add(novo_blog)
         db.session.commit()
@@ -71,6 +97,8 @@ def excluir_blog(blog_id):
     if blog.codUsuario != current_user.codigo:
         flash("Você não tem permissão para excluir esse blog.")
         return redirect(url_for('blog_route.listar_blogs'))
+
+    comentariosBlog.query.filter_by(codBlog=blog.codigo).delete()
 
     db.session.delete(blog)
     db.session.commit()

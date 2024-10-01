@@ -32,28 +32,98 @@
     </header>
 
     <main>
-        <h1>{{ blog.titulo }}</h1>
-        <p>Categoria: {{ blog.categoria_relacionada.nome }}</p>
-        <p><em>{{ blog.data_criacao.strftime('%Y-%m-%d') }}</em></p>
-        <div>{{ blog.descricao | safe }}</div>
-        <p>Publicado por: {{ blog.usuario_relacionado.nomeUsuario }}</p>
-        {% if current_user.codigo == blog.codUsuario %}
-        <a href="{{ url_for('blog_route.editar_blog', blog_id=blog.codigo) }}">Editar Blog</a>
-        {% endif %}
+        <div class="d-flex align-items-center justify-content-between">
+            <!-- Esquerda: Foto, Nome e Data -->
+            <div class="d-flex align-items-center">
+                <div class="p-2">
+                    <img src="{{ blog.usuario.foto_perfil if blog.usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                        alt="Foto de Perfil" width="70" height="70" class="rounded-circle">
+                </div>
+                <div class="p-2">
+                    <p class="mb-0"><strong>{{ blog.usuario.nomeUsuario }}</strong></p>
+                    <p class="mb-0"><em>{{ blog.data_criacao.strftime('%d-%m-%y') }}</em></p>
+                </div>
+            </div>
+
+            <!-- Direita: Ícones de edição e exclusão -->
+            <div class="d-flex align-items-center p-2">
+                <!--Somente para quer for o dono do blog-->
+                {% if current_user.codigo == blog.codUsuario %}
+                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                    style="color: black;">
+                    <i class="bi bi-pencil-square" style="font-size: 25px;"></i>
+                </button>
+
+                <!--Modal de editar pergunta-->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar blog</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ url_for('blog_route.editar_blog', blog_id=blog.codigo) }}"
+                                    method="POST">
+                                    <!--Titulo do blog do usuário-->
+                                    <input type="text" name="titulo" id="titulo" class="form-control"
+                                        value="{{ blog.titulo }}"><br>
+                                    <!--Descrição do blog do usuário-->
+                                    <div id="editor-edicao" style="height: 300px;">{{ blog.descricao | safe }}</div>
+                                    <input type="hidden" name="descricao" id="descricao">
+                                    <br>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn_roxo">Salvar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ícone de excluir -->
+                <form action="{{ url_for('blog_route.excluir_blog', blog_id=blog.codigo) }}" method="POST"
+                    style="display:inline;">
+                    <button type="submit" style="border: none; background: none;">
+                        <i class="bi bi-trash" style="color:black; font-size: 25px; margin-left: 10px;"></i>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
         <br>
-        <a href="{{ url_for('blog_route.listar_blogs') }}">Voltar para os blogs</a>
+
+        <!--Aqui está marcado a categoria do blog, arrumar para aparecer a cor correspondente depois-->
+        <p>Categoria: {{ blog.categoria_relacionada.nome }}</p>
+
+        <h1>{{ blog.titulo }}</h1>
+
+        <!--Conteúdo do blog-->
+        <div>{{ blog.descricao | safe }}</div>
+
+        <br>
+
         {% if current_user.is_authenticated %}
         <h3>Deixe seu Comentário</h3>
+        <!--Formulario para o usuário adicionar seu comentario no site-->
         <form action="{{ url_for('blog_route.blog_detalhe', blog_id=blog.codigo) }}" method="POST">
-            <label for="comentario">Seu Comentário:</label>
+            <label for="comentario"></label>
+            <div id="editor-comentario" style="height: 300px;"></div>
+            <input type="hidden" name="conteudo_comentario" id="comentario">
             <br>
-            <textarea name="conteudo_comentario" id="comentario" rows="5" required></textarea><br>
-            <button type="submit">Enviar Comentário</button>
+            <button type="submit" class="btn_roxo">Enviar Comentário</button>
         </form>
         {% else %}
-        <p><a href="{{ url_for('login_route.login') }}">Faça login para comentar.</a></p>
+        <!--Caso o usuário ainda não esteja logado, para conseguir escrever comentarios-->
+        <a href="{{ url_for('login_route.login') }}" class="btn_roxo">Faça login para comentar.</a>
         {% endif %}
-        <h2>Comentários</h2>
+
+        <!--Comentários-->
+        <h2 style="margin-top: 20px;">Comentários</h2>
         <ul>
             {% if comentarios %}
             {% for comentario in comentarios %}
@@ -65,7 +135,6 @@
                     style="display:inline;">
                     <button type="submit">Excluir</button>
                 </form>
-
                 {% endif %}
             </li>
             {% endfor %}
@@ -74,6 +143,55 @@
             {% endif %}
         </ul>
     </main>
+
+    <script>
+        // Inicialização do editor Quill para os comentários
+        var quillComentario = new Quill('#editor-comentario', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image', 'code-block'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            },
+        });
+
+        // Inicialização do editor Quill para a edição
+        var quillEdicao = new Quill('#editor-edicao', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image', 'code-block'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            },
+        });
+
+        // Função para lidar com o envio dos formulários
+        document.querySelectorAll('form').forEach(form => {
+            form.onsubmit = function () {
+                if (form.querySelector('#comentario')) {
+                    form.querySelector('#comentario').value = quillComentario.root.innerHTML;
+                }
+                if (form.querySelector('#descricao')) {
+                    form.querySelector('#descricao').value = quillEdicao.root.innerHTML;
+                }
+            };
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

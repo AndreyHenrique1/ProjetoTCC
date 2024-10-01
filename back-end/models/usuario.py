@@ -22,6 +22,7 @@ class Usuario(db.Model, UserMixin):
     cor_avatar = db.Column(db.String(7), nullable=True)
 
     perguntas = relationship("Pergunta", back_populates="usuario")
+    blog = relationship("Blog", back_populates="usuario")
 
     def __init__(self, email, nomeCompleto, nomeUsuario, senha, foto_perfil=None, quantidadePontos=0, cor_avatar=None):
         self.email = email
