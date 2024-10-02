@@ -464,6 +464,13 @@ nav ul {
     text-decoration: underline; 
 }
 
+i:hover {
+    color: var(--cor3);
+}
+
+#Excluir:hover {
+    color: #ff0000;
+}
 
 
 

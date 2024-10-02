@@ -86,7 +86,7 @@
                 <form action="{{ url_for('pergunta_route.excluir_pergunta', pergunta_id=pergunta.codigo) }}"
                     method="POST" style="display:inline;">
                     <button type="submit" style="border: none; background: none;">
-                        <i class="bi bi-trash" style="color:black; font-size: 25px; margin-left: 10px;"></i>
+                        <i class="bi bi-trash" style="font-size: 25px; margin-left: 10px;" id="Excluir"></i>
                     </button>
                 </form>
                 {% endif %}
@@ -103,7 +103,7 @@
         </div>
         <br>
 
-        <!-- Cadastrar usuários para que possa colocar comentários -->
+        <!-- Cadastrar usuários, para que possa colocar comentários -->
         {% if current_user.is_authenticated %}
         <h3>Deixe seu Comentário</h3>
         <form action="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}" method="POST">
@@ -137,10 +137,12 @@
                 </form>
                 {% endif %}
                 
+                <br>
                 <!-- Botão de curtir -->
                 <form action="{{ url_for('pergunta_route.curtir_comentario', comentario_id=comentario.codigo) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-link">Curtir</button>
+                    <button type="submit" style="border: 0; background-color: #fff;"><i class="bi bi-hand-thumbs-up" style="font-size: 25px;"></i></button>
                 </form>
+                <br>
                 <span>{{ comentario.quantidadeCurtidas }} curtidas</span> <!-- Exibe a quantidade de curtidas -->
                 
             </li>
