@@ -32,7 +32,8 @@ class Usuario(db.Model, UserMixin):
         self.foto_perfil = foto_perfil  
         self.quantidadePontos = quantidadePontos
         self.cor_avatar = cor_avatar
-    
+        quantidadePontos = db.Column(db.Integer, default=0)
+
     # Método para verificar a senha
     def verificar_senha(self, senha):
         return check_password_hash(self.senha, senha)
@@ -40,6 +41,10 @@ class Usuario(db.Model, UserMixin):
     def get_id(self):
         return str(self.codigo)
 
+    # Método para incrementar os pontos
+    def incrementar_pontos(self, pontos):
+        self.quantidadePontos += pontos
+        db.session.commit()
     # Retorna um dicionário com as informações do usuário
     def to_dict(self):
         return {

@@ -3,6 +3,8 @@ from database.db import db
 from models.pergunta import Pergunta
 from models.comentariosPerguntas import comentariosPerguntas 
 from models.categoria import Categoria
+from models.curtidasComentarios import CurtidasComentarios  # Importando o modelo de curtidas
+from models.usuario import Usuario
 from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 
@@ -53,14 +55,13 @@ def excluir_pergunta(pergunta_id):
     if pergunta.codUsuario != current_user.codigo:
         flash("Você não tem permissão para excluir essa pergunta.")
         return redirect(url_for('home.home'))
-    
 
+    # Excluir todos os comentários relacionados à pergunta
     comentariosPerguntas.query.filter_by(codPergunta=pergunta.codigo).delete()
 
     db.session.delete(pergunta)
     db.session.commit()
     return redirect(url_for('home.home'))
-    
 
 # Detalhes e comentários da pergunta
 @pergunta_route.route('/pergunta/<int:pergunta_id>', methods=['GET', 'POST'])
@@ -103,4 +104,30 @@ def excluir_comentario(comentario_id):
     
     return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=comentario.codPergunta))
 
+# Rota para curtir um comentário
+@pergunta_route.route('/comentario/<int:comentario_id>/curtir', methods=['POST'])
+@login_required
+def curtir_comentario(comentario_id):
+    comentario = comentariosPerguntas.query.get_or_404(comentario_id)
 
+    # Verifica se o usuário já curtiu o comentário
+    curtida_existente = CurtidasComentarios.query.filter_by(codUsuario=current_user.codigo, codComentario=comentario_id).first()
+    if curtida_existente:
+        flash('Você já curtiu este comentário.')
+        return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=comentario.codPergunta))
+
+    # Adiciona uma nova curtida
+    nova_curtida = CurtidasComentarios(codComentario=comentario_id, codUsuario=current_user.codigo)
+    db.session.add(nova_curtida)
+
+    # Incrementa a quantidade de curtidas no comentário
+    comentario.quantidadeCurtidas += 1
+    db.session.commit()
+
+    # Incrementa pontos ao dono do comentário
+    dono_comentario = Usuario.query.get(comentario.codUsuario)
+    dono_comentario.quantidadePontos += 1  # Adiciona 1 ponto
+    db.session.commit()
+
+    flash('Comentário curtido com sucesso!')
+    return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=comentario.codPergunta))

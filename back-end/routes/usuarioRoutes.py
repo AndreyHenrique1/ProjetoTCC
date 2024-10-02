@@ -56,3 +56,8 @@ def editar_perfil():
 
     return redirect(url_for('usuario_route.perfil'))
 
+# Rota para listar todos os usuários
+@usuario_route.route('/usuarios')
+def listar_usuarios():
+    usuarios = Usuario.query.all()  # Obtém todos os usuários do banco de dados
+    return render_template('listar_usuarios.html', usuarios=usuarios)

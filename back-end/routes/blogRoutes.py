@@ -131,8 +131,6 @@ def blog_detalhe(blog_id):
 def excluir_comentario(comentario_id):
     comentario = comentariosBlog.query.get_or_404(comentario_id)
 
-    # Resto da lógica...
-
     if comentario.codUsuario != current_user.codigo:
         flash("Você não tem permissão para excluir esse comentário.")
         return redirect(url_for('home.home'))
