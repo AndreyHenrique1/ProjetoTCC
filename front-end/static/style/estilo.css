@@ -472,6 +472,31 @@ i:hover {
     color: #ff0000;
 }
 
+/*CSS das etiquetas*/
+#etiquetas_sugestoes {
+    list-style-type: none;
+    width: 37%;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    position: absolute;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: white;
+    z-index: 1000;
+}
+
+#etiquetas_sugestoes li {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+#etiquetas_sugestoes li:hover {
+    background-color: var(--cor2);
+    color: var(--cor0);
+    transition: .2s;
+}
+
 
 
 

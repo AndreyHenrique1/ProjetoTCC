@@ -1,5 +1,4 @@
 from database.db import db
-from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 class comentariosPerguntas(db.Model):
@@ -8,8 +7,10 @@ class comentariosPerguntas(db.Model):
     comentario = db.Column(db.String(1000), nullable=False)
     codPergunta = db.Column(db.Integer, db.ForeignKey('perguntas.codigo'), nullable=False)
     codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
-    quantidadeCurtidas = db.Column(db.Integer, default=0)  # Certifique-se que esta linha está presente
+    quantidadeCurtidas = db.Column(db.Integer, default=0)
 
     # Relacionamento com a tabela Usuário 
-    usuario_relacionado = db.relationship('Usuario', backref='comentariosPerguntas', lazy=True)
+    usuario_relacionado = db.relationship('Usuario', backref='comentarios', lazy=True)
+    
+    # Relacionamento com a pergunta
     pergunta_relacionado = db.relationship('Pergunta', backref='comentarios', lazy=True)

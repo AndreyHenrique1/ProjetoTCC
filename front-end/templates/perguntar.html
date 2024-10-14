@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
 
     <!--Link do favicoon-->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
+        type="image/x-icon">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!--Arquivo JS da pesquisa de etiquetas-->
+    <script src="{{ url_for('static', filename='js/etiquetas.js') }}"></script>
 </head>
 
 <body>
@@ -24,17 +31,20 @@
         <div class="logo">
             <a href="{{ url_for('home.home') }}">
                 <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
-            </a>   
+            </a>
         </div>
     </header>
 
     <main>
         <div class="dividir_tela">
             <form action="{{ url_for('pergunta_route.perguntar') }}" method="POST">
-                <input type="text" name="titulo" id="titulo" class="form-control" placeholder="Descreva em poucas palavras a sua pergunta" required>
+                <input type="text" name="titulo" id="titulo" class="form-control"
+                    placeholder="Descreva em poucas palavras a sua pergunta" required>
                 <br>
+                <!--Categoria-->
                 <label>Categoria</label>
-                <select class="form-select" aria-label="Default select example" id="categorias" name="categorias" required>
+                <select class="form-select" aria-label="Default select example" id="categorias" name="categorias"
+                    required>
                     <option value="" disabled selected>Selecione a categoria</option>
                     {% for categoria in categorias %}
                     <option value="{{ categoria.codigo }}">
@@ -42,6 +52,15 @@
                     </option>
                     {% endfor %}
                 </select>
+                <br>
+                <!-- Etiquetas -->
+                <div>
+                    <label for="etiquetas_input">Etiquetas</label>
+                    <input type="text" id="etiquetas_input" name="Etiqueta"
+                        placeholder="Selecione ou crie novas etiquetas. Inicie cada etiqueta com #" autocomplete="off"
+                        class="form-control" />
+                    <ul id="etiquetas_sugestoes" style="display: none;"></ul>
+                </div>
                 <br>
                 <label for="descricao">Descrição:</label>
                 <div id="editor-container" style="height: 300px;"></div>
@@ -86,11 +105,12 @@
         };
     </script>
 
-    
+
     <!--Bootstrap-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
 </body>
+
 </html>

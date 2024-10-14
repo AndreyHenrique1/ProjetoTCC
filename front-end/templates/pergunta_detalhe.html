@@ -125,6 +125,9 @@
         <ul>
             {% if comentarios %}
             {% for comentario in comentarios %}
+            <!--Foto de perfil do usuário-->
+            <img src="{{ comentario.usuario_relacionado.foto_perfil if pergunta.usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                                alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
             <br>
             <li>
                 {{ comentario.comentario | safe }} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em>
@@ -146,6 +149,7 @@
                 <span>{{ comentario.quantidadeCurtidas }} curtidas</span> <!-- Exibe a quantidade de curtidas -->
                 
             </li>
+            <br>
             {% endfor %}
             {% else %}
             <p>Não há comentários ainda. Seja o primeiro a comentar!</p>

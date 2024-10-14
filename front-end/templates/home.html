@@ -38,7 +38,7 @@
             {% if current_user.is_authenticated %}
 
             <!--Barra de pesquisa-->
-            <form action="" method="POST" class="pesquisar">
+            <form action="{{ url_for('pergunta_route.pesquisar') }}" method="POST" class="pesquisar">
                 <input type="search" name="pesquisar" id="inputPesquisar" placeholder="O que você procura?" autocomplete="on">
 
                 <label for="inputPesquisar">
@@ -140,19 +140,22 @@
                     <li class="pergunta-item">
                         <div class="img_usuario">
                             <img src="{{ pergunta.usuario.foto_perfil if pergunta.usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                                alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
+                                 alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
                         </div>
-                        <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}"
-                            class="links">
+                        <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}" class="links">
                             <strong>{{ pergunta.titulo }}</strong>
-                            <p>{{ pergunta.descricao[:80] | safe }}{% if pergunta.descricao|length > 100 %}...{% else
-                                %}...{% endif %}</p>
+                            <p>{{ pergunta.descricao[:80] | safe }}{% if pergunta.descricao|length > 100 %}...{% endif %}</p>
                             <p>Leia mais</p>
+                            <br>
+                            <p>{{  pergunta.categoria_relacionado.nome }}</p> 
                         </a>
                     </li>
                 </ul>
             </div>
             {% endfor %}
+        </ul>
+        
+        
     </main>
 
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
