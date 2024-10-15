@@ -1,3 +1,4 @@
+// Barra de pesquisa das etiquetas
 document.addEventListener('DOMContentLoaded', function () {
     const inputEtiquetas = document.getElementById('etiquetas_input');
     const listaSugestoes = document.getElementById('etiquetas_sugestoes');

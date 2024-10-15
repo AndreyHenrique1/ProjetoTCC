@@ -62,7 +62,7 @@ def criar_blog():
         else:
             flash('Erro ao obter a URL da imagem.')
 
-        # Crie uma nova postagem de blog e salve no banco de dados
+        # Crie uma nova postagem de blog e salva no banco de dados
         novo_blog = Blog(titulo=titulo, descricao=descricao, codUsuario=codUsuario, codCategoria=codCategoria)
         db.session.add(novo_blog)
         db.session.commit()

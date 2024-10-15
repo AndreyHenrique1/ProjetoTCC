@@ -41,7 +41,7 @@
                 </div>
                 <div class="p-2">
                     <p class="mb-0"><strong>{{ pergunta.usuario.nomeUsuario }}</strong></p>
-                    <p class="mb-0"><em>{{ pergunta.data_criacao.strftime('%d-%m-%y') }}</em></p>
+                    <p class="mb-0"><em>{{ pergunta.data_criacao.strftime('%d/%m/%y') }}</em></p>
                 </div>
             </div>
 
@@ -69,7 +69,7 @@
                                     method="POST">
                                     <input type="text" name="titulo" id="titulo" class="form-control"
                                         value="{{ pergunta.titulo }}"><br>
-                                    <div id="editor-edicao" style="height: 300px;">{{ pergunta.descricao | safe }}</div>
+                                    <div id="editor-geral" style="height: 300px;">{{ pergunta.descricao | safe }}</div>
                                     <input type="hidden" name="descricao" id="descricao">
                                     <br>
                             </div>
@@ -119,7 +119,7 @@
         {% else %}
         <a href="{{ url_for('login_route.login') }}" class="btn_roxo">Faça login para comentar.</a>
         {% endif %}
-        
+
         <!-- Aparecer na tela os comentários -->
         <h2 style="margin-top: 20px;">Comentários</h2>
         <ul>
@@ -127,27 +127,30 @@
             {% for comentario in comentarios %}
             <!--Foto de perfil do usuário-->
             <img src="{{ comentario.usuario_relacionado.foto_perfil if pergunta.usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                                alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
+                alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
             <br>
             <li>
                 {{ comentario.comentario | safe }} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em>
                 {% if current_user.codigo == comentario.codUsuario %}
-                <!-- Caso o usuário queira excluir seu comentário -->
-                <form action="{{ url_for('pergunta_route.excluir_comentario', comentario_id=comentario.codigo) }}"
-                    method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');"
-                    style="display:inline;">
-                    <button type="submit">Excluir</button>
-                </form>
+                    <!-- Caso o usuário queira excluir seu comentário -->
+                    <div class="d-flex align-items-center p-2"></div>
+                    <form action="{{ url_for('pergunta_route.excluir_comentario', comentario_id=comentario.codigo) }}"
+                        method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');"
+                        style="display:inline;">
+                        <button type="submit">Excluir</button>
+                    </form>
+                    </div>
                 {% endif %}
-                
                 <br>
                 <!-- Botão de curtir -->
-                <form action="{{ url_for('pergunta_route.curtir_comentario', comentario_id=comentario.codigo) }}" method="POST" style="display:inline;">
-                    <button type="submit" style="border: 0; background-color: #fff;"><i class="bi bi-hand-thumbs-up" style="font-size: 25px;"></i></button>
+                <form action="{{ url_for('pergunta_route.curtir_comentario', comentario_id=comentario.codigo) }}"
+                    method="POST" style="display:inline;">
+                    <button type="submit" style="border: 0; background-color: #fff;"><i class="bi bi-hand-thumbs-up"
+                            style="font-size: 25px;"></i></button>
                 </form>
                 <br>
                 <span>{{ comentario.quantidadeCurtidas }} curtidas</span> <!-- Exibe a quantidade de curtidas -->
-                
+
             </li>
             <br>
             {% endfor %}
@@ -157,54 +160,10 @@
         </ul>
     </main>
 
-    <script>
-        // Inicialização do editor Quill para os comentários
-        var quillComentario = new Quill('#editor-comentario', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, false] }],
-                    ['bold', 'italic', 'underline'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    ['link', 'image', 'code-block'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                    ['clean']
-                ]
-            },
-        });
-
-        // Inicialização do editor Quill para a edição
-        var quillEdicao = new Quill('#editor-edicao', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, false] }],
-                    ['bold', 'italic', 'underline'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    ['link', 'image', 'code-block'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                    ['clean']
-                ]
-            },
-        });
-
-        // Função para lidar com o envio dos formulários
-        document.querySelectorAll('form').forEach(form => {
-            form.onsubmit = function () {
-                if (form.querySelector('#comentario')) {
-                    form.querySelector('#comentario').value = quillComentario.root.innerHTML;
-                }
-                if (form.querySelector('#descricao')) {
-                    form.querySelector('#descricao').value = quillEdicao.root.innerHTML;
-                }
-            };
-        });
-    </script>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 
+    <!--Arquivo JS do Editor Online-->
+    <script src="{{ url_for('static', filename='js/editorOnline.js') }}"></script>
+</body>
 </html>

@@ -1,3 +1,5 @@
+//Menu lateral da home
+
 var menuItem = document.querySelectorAll('.item-menu')
 
 function selectLink() {
