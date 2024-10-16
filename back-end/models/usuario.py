@@ -21,8 +21,17 @@ class Usuario(db.Model, UserMixin):
     foto_perfil = db.Column(db.Text, nullable=True)  
     cor_avatar = db.Column(db.String(7), nullable=True)
 
-    perguntas = relationship("Pergunta", back_populates="usuario")
-    blog = relationship("Blog", back_populates="usuario")
+    # Relacionamento com perguntas
+    perguntas = relationship("Pergunta", back_populates="usuario_relacionado")
+
+    # Relacionamento com notificações
+    notificacoes = db.relationship('Notificacao', back_populates='usuario_relacionado')
+
+    # Relacionamento com blogs
+    blog = relationship("Blog", back_populates="usuario_relacionado")
+    
+    def __repr__(self):
+        return f'<Usuario {self.nomeUsuario}>'
 
     def __init__(self, email, nomeCompleto, nomeUsuario, senha, foto_perfil=None, quantidadePontos=0, cor_avatar=None):
         self.email = email
@@ -45,6 +54,7 @@ class Usuario(db.Model, UserMixin):
     def incrementar_pontos(self, pontos):
         self.quantidadePontos += pontos
         db.session.commit()
+        
     # Retorna um dicionário com as informações do usuário
     def to_dict(self):
         return {
@@ -56,5 +66,3 @@ class Usuario(db.Model, UserMixin):
             'foto_perfil': self.foto_perfil,
             'cor_avatar': self.cor_avatar
         }
-    
-

@@ -3,8 +3,9 @@ from database.db import db
 from models.pergunta import Pergunta
 from models.comentariosPerguntas import comentariosPerguntas 
 from models.categoria import Categoria
-from models.curtidasComentarios import CurtidasComentarios  # Importando o modelo de curtidas
+from models.curtidasComentarios import CurtidasComentarios 
 from models.usuario import Usuario
+from models.notificacao import enviar_notificacao
 from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 
@@ -72,11 +73,19 @@ def pergunta_detalhe(pergunta_id):
         conteudo_comentario = request.form.get('conteudo_comentario')
 
         if conteudo_comentario and current_user.is_authenticated:
+        # Quando alguém responde a uma pergunta
             novo_comentario = comentariosPerguntas(
-                comentario=conteudo_comentario, codPergunta=pergunta_id, codUsuario=current_user.codigo
+            comentario=conteudo_comentario, codPergunta=pergunta_id, codUsuario=current_user.codigo
             )
             db.session.add(novo_comentario)
             db.session.commit()
+
+            # Enviar notificação para o dono da pergunta
+            if current_user.codigo != pergunta.codUsuario:  # Evitar notificar o próprio usuário
+                mensagem = f"Você recebeu uma nova resposta para sua pergunta: {pergunta.titulo}"
+                link_pergunta = url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta_id)
+                enviar_notificacao(pergunta.codUsuario, mensagem, link_pergunta, pergunta.codigo)
+
 
             return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta_id))
 

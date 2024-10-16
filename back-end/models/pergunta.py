@@ -5,6 +5,7 @@ from datetime import datetime
 
 class Pergunta(db.Model):
     __tablename__ = 'perguntas'
+    
     codigo = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(255), nullable=False)
     descricao = db.Column(db.String(1000), nullable=False) 
@@ -12,9 +13,10 @@ class Pergunta(db.Model):
     codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
     codCategoria = db.Column(db.Integer, db.ForeignKey('categorias.codigo'), nullable=False)
 
-    # Relacionamento com a tabela Categoria e Usuário
-    categoria_relacionado = relationship('Categoria', backref='perguntas')
-    usuario_relacionado = relationship('Usuario', backref='usuario')
+    # Relacionamento com a tabela Usuario
+    usuario_relacionado = relationship('Usuario', back_populates='perguntas') 
+    categoria_relacionada = relationship('Categoria', backref='perguntas', lazy=True)
+    notificacoes = db.relationship('Notificacao', back_populates='pergunta_relacionada')
     usuario = relationship("Usuario", back_populates="perguntas")
 
     def __repr__(self):

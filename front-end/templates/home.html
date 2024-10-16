@@ -48,7 +48,13 @@
 
             <!--Icone de mensagens-->
             <div class="notificacao">
-                <i class="bi bi-bell-fill" style="font-size: 25px;"></i>
+                <a href="{{ url_for('notificacao_route.listar_notificacoes') }}">
+                    <i class="bi bi-bell-fill" style="font-size: 25px;"></i>
+                    {% if notificacoes_nao_lidas %}
+                    <span class="badge bg-danger">{{ notificacoes_nao_lidas|length }}</span>
+                    {% endif %}
+                </a>
+                
             </div>
 
             <div class="img_usuario">
