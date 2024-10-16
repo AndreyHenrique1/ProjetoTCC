@@ -18,28 +18,29 @@
         </div>
     </header>
 
+    <!--Chamando o arquivo menu_lateral.html-->
+    {% include 'menu_lateral.html' %}
+
     <main class="container mt-5">
         <h1>Lista de Usuários</h1>
-        <table class="table table-bordered">
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Código</th>
-                    <th>Nome de Usuário</th>
-                    <th>Email</th>
+                    <th>Classificação</th>
+                    <th></th>
+                    <th></th>
                     <th>Quantidade de Pontos</th>
-                    <th>Foto de Perfil</th>
                 </tr>
             </thead>
             <tbody>
                 {% for usuario in usuarios %}
                 <tr>
-                    <td>{{ usuario.codigo }}</td>
-                    <td>{{ usuario.nomeUsuario }}</td>
-                    <td>{{ usuario.email }}</td>
-                    <td>{{ usuario.quantidadePontos }}</td>
+                    <td>1</td>
                     <td>
                         <img src="{{ usuario.foto_perfil if usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}" alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
                     </td>
+                    <td>{{ usuario.nomeUsuario }}</td>
+                    <td>{{ usuario.quantidadePontos }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

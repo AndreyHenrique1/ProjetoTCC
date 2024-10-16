@@ -71,7 +71,7 @@
                                     <input type="text" name="titulo" id="titulo" class="form-control"
                                         value="{{ blog.titulo }}"><br>
                                     <!--Descrição do blog do usuário-->
-                                    <div id="editor-edicao" style="height: 300px;">{{ blog.descricao | safe }}</div>
+                                    <div id="editor-geral" style="height: 300px;">{{ blog.descricao | safe }}</div>
                                     <input type="hidden" name="descricao" id="descricao">
                                     <br>
                             </div>
@@ -128,7 +128,7 @@
             {% if comentarios %}
             {% for comentario in comentarios %}
             <li>
-                {{ comentario.comentario }} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em>
+                {{ comentario.comentario | safe }} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em>
                 {% if current_user.codigo == comentario.codUsuario %}
                 <form action="{{ url_for('blog_route.excluir_comentario', comentario_id=comentario.codigo) }}"
                     method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');"
@@ -144,51 +144,8 @@
         </ul>
     </main>
 
-    <script>
-        // Inicialização do editor Quill para os comentários
-        var quillComentario = new Quill('#editor-comentario', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, false] }],
-                    ['bold', 'italic', 'underline'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    ['link', 'image', 'code-block'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                    ['clean']
-                ]
-            },
-        });
-
-        // Inicialização do editor Quill para a edição
-        var quillEdicao = new Quill('#editor-edicao', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, false] }],
-                    ['bold', 'italic', 'underline'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    ['link', 'image', 'code-block'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                    ['clean']
-                ]
-            },
-        });
-
-        // Função para lidar com o envio dos formulários
-        document.querySelectorAll('form').forEach(form => {
-            form.onsubmit = function () {
-                if (form.querySelector('#comentario')) {
-                    form.querySelector('#comentario').value = quillComentario.root.innerHTML;
-                }
-                if (form.querySelector('#descricao')) {
-                    form.querySelector('#descricao').value = quillEdicao.root.innerHTML;
-                }
-            };
-        });
-    </script>
+    <!--Arquivo JS do Editor Online-->
+    <script src="{{ url_for('static', filename='js/editorOnline.js') }}"></script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

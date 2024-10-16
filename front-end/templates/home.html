@@ -38,7 +38,7 @@
             {% if current_user.is_authenticated %}
 
             <!--Barra de pesquisa-->
-            <form action="" method="POST" class="pesquisar">
+            <form action="{{ url_for('pergunta_route.pesquisar') }}" method="POST" class="pesquisar">
                 <input type="search" name="pesquisar" id="inputPesquisar" placeholder="O que você procura?" autocomplete="on">
 
                 <label for="inputPesquisar">
@@ -71,49 +71,8 @@
         </div>
     </header>
 
-    <!--Menu lateral-->
-    <nav class="menu-lateral">
-        <ul>
-            <li class="item-menu ativo">
-                <a href="#">
-                    <span class="icon"><i class="bi bi-person-raised-hand"></i></span>
-                    <span class="txt-link">Perguntas</span>
-                </a>
-            </li>
-        </ul>
-        <ul>
-            <li class="item-menu">
-                <a href="{{ url_for('blog_route.listar_blogs') }}">
-                    <span class="icon"><i class="bi bi-file-text-fill"></i></span>
-                    <span class="txt-link">Blog</span>
-                </a>
-            </li>
-        </ul>
-        <ul>
-            <li class="item-menu">
-                <a href="#">
-                    <span class="icon"><i class="bi bi-robot"></i></span>
-                    <span class="txt-link">I.A</span>
-                </a>
-            </li>
-        </ul>
-        <ul>
-            <li class="item-menu">
-                <a href="{{ url_for('usuario_route.listar_usuarios') }}">
-                    <span class="icon"><i class="bi bi-people-fill"></i></span>
-                    <span class="txt-link">Usuários</span>
-                </a>
-            </li>
-        </ul>        
-        <ul>
-            <li class="item-menu">
-                <a href="#">
-                    <span class="icon"><i class="bi bi-bookmark-fill"></i></span>
-                    <span class="txt-link">Categorias</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <!--Chamando o arquivo menu_lateral.html-->
+    {% include 'menu_lateral.html' %}
 
     <main>
         <!--Pesquisar por categorias (Filtro)-->
@@ -146,19 +105,25 @@
                     <li class="pergunta-item">
                         <div class="img_usuario">
                             <img src="{{ pergunta.usuario.foto_perfil if pergunta.usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                                alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
+                                 alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
                         </div>
-                        <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}"
-                            class="links">
+                        <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}" class="links">
                             <strong>{{ pergunta.titulo }}</strong>
-                            <p>{{ pergunta.descricao[:80] | safe }}{% if pergunta.descricao|length > 100 %}...{% else
-                                %}...{% endif %}</p>
+                            <p>{{ pergunta.descricao[:80] | safe }}{% if pergunta.descricao|length > 100 %}...{% endif %}</p>
                             <p>Leia mais</p>
+                            <br>
+                            <p>{{  pergunta.categoria_relacionado.nome }}</p> 
+                            {% for rel in pergunta.etiquetas %}
+                                <p>{{ rel.etiqueta.nome }}</p>
+                            {% endfor %}
                         </a>
                     </li>
                 </ul>
             </div>
             {% endfor %}
+        </ul>
+        
+        
     </main>
 
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>

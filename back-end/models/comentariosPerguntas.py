@@ -1,5 +1,4 @@
 from database.db import db
-from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 class comentariosPerguntas(db.Model):
@@ -11,5 +10,7 @@ class comentariosPerguntas(db.Model):
     quantidadeCurtidas = db.Column(db.Integer, default=0) 
 
     # Relacionamento com a tabela Usuário 
-    usuario_relacionado = db.relationship('Usuario', backref='comentariosPerguntas', lazy=True)
+    usuario_relacionado = db.relationship('Usuario', backref='comentarios', lazy=True)
+    
+    # Relacionamento com a pergunta
     pergunta_relacionado = db.relationship('Pergunta', backref='comentarios', lazy=True)

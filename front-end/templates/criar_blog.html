@@ -56,45 +56,15 @@
             <br>
 
             <label for="descricao">Descrição:</label>
-            <div id="editor-container" style="height: 300px;"></div>
+            <div id="editor-geral" style="height: 300px;"></div>
             <input type="hidden" name="descricao" id="descricao">
             <br>
             <button type="submit" class="btn_roxo" style="width: 100%;">Publicar</button>
         </form>
     </main>
 
-    <script>
-        var quill = new Quill('#editor-container', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, false] }],
-                    ['bold', 'italic', 'underline'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    ['link', 'image', 'code-block'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                    ['clean']
-                ]
-            },
-        });
-
-        function updatePreview() {
-            var content = quill.root.innerHTML;
-            document.querySelector('#Visualizacao-tempoReal').innerHTML = content;
-        }
-
-        // Atualizar visualização em tempo real
-        quill.on('text-change', updatePreview);
-
-        // Atualizar visualização ao carregar a página
-        updatePreview();
-
-        // Ao enviar o formulário, insira o conteúdo do editor no campo hidden
-        document.querySelector('form').onsubmit = function () {
-            document.querySelector('#descricao').value = quill.root.innerHTML;
-        };
-    </script>
+    <!--Arquivo JS do Editor Online-->
+    <script src="{{ url_for('static', filename='js/editorOnline.js') }}"></script>
 
     <!--Bootstrap-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
