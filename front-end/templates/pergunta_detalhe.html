@@ -17,6 +17,9 @@
     <!-- Link do Quill.js, editor de texto online -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <!--Arquivo JS dos avisos-->
+    <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
 </head>
 
 <body>
@@ -60,7 +63,8 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ url_for('pergunta_route.editar_pergunta', pergunta_id=pergunta.codigo) }}"
+                                <form
+                                    action="{{ url_for('pergunta_route.editar_pergunta', pergunta_id=pergunta.codigo) }}"
                                     method="POST">
                                     <input type="text" name="titulo" id="titulo" class="form-control"
                                         value="{{ pergunta.titulo }}"><br>
@@ -80,10 +84,39 @@
                 <!-- Ícone de excluir -->
                 <form action="{{ url_for('pergunta_route.excluir_pergunta', pergunta_id=pergunta.codigo) }}"
                     method="POST" style="display:inline;">
-                    <button type="submit" style="border: none; background: none;">
+                    <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
+                        data-bs-target="#modalExcluirPergunta{{ pergunta.codigo }}"
+                        style="border: none; background: none; color: black;">
                         <i class="bi bi-trash" style="font-size: 25px; margin-left: 10px;" id="Excluir"></i>
                     </button>
                 </form>
+
+                <!-- Modal de confirmação de exclusão da pergunta -->
+                <div class="modal fade" id="modalExcluirPergunta{{ pergunta.codigo }}" tabindex="-1"
+                    aria-labelledby="modalExcluirLabel{{ pergunta.codigo }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalExcluirLabel{{ pergunta.codigo }}">Excluir Pergunta?
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Você quer mesmo excluir a pergunta <strong>"{{ pergunta.titulo }}"</strong> ?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <form
+                                    action="{{ url_for('pergunta_route.excluir_pergunta', pergunta_id=pergunta.codigo) }}"
+                                    method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
             </div>
         </div>
@@ -112,95 +145,88 @@
 
         <!-- Caso o usuário não estiver logado -->
         {% else %}
-        <a href="{{ url_for('login_route.login') }}" class="btn_roxo">Faça login para comentar.</a>
+        <a href="{{ url_for('login_route.login') }}" class="btn_roxo">Faça login para comentar</a>
         {% endif %}
 
         <!-- Aparecer na tela os comentários -->
         <h2 style="margin-top: 20px;">Comentários</h2>
+        <br>
         <ul>
             {% if comentarios %}
             {% for comentario in comentarios %}
-            <!--Foto de perfil do usuário-->
-            <img src="{{ comentario.usuario.foto_perfil if pergunta.usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
-            <br>
-            <li>
-                {{ comentario.comentario | safe }} - <em>{{ comentario.usuario.nomeUsuario }}</em>
-                {% if current_user.codigo == comentario.codUsuario %}
-                    <!-- Caso o usuário queira excluir seu comentário -->
-                    <div class="d-flex align-items-center p-2"></div>
-                    <form action="{{ url_for('pergunta_route.excluir_comentario', comentario_id=comentario.codigo) }}"
-                        method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');"
-                        style="display:inline;">
-                        <button type="submit">Excluir</button>
-                    </form>
+            <li class="mb-5">
+                <div class="d-flex align-items-center justify-content-between">
+                    <!-- Esquerda: Foto, Nome e Data -->
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <img src="{{ comentario.usuario.foto_perfil if comentario.usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                                alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
+                        </div>
+                        <div>
+                            <p class="mb-1"><strong>{{ comentario.usuario.nomeUsuario }}</strong></p>
+                            <p class="mb-1"><em>{{ comentario.data_criacao.strftime('%d/%m/%y') }}</em></p>
+                        </div>
                     </div>
-                {% endif %}
-                <br>
-                <!-- Botão de curtir -->
-                <form action="{{ url_for('pergunta_route.curtir_comentario', comentario_id=comentario.codigo) }}"
-                    method="POST" style="display:inline;">
-                    <button type="submit" style="border: 0; background-color: #fff;"><i class="bi bi-hand-thumbs-up"
-                            style="font-size: 25px;"></i></button>
-                </form>
-                <br>
-                <span>{{ comentario.quantidadeCurtidas }} curtidas</span> <!-- Exibe a quantidade de curtidas -->
-                
+                    <!-- Direita: Ícones de edição e exclusão -->
+                    <div>
+                        {% if current_user.codigo == comentario.codUsuario %}
+                        <!-- Botão de excluir -->
+                        <button type="button" class="btn btn-link p-0" style="color: black;" data-bs-toggle="modal"
+                            data-bs-target="#modalExcluir{{ comentario.codigo }}">
+                            <i class="bi bi-trash" id="Excluir" style="font-size: 25px;"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Comentário -->
+                <div class="ms-5">
+                    <p class="mb-2">{{ comentario.comentario | safe }}</p>
+                </div>
+                <!-- Botão de curtir e quantidade de curtidas -->
+                <div class="d-flex align-items-center ms-5">
+                    <form action="{{ url_for('pergunta_route.curtir_comentario', comentario_id=comentario.codigo) }}"
+                        method="POST" style="display:inline;">
+                        <button type="submit" class="btn p-0 me-1" style="border: 0; background-color: transparent;">
+                            <i class="bi bi-hand-thumbs-up" style="font-size: 25px;"></i>
+                        </button>
+                    </form>
+                    <span>{{ comentario.quantidadeCurtidas }} curtidas</span>
+                </div>
+
+                <!-- Modal de excluir (dentro do loop) -->
+                <div class="modal fade" id="modalExcluir{{ comentario.codigo }}" tabindex="-1"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Excluir comentário?</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Você quer mesmo excluir o comentário?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <!-- Botão de confirmar exclusão -->
+                                <form
+                                    action="{{ url_for('pergunta_route.excluir_comentario', comentario_id=comentario.codigo) }}"
+                                    method="POST">
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </li>
-            <br>
             {% endfor %}
             {% else %}
             <p>Não há comentários ainda. Seja o primeiro a comentar!</p>
             {% endif %}
         </ul>
     </main>
-    
-    <script>
-        // Inicialização do editor Quill para os comentários
-        var quillComentario = new Quill('#editor-comentario', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, false] }],
-                    ['bold', 'italic', 'underline'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    ['link', 'image', 'code-block'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                    ['clean']
-                ]
-            },
-        });
 
-        // Inicialização do editor Quill para a edição
-        var quillEdicao = new Quill('#editor-edicao', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, false] }],
-                    ['bold', 'italic', 'underline'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    ['link', 'image', 'code-block'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                    ['clean']
-                ]
-            },
-        });
-
-        // Função para lidar com o envio dos formulários
-        document.querySelectorAll('form').forEach(form => {
-            form.onsubmit = function () {
-                if (form.querySelector('#comentario')) {
-                    form.querySelector('#comentario').value = quillComentario.root.innerHTML;
-                }
-                if (form.querySelector('#descricao')) {
-                    form.querySelector('#descricao').value = quillEdicao.root.innerHTML;
-                }
-            };
-        });
-    </script>
-pergunta.usuario
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

@@ -1,5 +1,6 @@
 from database.db import db
 from sqlalchemy.orm import relationship
+from datetime import datetime
 
 class comentariosPerguntas(db.Model):
     __tablename__ = 'comentariosperguntas'
@@ -8,9 +9,10 @@ class comentariosPerguntas(db.Model):
     codPergunta = db.Column(db.Integer, db.ForeignKey('perguntas.codigo'), nullable=False)
     codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
     quantidadeCurtidas = db.Column(db.Integer, default=0) 
+    data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relacionamento com a tabela Usuário 
-    usuario_relacionado = db.relationship('Usuario', backref='comentarios', lazy=True)
+    usuario = db.relationship('Usuario', backref='comentarios', lazy=True)
     
     # Relacionamento com a pergunta
     pergunta_relacionado = db.relationship('Pergunta', backref='comentarios', lazy=True)

@@ -496,3 +496,11 @@ i:hover {
     color: var(--cor0);
     transition: .2s;
 }
+
+em {
+    font-size: 14px;
+}
+
+
+
+

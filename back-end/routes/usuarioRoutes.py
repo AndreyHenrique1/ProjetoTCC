@@ -9,6 +9,7 @@ from models.comentariosPerguntas import comentariosPerguntas
 import cloudinary.uploader
 import random
 import base64
+from sqlalchemy import desc
 
 usuario_route = Blueprint('usuario_route', __name__)
 
@@ -56,8 +57,14 @@ def editar_perfil():
 
     return redirect(url_for('usuario_route.perfil'))
 
-# Rota para listar todos os usuários
 @usuario_route.route('/usuarios')
 def listar_usuarios():
-    usuarios = Usuario.query.all()  # Obtém todos os usuários do banco de dados
+    search_query = request.args.get('search')  # Obtém o nome do usuário a partir da query string
+    if search_query:
+        # Filtra os usuários que contêm a string da pesquisa no nome
+        usuarios = Usuario.query.filter(Usuario.nomeUsuario.ilike(f'%{search_query}%')).order_by(desc(Usuario.quantidadePontos)).all()
+    else:
+        # Se não houver pesquisa, obtém todos os usuários ordenados por quantidade de pontos
+        usuarios = Usuario.query.order_by(desc(Usuario.quantidadePontos)).all()
+
     return render_template('listar_usuarios.html', usuarios=usuarios)

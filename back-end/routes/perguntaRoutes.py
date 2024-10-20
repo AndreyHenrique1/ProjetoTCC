@@ -39,7 +39,7 @@ def perguntar():
         # Separando as etiquetas por # e removendo espaços 
         etiquetas_lista = [et.strip().lstrip('#') for et in etiquetas_input.split('#') if et.strip()]  
 
-        #Adiciona a pergunta no banco de dados
+        # Adiciona a pergunta no banco de dados
         nova_pergunta = Pergunta(titulo=titulo, descricao=descricao, codCategoria=codCategoria, codUsuario=codUsuario)
         db.session.add(nova_pergunta)
         db.session.commit()
@@ -50,10 +50,8 @@ def perguntar():
 
             # Verifica se a etiqueta já existe
             if etiqueta_objeto:
-                #Caso exista a etiqueta aumenta +1 na popularidade
+                # Caso exista a etiqueta aumenta +1 na popularidade
                 etiqueta_objeto.popularidade += 1
-
-            # Caso a etiqueta não esteja no banco de dados 
             else:
                 # Cria uma nova etiqueta
                 etiqueta_objeto = Etiqueta(nome=nome_etiqueta, popularidade=1)
@@ -65,9 +63,10 @@ def perguntar():
             db.session.add(nova_pergunta_etiqueta)
 
         # Commit final para associar etiquetas e pergunta
-        db.session.commit()  
+        db.session.commit()
 
-        return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=nova_pergunta.codigo))
+        # Redireciona para a página de detalhes com um parâmetro de sucesso
+        return redirect(url_for('home.home', pergunta_id=nova_pergunta.codigo, sucesso="pergunta_enviada"))
 
     etiquetas = Etiqueta.query.all()
     categorias = Categoria.query.all()
@@ -87,7 +86,7 @@ def editar_pergunta(pergunta_id):
         pergunta.titulo = request.form['titulo']
         pergunta.descricao = request.form['descricao']
         db.session.commit()
-        return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta_id))
+        return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta_id, sucesso="pergunta_editada"))
 
     return render_template('editar_pergunta.html', pergunta=pergunta)
 
@@ -132,7 +131,7 @@ def excluir_pergunta(pergunta_id):
     db.session.delete(pergunta)
     db.session.commit()
     
-    return redirect(url_for('home.home'))
+    return redirect(url_for('home.home', sucesso="pergunta_excluida"))
 
 # Detalhes e comentários da pergunta
 @pergunta_route.route('/pergunta/<int:pergunta_id>', methods=['GET', 'POST'])
