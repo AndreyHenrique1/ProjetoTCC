@@ -192,7 +192,14 @@
                     </form>
                     <span>{{ comentario.quantidadeCurtidas }} curtidas</span>
                 </div>
-
+                <!-- Botão de Denúncia -->
+                <div class="d-flex align-items-center ms-5">
+                    {% if current_user.is_authenticated and current_user.codigo != pergunta.codUsuario %}
+                        <form action="{{ url_for('denuncia_route.denunciar', pergunta_id=pergunta.codigo) }}" method="GET" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Denunciar</button>
+                        </form>
+                    {% endif %}
+                </div>
                 <!-- Modal de excluir (dentro do loop) -->
                 <div class="modal fade" id="modalExcluir{{ comentario.codigo }}" tabindex="-1"
                     aria-labelledby="exampleModalLabel" aria-hidden="true">

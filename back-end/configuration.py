@@ -5,6 +5,7 @@ from routes.perguntaRoutes import pergunta_route
 from routes.blogRoutes import blog_route
 from routes.usuarioRoutes import usuario_route
 from routes.notificacaoRoutes import notificacao_route
+from routes.denunciaRoutes import denuncia_route
 from database.db import db
 from extensions import login_manager
 import cloudinary
@@ -28,7 +29,8 @@ def configure_routes(app):
     app.register_blueprint(usuario_route)
     app.register_blueprint(blog_route)
     app.register_blueprint(notificacao_route)
-
+    app.register_blueprint(denuncia_route)
+    
 def configure_db(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost:3308/projetotcc'
     db.init_app(app)
