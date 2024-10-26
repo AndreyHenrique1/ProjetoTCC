@@ -13,10 +13,12 @@ class Blog(db.Model):
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     fotoCapa_blog = db.Column(db.Text, nullable=True)
 
-    # Relacionamento com usuário e categoria
-    usuario_relacionado = db.relationship('Usuario', backref='blogs', lazy=True)
+    # Relacionamentos de tabelas
+    usuario_relacionado = db.relationship('Usuario', back_populates='blog_relacionado')
     categoria_relacionada = db.relationship('Categoria', backref='blogs', lazy=True)
-    usuario = relationship("Usuario", back_populates="blogs")
+
+    def __repr__(self):
+        return f'<Blog {self.titulo}>'
 
    
 

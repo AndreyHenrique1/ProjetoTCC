@@ -3,7 +3,7 @@ from database.db import db
 from models.pergunta import Pergunta
 from models.comentariosPerguntas import comentariosPerguntas 
 from models.categoria import Categoria
-from models.Etiqueta import Etiqueta
+from models.etiqueta import Etiqueta
 from models.curtidasComentarios import CurtidasComentarios  
 from models.usuario import Usuario
 from models.perguntasEtiquetas import PerguntasEtiquetas
@@ -12,18 +12,6 @@ from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 
 pergunta_route = Blueprint('pergunta_route', __name__)
-
-@pergunta_route.route('/etiquetas_populares', methods=['GET'])
-def etiquetas_populares():
-    search = request.args.get('search', '')  # Obtém o parâmetro de busca
-    etiquetas = Etiqueta.query.filter(Etiqueta.nome.ilike(f'{search}%')).order_by(Etiqueta.popularidade.desc()).limit(10).all()
-    return jsonify([etiqueta.nome for etiqueta in etiquetas])
-
-
-@pergunta_route.route('/etiquetas/<termo>')
-def etiquetas(termo):
-    etiquetas = Etiqueta.query.filter(Etiqueta.nome.ilike(f'%{termo}%')).all()
-    return jsonify([etiqueta.nome for etiqueta in etiquetas])
 
 # Rota para criar as perguntas e etiquetas recebidas
 @pergunta_route.route('/perguntar', methods=['GET', 'POST'])
@@ -65,21 +53,28 @@ def perguntar():
         # Commit final para associar etiquetas e pergunta
         db.session.commit()
 
-        # Redireciona para a página de detalhes com um parâmetro de sucesso
-        return redirect(url_for('home.home', pergunta_id=nova_pergunta.codigo, sucesso="pergunta_enviada"))
+        # Redireciona para a página com um parâmetro de sucesso
+        return redirect(url_for('home.homePergunta', pergunta_id=nova_pergunta.codigo, sucesso="pergunta_enviada"))
 
     etiquetas = Etiqueta.query.all()
     categorias = Categoria.query.all()
-    return render_template('perguntar.html', categorias=categorias, etiquetas=etiquetas)
+    return render_template('criar_pergunta.html', categorias=categorias, etiquetas=etiquetas)
 
-# Rota para editar perguntas
+# Rota de detalhes da pergunta
+@pergunta_route.route('/pergunta/<int:pergunta_id>', methods=['GET'])
+def detalhes_pergunta(pergunta_id):
+    pergunta = Pergunta.query.get_or_404(pergunta_id)
+    comentarios = comentariosPerguntas.query.filter_by(codPergunta=pergunta_id).all()  # Adicione esta linha
+    return render_template('detalhes_pergunta.html', pergunta=pergunta, comentarios=comentarios)  # Passando os comentários
+
+# Rota para editar as perguntas
 @pergunta_route.route('/pergunta/<int:pergunta_id>/editar', methods=['GET', 'POST'])
 @login_required
 def editar_pergunta(pergunta_id):
     pergunta = Pergunta.query.get_or_404(pergunta_id)
     
+    # Caso a pergunta não seja associada ao usuário, a pergunta não poderá ser editada
     if pergunta.codUsuario != current_user.codigo:
-        flash("Você não tem permissão para editar essa pergunta.")
         return redirect(url_for('home.home'))
 
     if request.method == 'POST':
@@ -88,17 +83,15 @@ def editar_pergunta(pergunta_id):
         db.session.commit()
         return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta_id, sucesso="pergunta_editada"))
 
-    return render_template('editar_pergunta.html', pergunta=pergunta)
-
-# Rota para excluir pergunta
+# Rota para excluir a pergunta
 @pergunta_route.route('/pergunta/<int:pergunta_id>/excluir', methods=['POST'])
 @login_required
 def excluir_pergunta(pergunta_id):
     pergunta = Pergunta.query.get_or_404(pergunta_id)
     
+    # Caso a pergunta não seja associada ao usuário, a pergunta não poderá ser editada
     if pergunta.codUsuario != current_user.codigo:
-        flash("Você não tem permissão para excluir essa pergunta.")
-        return redirect(url_for('home.home'))
+        return redirect(url_for('home.homePergunta'))
 
     # Obter todas as etiquetas associadas à pergunta
     etiquetas_associadas = PerguntasEtiquetas.query.filter_by(codPergunta=pergunta.codigo).all()
@@ -131,18 +124,17 @@ def excluir_pergunta(pergunta_id):
     db.session.delete(pergunta)
     db.session.commit()
     
-    return redirect(url_for('home.home', sucesso="pergunta_excluida"))
+    return redirect(url_for('home.homePergunta', sucesso="pergunta_excluida"))
 
-# Detalhes e comentários da pergunta
+# Comentario da pergunta
 @pergunta_route.route('/pergunta/<int:pergunta_id>', methods=['GET', 'POST'])
-def pergunta_detalhe(pergunta_id):
+def comentarios_pergunta(pergunta_id):
     pergunta = Pergunta.query.get_or_404(pergunta_id)
 
     if request.method == 'POST':
         conteudo_comentario = request.form.get('conteudo_comentario')
 
         if conteudo_comentario and current_user.is_authenticated:
-        # Quando alguém responde a uma pergunta
             novo_comentario = comentariosPerguntas(
             comentario=conteudo_comentario, codPergunta=pergunta_id, codUsuario=current_user.codigo
             )
@@ -152,35 +144,36 @@ def pergunta_detalhe(pergunta_id):
             # Enviar notificação para o dono da pergunta
             if current_user.codigo != pergunta.codUsuario:  # Evitar notificar o próprio usuário
                 mensagem = f"Você recebeu uma nova resposta para sua pergunta: {pergunta.titulo}"
-                link_pergunta = url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta_id)
+                link_pergunta = url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id)
                 enviar_notificacao(pergunta.codUsuario, mensagem, link_pergunta, pergunta.codigo)
 
 
-            return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta_id))
+            return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id))
 
     comentarios = comentariosPerguntas.query.filter_by(codPergunta=pergunta_id).all()
 
-    return render_template('pergunta_detalhe.html', pergunta=pergunta, comentarios=comentarios)
+    return render_template('detalhes_pergunta.html', pergunta=pergunta, comentarios=comentarios)
 
 # Rota para excluir comentário
 @pergunta_route.route('/comentario/<int:comentario_id>/excluir', methods=['POST'])
 @login_required
-def excluir_comentario(comentario_id):
+def excluir_comentario_pergunta(comentario_id):
     comentario = comentariosPerguntas.query.get_or_404(comentario_id)
 
+    # Caso o comentario da pergunta não seja associada ao usuário, o comentario não poderá ser excluido
     if comentario.codUsuario != current_user.codigo:
-        flash("Você não tem permissão para excluir esse comentário.")
-        return redirect(url_for('home.home'))
+        return redirect(url_for('home.homePergunta'))
 
     try:
+        # Excluir comentario
         db.session.delete(comentario)
         db.session.commit()
-        flash("Comentário excluído com sucesso.")
+
     except IntegrityError:
+        # Caso tenha um erro, volta novamente 
         db.session.rollback()
-        flash("Ocorreu um erro ao excluir o comentário.")
     
-    return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=comentario.codPergunta))
+    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
 
 # Rota para curtir um comentário
 @pergunta_route.route('/comentario/<int:comentario_id>/curtir', methods=['POST'])
@@ -191,8 +184,7 @@ def curtir_comentario(comentario_id):
     # Verifica se o usuário já curtiu o comentário
     curtida_existente = CurtidasComentarios.query.filter_by(codUsuario=current_user.codigo, codComentario=comentario_id).first()
     if curtida_existente:
-        flash('Você já curtiu este comentário.')
-        return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=comentario.codPergunta))
+        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
 
     # Adiciona uma nova curtida
     nova_curtida = CurtidasComentarios(codComentario=comentario_id, codUsuario=current_user.codigo)
@@ -204,15 +196,14 @@ def curtir_comentario(comentario_id):
 
     # Incrementa pontos ao dono do comentário
     dono_comentario = Usuario.query.get(comentario.codUsuario)
-    dono_comentario.quantidadePontos += 1  # Adiciona 1 ponto
+    dono_comentario.quantidadePontos += 1 
     db.session.commit()
 
-    flash('Comentário curtido com sucesso!')
-    return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=comentario.codPergunta))
+    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
 
 # Rota para a barra de pesquisa
 @pergunta_route.route('/pesquisar', methods=['POST'])
-def pesquisar():
+def pergunta_pesquisar():
     pesquisa = request.form.get('pesquisar')
 
     if pesquisa:
@@ -223,9 +214,31 @@ def pesquisar():
         ).all()
 
         # Renderiza a página principal com as perguntas filtradas
-        return render_template('home.html', perguntas=perguntas_encontradas, pesquisa=pesquisa)
+        return render_template('homePergunta.html', perguntas=perguntas_encontradas, pesquisa=pesquisa)
 
     # Se a pesquisa estiver vazia, redireciona para a página inicial
-    flash('Por favor, insira um termo para pesquisa.')
-    return redirect(url_for('home.home'))
+    return redirect(url_for('home.homePergunta'))
+
+# Rota para aparecer as etiquetas no banco de dados ao clicar no input
+@pergunta_route.route('/etiquetas_iniciais')
+def etiquetas_iniciais():
+    # Pega as cinco primeiras etiquetas do banco de dados
+    etiquetas = Etiqueta.query.limit(5).all()
+    etiquetas_json = [{'codigo': etiqueta.codigo, 'nome': etiqueta.nome} for etiqueta in etiquetas]
+    return jsonify(etiquetas_json)
+
+# Rota para pegar as etiquetas relacionadas de acordo com a pesquisa
+@pergunta_route.route('/etiquetas_relacionadas')
+def etiquetas_relacionadas():
+    termo = request.args.get('termo', '')
+    
+    if termo:
+        etiquetas = Etiqueta.query.filter(Etiqueta.nome.ilike(f'%{termo}%')).limit(5).all()
+    else:
+        etiquetas = []
+
+    etiquetas_json = [{'codigo': etiqueta.codigo, 'nome': etiqueta.nome} for etiqueta in etiquetas]
+    return jsonify(etiquetas_json)
+
+
 

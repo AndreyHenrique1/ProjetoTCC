@@ -20,15 +20,11 @@ class Usuario(db.Model, UserMixin):
     foto_perfil = db.Column(db.Text, nullable=True)
     cor_avatar = db.Column(db.String(7), nullable=True)
 
-    # Relacionamentos
-    blog = db.relationship("Blog", back_populates="usuario")
-    comentarios_feitos = db.relationship('comentariosPerguntas', backref='autor_comentario', lazy=True)
-    
-    # Relacionamento com notificações
-    notificacoes = db.relationship('Notificacao', back_populates='usuario_relacionado')
-
-    # Renomeado o backref para evitar conflito
-    perguntas = db.relationship('Pergunta', backref='autor', lazy=True)
+    # Relacionamentos de tabelas
+    blog_relacionado = db.relationship("Blog", back_populates="usuario_relacionado")
+    comentario_feito_relacionado = db.relationship('comentariosPerguntas', backref='autor_comentario', lazy=True)  # Usando string aqui
+    notificacao_relacionada = db.relationship('Notificacao', back_populates='usuario_relacionado')
+    pergunta_relacionada = db.relationship('Pergunta', backref='autor', lazy=True)
 
     def __init__(self, email, nomeCompleto, nomeUsuario, senha, foto_perfil=None, quantidadePontos=0, cor_avatar=None):
         self.email = email

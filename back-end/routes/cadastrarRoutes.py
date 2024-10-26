@@ -1,12 +1,12 @@
-from flask import Flask, render_template, Blueprint, request, redirect, url_for, flash
+from flask import render_template, Blueprint, request, redirect, url_for, flash
 from models.usuario import Usuario
 from database.db import db
-import random
-import base64
+import random, base64
 from io import BytesIO
 
 cadastrar_route = Blueprint('cadastrar_route', __name__)
 
+# Rota para cadastrar novos usuários
 @cadastrar_route.route('/cadastrar', methods=['GET', 'POST'])
 def cadastrar():
     if request.method == 'POST':
@@ -36,11 +36,11 @@ def cadastrar():
         db.session.add(usuario)
         db.session.commit()
 
-        flash('Cadastro realizado com sucesso!', 'success')
         return redirect(url_for('login_route.login'))
 
-    return render_template("cadastrar.html")
+    return render_template("cadastrar_usuario.html")
 
+# Rota para verificar usuário
 @cadastrar_route.route('/verificar_usuario', methods=['POST'])
 def verificar_usuario():
     nomeUsuario = request.json.get('nomeUsuario')

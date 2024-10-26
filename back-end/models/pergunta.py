@@ -8,17 +8,15 @@ class Pergunta(db.Model):
     titulo = db.Column(db.String(255), nullable=False)
     descricao = db.Column(db.String(1000), nullable=False)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
-    codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)  # Corrigido: nome correto do campo de referência
-    codCategoria = db.Column(db.Integer, db.ForeignKey('categorias.codigo'), nullable=False)  # Corrigido: referenciando 'categorias.codigo'
+    codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
+    codCategoria = db.Column(db.Integer, db.ForeignKey('categorias.codigo'), nullable=False)
 
-    # Relacionamentos
-    categoria_relacionado = db.relationship('Categoria', backref='perguntas')
-    
-    usuario = db.relationship('Usuario', backref='perguntas_usuario', lazy=True)
-
-    notificacoes = db.relationship('Notificacao', back_populates='pergunta_relacionada')
-
-    etiquetas = db.relationship('PerguntasEtiquetas', backref='pergunta_rel', cascade='all, delete-orphan')
+    # Relacionamentos de tabelas
+    categoria_relacionada = db.relationship('Categoria', backref='perguntas', lazy=True)
+    usuario_relacionado = db.relationship('Usuario', backref='perguntas_usuario', lazy=True)
+    notificacao_relacionada = db.relationship('Notificacao', back_populates='pergunta_relacionada', lazy=True)
+    etiqueta_relacionada = db.relationship('PerguntasEtiquetas', backref='pergunta_rel', cascade='all, delete-orphan')
+    etiquetas = db.relationship('Etiqueta', secondary='pergunta_etiqueta', backref='perguntas')
 
     def __repr__(self):
         return f'<Pergunta {self.titulo}>'

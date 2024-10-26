@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Blog</title>
+    <title>Criar novo blog - DevSolve</title>
     <!--Link do favicoon-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
         type="image/x-icon">
@@ -25,19 +24,21 @@
 <body>
     <header>
         <div class="logo">
-            <a href="{{ url_for('home.home') }}">
+            <a href="{{ url_for('home.homePergunta') }}">
                 <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
             </a>  
         </div>
     </header>
 
     <main>
+        <!--Formulario-->
         <form action="{{ url_for('blog_route.criar_blog') }}" method="POST" enctype="multipart/form-data">
             <input type="text" name="titulo" id="titulo" class="form-control" placeholder="Digite o título do blog"
                 required>
 
             <br>
 
+            <!--Adicionar a categoria do blog-->
             <label>Categoria</label>
             <select class="form-select" aria-label="Default select example" id="categorias" name="categorias" required>
                 <option value="" disabled selected>Selecione a categoria</option>
@@ -50,15 +51,18 @@
 
             <br>
 
+            <!--Adicionar a foto de capa do blog-->
             <label for="imagem">Selecione uma foto para a capa do blog:</label>
             <input class="form-control" type="file" id="imagem" name="imagem" accept="image/*" required>
 
             <br>
 
+            <!--Adicionar a descrição do blog-->
             <label for="descricao">Descrição:</label>
             <div id="editor-geral" style="height: 300px;"></div>
             <input type="hidden" name="descricao" id="descricao">
             <br>
+            <!--Botão de publicar blog-->
             <button type="submit" class="btn_roxo" style="width: 100%;">Publicar</button>
         </form>
     </main>
@@ -71,5 +75,4 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 </body>
-
 </html>

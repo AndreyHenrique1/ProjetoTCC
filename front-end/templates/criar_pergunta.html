@@ -29,7 +29,7 @@
 <body>
     <header>
         <div class="logo">
-            <a href="{{ url_for('home.home') }}">
+            <a href="{{ url_for('home.homePergunta') }}">
                 <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
             </a>
         </div>
@@ -54,7 +54,7 @@
                 </select>
                 <br>
                 <!-- Etiquetas -->
-                <div>
+                <div style="position: relative;">
                     <label for="etiquetas_input">Etiquetas</label>
                     <input type="text" id="etiquetas_input" name="Etiqueta"
                         placeholder="Selecione ou crie novas etiquetas. Inicie cada etiqueta com #" autocomplete="off"

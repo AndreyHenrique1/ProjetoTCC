@@ -387,6 +387,19 @@ nav ul {
     background-color: var(--cor1); 
 }
 
+.btn_denunciar_excluir {
+    background-color: var(--cor0);
+    border: 0px;
+    padding: 5px;
+}
+
+.btn_denunciar_excluir:hover {
+    background-color: var(--cor4);
+    border-radius: 20px;
+    color: var(--cor0);
+    transition: .2s;
+}
+
 /* Divide a tela */
 .dividir_tela {
     display: flex;
@@ -472,18 +485,21 @@ i:hover {
     color: #ff0000;
 }
 
-/*CSS das etiquetas*/
+/* CSS das etiquetas */
 #etiquetas_sugestoes {
     list-style-type: none;
-    width: 37%;
+    width: 300px;
     padding: 0;
     margin: 0;
-    border: 1px solid #ccc;
-    position: absolute;
+    position: absolute;  
     max-height: 250px;
     overflow-y: auto;
     background-color: white;
     z-index: 1000;
+    border-radius: 10px;
+    left: 50%;          
+    transform: translateX(-50%); 
+    top: 100%;          
 }
 
 #etiquetas_sugestoes li {

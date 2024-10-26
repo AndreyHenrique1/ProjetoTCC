@@ -54,7 +54,7 @@ def criar_blog():
         upload_result = cloudinary.uploader.upload(imagem, folder="fotos_perfil")
         url_imagem = upload_result.get('secure_url')
 
-        # Atualize a imagem de capa do blog do usuário
+        # Atualiza a imagem de capa do blog do usuário
         if url_imagem:
             current_user.fotoCapa_blog = url_imagem
             db.session.commit()
@@ -67,18 +67,20 @@ def criar_blog():
         db.session.add(novo_blog)
         db.session.commit()
 
+        # Redireciona para a página de lista de blog
         return redirect(url_for('blog_route.listar_blogs'))
 
     categorias = Categoria.query.all()
     return render_template('criar_blog.html', categorias=categorias)
 
+# Rota para editar um blog
 @blog_route.route('/blogs/<int:blog_id>/editar', methods=['GET', 'POST'])
 @login_required
 def editar_blog(blog_id):
     blog = Blog.query.get_or_404(blog_id)
 
+    # Caso não seja o usuário que tenha criado blog, não poderá editar o blog
     if blog.codUsuario != current_user.codigo:
-        flash("Você não tem permissão para editar esse blog.")
         return redirect(url_for('blog_route.listar_blogs'))
 
     if request.method == 'POST':
@@ -89,30 +91,33 @@ def editar_blog(blog_id):
 
     return render_template('editar_blog.html', blog=blog)
 
+# Rota para exluir blog
 @blog_route.route('/blogs/<int:blog_id>/excluir', methods=['POST'])
 @login_required
 def excluir_blog(blog_id):
     blog = Blog.query.get_or_404(blog_id)
 
+    # Caso não seja o usuário que tenha criado blog, não poderá excluir o blog
     if blog.codUsuario != current_user.codigo:
-        flash("Você não tem permissão para excluir esse blog.")
         return redirect(url_for('blog_route.listar_blogs'))
 
+    # Excluindo os comentários associados ao blog
     comentariosBlog.query.filter_by(codBlog=blog.codigo).delete()
 
     db.session.delete(blog)
     db.session.commit()
     return redirect(url_for('blog_route.listar_blogs'))
 
-# Detalhes e comentários da blog
+# Rota comentários do blog
 @blog_route.route('/blog/<int:blog_id>', methods=['GET', 'POST'])
-def blog_detalhe(blog_id):
-    blog = Blog.query.get_or_404(blog_id)
+def comentario_blog(blog_id):
+    blog = Blog.query.get_or_404(blog_id) # Busca o blog ou retorna 404
 
     if request.method == 'POST':
         conteudo_comentario = request.form.get('conteudo_comentario')
 
         if conteudo_comentario and current_user.is_authenticated:
+            # Criação do novo comentário
             novo_comentario = comentariosBlog(
                 comentario=conteudo_comentario, codBlog=blog_id, codUsuario=current_user.codigo
             )
@@ -125,22 +130,23 @@ def blog_detalhe(blog_id):
 
     return render_template('detalhes_blog.html', blog=blog, comentarios=comentarios) 
 
-# Rota para excluir comentário
+# Rota para excluir comentário do blog
 @blog_route.route('/comentario/<int:comentario_id>/excluir', methods=['POST'])
 @login_required
-def excluir_comentario(comentario_id):
+def excluir_comentario_blog(comentario_id):
     comentario = comentariosBlog.query.get_or_404(comentario_id)
 
+    # Caso não seja o usuário que tenha criado blog, não poderá excluir o comentario do blog
     if comentario.codUsuario != current_user.codigo:
-        flash("Você não tem permissão para excluir esse comentário.")
         return redirect(url_for('home.home'))
 
     try:
+        # Excluir comentario do blog
         db.session.delete(comentario)
         db.session.commit()
-        flash("Comentário excluído com sucesso.")
+
     except IntegrityError:
+        # Caso tenha um erro na hora de excluir, volta o comentario novamente
         db.session.rollback()
-        flash("Ocorreu um erro ao excluir o comentário.")
-    
-    return redirect(url_for('blog_route.blog_detalhe', blog_id=comentario.codBlog))
+
+    return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))

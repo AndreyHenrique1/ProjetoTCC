@@ -1,4 +1,4 @@
-from routes.homeRoutes import home_route
+from routes.home_perguntaRoutes import homePergunta_route
 from routes.cadastrarRoutes import cadastrar_route
 from routes.loginRoutes import login_route
 from routes.perguntaRoutes import pergunta_route
@@ -11,7 +11,6 @@ from extensions import login_manager
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-import os
 
 def configure_all(app):
     configure_routes(app)
@@ -22,7 +21,7 @@ def configure_all(app):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 def configure_routes(app):
-    app.register_blueprint(home_route)
+    app.register_blueprint(homePergunta_route)
     app.register_blueprint(cadastrar_route)
     app.register_blueprint(login_route)
     app.register_blueprint(pergunta_route)

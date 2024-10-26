@@ -30,7 +30,7 @@
                 <i class="bi bi-list" id="btn-exp"></i>
             </div>
             <div class="logo">
-                <a href="{{ url_for('home.home') }}">
+                <a href="{{ url_for('home.homePergunta') }}">
                     <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
                 </a>
             </div>
@@ -96,7 +96,7 @@
             <ul class="list-group mb-5">
                 {% for pergunta in perguntas %}
                 <li class="list-group-item">
-                    <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta.codigo) }}">
+                    <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}">
                         {{ pergunta.titulo }}
                     </a>
                     <small class="text-muted"> - Publicada em {{ pergunta.data_criacao.strftime('%d/%m/%Y') }}</small>

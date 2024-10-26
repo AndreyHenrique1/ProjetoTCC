@@ -7,8 +7,6 @@ from models.pergunta import Pergunta
 from models.blog import Blog
 from models.comentariosPerguntas import comentariosPerguntas
 import cloudinary.uploader
-import random
-import base64
 from sqlalchemy import desc
 
 usuario_route = Blueprint('usuario_route', __name__)
@@ -31,7 +29,6 @@ def editar_perfil():
     if novo_nome:
         current_user.nomeUsuario = novo_nome
         db.session.commit()
-        flash('Nome de usuário atualizado com sucesso!')
 
     if 'imagem' not in request.files:
         flash('Nenhuma imagem selecionada.')
@@ -39,7 +36,6 @@ def editar_perfil():
 
     imagem = request.files['imagem']
     if imagem.filename == '':
-        flash('Arquivo inválido.')
         return redirect(url_for('usuario_route.perfil'))
 
     # Faz o upload da imagem para o Cloudinary e obtém a URL segura
@@ -51,12 +47,9 @@ def editar_perfil():
         current_user.foto_perfil = url_imagem
         db.session.commit()
 
-        print(f"Imagem salva com sucesso: {current_user.foto_perfil}")
-    else:
-        flash('Erro ao obter a URL da imagem.')
-
     return redirect(url_for('usuario_route.perfil'))
 
+# Rota da lista de usuários
 @usuario_route.route('/usuarios')
 def listar_usuarios():
     search_query = request.args.get('search')  # Obtém o nome do usuário a partir da query string

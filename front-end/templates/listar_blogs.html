@@ -20,48 +20,8 @@
 
 <body>
     <header>
-        <!-- Botão de expandir e logo alinhados à esquerda -->
-        <div class="header-left">
-            <div class="btn-expandir">
-                <i class="bi bi-list" id="btn-exp"></i>
-            </div>
-            <div class="logo">
-                <a href="{{ url_for('home.home') }}">
-                    <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
-                </a>
-            </div>
-        </div>
-
-        <!-- Ícones e imagem de usuário à direita -->
-        <div class="header-right">
-            {% if current_user.is_authenticated %}
-
-            <!--Barra de pesquisa-->
-            <form action="" method="POST" class="pesquisar">
-                <input type="search" name="pesquisar" id="inputPesquisar" placeholder="O que você procura?" autocomplete="on">
-
-                <label for="inputPesquisar">
-                    <span class="icon"></span>
-                </label>
-            </form>
-
-            <!--Icone de mensagens-->
-            <div class="notificacao">
-                <i class="bi bi-bell-fill" style="font-size: 25px;"></i>
-            </div>
-
-            <div class="img_usuario">
-                <!-- Adicionar o redirecionamento para o perfil do usuário -->
-                <a href="{{ url_for('usuario_route.perfil') }}">
-                    <img src="{{ current_user.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                        alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
-                </a>
-            </div>
-            {% else %}
-            <li><a href="{{ url_for('cadastrar_route.cadastrar') }}" class="btn_cinza">Cadastrar</a></li>
-            <li><a href="{{ url_for('login_route.login') }}" class="btn_cinza">Entrar</a></li>
-            {% endif %}
-        </div>
+        <!--Chamando o arquivo do cabeçalho-->
+        {% include 'header.html' %}
     </header>
     
     <!--Chamando o arquivo menu_lateral.html-->
@@ -95,7 +55,7 @@
                     <div class="card">
                         <img src="{{ url_for('static', filename='Imagens/teste_blog.jpg') }}" class="card-img-top" alt="Foto do tema do blog">
                         <div class="card-body">
-                            <a href="{{ url_for('blog_route.blog_detalhe', blog_id=blog.codigo) }}" class="card-title">
+                            <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}" class="card-title">
                                 <h5>{{ blog.titulo }}</h5>
                             </a>                       
                             <p class="card-text">{{ blog.descricao[:90] | safe }}{% if blog.descricao|length > 100 %}...{% else %}...{% endif %} Leia mais</p>
