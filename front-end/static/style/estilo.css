@@ -461,13 +461,26 @@ nav ul {
     text-decoration: none;
 }
 
-
-/*Cards do blog*/
-.card {
-    width: 300px;
-    min-height: 400px;
+.container {
+    display: flex;
+    justify-content: center; 
+    flex-wrap: wrap; 
 }
 
+/* Cards do blog */
+.card {
+    width: 100%; 
+    min-height: 410px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1); 
+}
+
+.card:hover {
+    transform: scale(1.05); 
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo para o título do card */
 .card .card-title {
     color: black; 
     text-decoration: none; 
@@ -516,6 +529,8 @@ i:hover {
 em {
     font-size: 14px;
 }
+
+
 
 
 

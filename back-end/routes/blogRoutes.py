@@ -49,25 +49,22 @@ def criar_blog():
             flash('Arquivo inválido.')
             return redirect(request.url)
 
-        
         # Faça o upload da imagem para o Cloudinary
-        upload_result = cloudinary.uploader.upload(imagem, folder="fotos_perfil")
+        upload_result = cloudinary.uploader.upload(imagem, folder="fotos_capa_blog")
         url_imagem = upload_result.get('secure_url')
 
-        # Atualiza a imagem de capa do blog do usuário
-        if url_imagem:
-            current_user.fotoCapa_blog = url_imagem
-            db.session.commit()
-
-        else:
-            flash('Erro ao obter a URL da imagem.')
-
-        # Crie uma nova postagem de blog e salva no banco de dados
-        novo_blog = Blog(titulo=titulo, descricao=descricao, codUsuario=codUsuario, codCategoria=codCategoria)
+        # Crie uma nova postagem de blog com a imagem de capa
+        novo_blog = Blog(
+            titulo=titulo,
+            descricao=descricao,
+            codUsuario=codUsuario,
+            codCategoria=codCategoria,
+            fotoCapa_blog=url_imagem  
+        )
         db.session.add(novo_blog)
         db.session.commit()
 
-        # Redireciona para a página de lista de blog
+        # Redireciona para a página de lista de blogs
         return redirect(url_for('blog_route.listar_blogs'))
 
     categorias = Categoria.query.all()
@@ -124,7 +121,7 @@ def comentario_blog(blog_id):
             db.session.add(novo_comentario)
             db.session.commit()
 
-            return redirect(url_for('blog_route.blog_detalhe', blog_id=blog_id))
+            return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
 
     comentarios = comentariosBlog.query.filter_by(codBlog=blog_id).all()
 
@@ -138,7 +135,7 @@ def excluir_comentario_blog(comentario_id):
 
     # Caso não seja o usuário que tenha criado blog, não poderá excluir o comentario do blog
     if comentario.codUsuario != current_user.codigo:
-        return redirect(url_for('home.home'))
+        return redirect(url_for('home.homePergunta'))
 
     try:
         # Excluir comentario do blog

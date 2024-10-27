@@ -45,7 +45,7 @@
                     <button type="submit" class="btn btn-link">Marcar como lida</button>
                 </form>
 
-                <a href="{{ url_for('pergunta_route.pergunta_detalhe', pergunta_id=notificacao.codPergunta) }}" 
+                <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=notificacao.codPergunta) }}" 
                    class="btn btn-link">Ver Pergunta</a>
             </li>
             {% endfor %}

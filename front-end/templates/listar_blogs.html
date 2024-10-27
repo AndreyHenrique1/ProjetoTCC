@@ -23,7 +23,7 @@
         <!--Chamando o arquivo do cabeçalho-->
         {% include 'header.html' %}
     </header>
-    
+
     <!--Chamando o arquivo menu_lateral.html-->
     {% include 'menu_lateral.html' %}
 
@@ -49,25 +49,28 @@
 
         <!--Card de blogs com bootstrap-->
         <div class="container" style="margin-top: 50px;">
-            <div class="row">
+            <div class="row justify-content-center"> <!-- Adicione a classe justify-content-center -->
                 {% for blog in blogs %}
-                <div class="col-md-4 mb-4"> 
+                <div class="col-md-3 mb-3">
                     <div class="card">
-                        <img src="{{ url_for('static', filename='Imagens/teste_blog.jpg') }}" class="card-img-top" alt="Foto do tema do blog">
+                        <img src="{{ blog.fotoCapa_blog if blog.fotoCapa_blog else url_for('static', filename='Imagens/default_blog_cover.png') }}"
+                            alt="Foto da Capa do Blog" width="300" height="200" style="border-radius: 5px 5px 0px 0px;" class="img-fluid">
                         <div class="card-body">
                             <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}" class="card-title">
                                 <h5>{{ blog.titulo }}</h5>
-                            </a>                       
-                            <p class="card-text">{{ blog.descricao[:90] | safe }}{% if blog.descricao|length > 100 %}...{% else %}...{% endif %} Leia mais</p>
+                            </a>
+                            <p class="card-text">{{ blog.descricao[:90] | safe }}{% if blog.descricao|length > 100
+                                %}...{% else %}...{% endif %} Leia mais</p>
                             <p>{{ blog.categoria_relacionada.nome }}</p>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-        </div>   
+        </div>
     </main>
 
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
+
 </html>
