@@ -25,7 +25,8 @@ def listar_blogs():
 @blog_route.route('/blogs/<int:blog_id>')
 def detalhes_blog(blog_id):
     blog = Blog.query.get_or_404(blog_id)
-    return render_template('detalhes_blog.html', blog=blog)
+    comentarios = comentariosBlog.query.filter_by(codBlog=blog_id).all()  # Busca os comentários relacionados ao blog
+    return render_template('detalhes_blog.html', blog=blog, comentarios=comentarios)
 
 # Rota para criar um novo blog, somente para usuários logados
 @blog_route.route('/blogs/novo', methods=['GET', 'POST'])
@@ -108,7 +109,7 @@ def excluir_blog(blog_id):
 # Rota comentários do blog
 @blog_route.route('/blog/<int:blog_id>', methods=['GET', 'POST'])
 def comentario_blog(blog_id):
-    blog = Blog.query.get_or_404(blog_id) # Busca o blog ou retorna 404
+    blog = Blog.query.get_or_404(blog_id)  # Busca o blog ou retorna 404
 
     if request.method == 'POST':
         conteudo_comentario = request.form.get('conteudo_comentario')
@@ -123,9 +124,9 @@ def comentario_blog(blog_id):
 
             return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
 
-    comentarios = comentariosBlog.query.filter_by(codBlog=blog_id).all()
+    comentarios = comentariosBlog.query.filter_by(codBlog=blog_id).all()  # Busca os comentários relacionados ao blog
 
-    return render_template('detalhes_blog.html', blog=blog, comentarios=comentarios) 
+    return render_template('detalhes_blog.html', blog=blog, comentarios=comentarios)
 
 # Rota para excluir comentário do blog
 @blog_route.route('/comentario/<int:comentario_id>/excluir', methods=['POST'])

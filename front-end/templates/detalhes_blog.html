@@ -110,7 +110,7 @@
         {% if current_user.is_authenticated %}
         <h3>Deixe seu Comentário</h3>
         <!--Formulario para o usuário adicionar seu comentario no site-->
-        <form action="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}" method="POST">
+        <form action="{{ url_for('blog_route.comentario_blog', blog_id=blog.codigo) }}" method="POST">
             <label for="comentario"></label>
             <div id="editor-comentario" style="height: 300px;"></div>
             <input type="hidden" name="conteudo_comentario" id="comentario">
@@ -122,19 +122,152 @@
         <a href="{{ url_for('login_route.login') }}" class="btn_roxo">Faça login para comentar.</a>
         {% endif %}
 
-        <!--Comentários-->
+        <!-- Comentários dos usuários -->
         <h2 style="margin-top: 20px;">Comentários</h2>
+        <br>
         <ul>
             {% if comentarios %}
             {% for comentario in comentarios %}
-            <li>
-                {{ comentario.comentario | safe }} - <em>{{ comentario.usuario_relacionado.nomeUsuario }}</em>
+            <li class="mb-5">
+                <div class="d-flex align-items-center justify-content-between">
+                    <!-- Esquerda: Foto, Nome e Data -->
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <img src="{{ comentario.usuario_relacionado.foto_perfil if comentario.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                                alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
+                        </div>
+                        <div>
+                            <p class="mb-1">
+                                <strong>{{ comentario.usuario_relacionado.nomeUsuario }}</strong>
+                                {% if comentario.denuncias|length > 0 %}
+                                <button class="badge bg-danger text-white" style="margin-left: 10px; border: 0px;"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalVerDenuncias{{ comentario.codigo }}">Denunciado</button>
+                                {% endif %}
+                            </p>
+                            <p class="mb-1"><em>Data</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descrição do comentário -->
+                <div class="ms-5">
+                    <p class="mb-2">{{ comentario.comentario | safe }}</p>
+                </div>
+
+                <!-- Botões de curtida, descurtir e denúncia -->
+                <div class="d-flex align-items-center ms-5" style="gap: 10px;">
+                    <!-- Botão de Curtir -->
+                    <form action="#"
+                        method="POST" style="display:inline;">
+                        <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
+                            <i class="bi bi-hand-thumbs-up" style="font-size: 20px;"></i>
+                        </button>
+                    </form>
+                    <span>{{ comentario.quantidadeCurtidas }}</span>
+
+                    <!-- Botão de Denunciar -->
+                    {% if current_user.is_authenticated and current_user.codigo != comentario.codUsuario %}
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#modalDenunciar{{ comentario.codigo }}"
+                        style="font-size: 14px;" class="btn_denunciar_excluir">
+                        Denunciar
+                    </button>
+                    {% endif %}
+
+                    <!-- Botão de Excluir (se o usuário for dono do comentário) -->
+                    {% if current_user.codigo == comentario.codUsuario %}
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#modalExcluir{{ comentario.codigo }}"
+                        class="btn_denunciar_excluir">
+                        Excluir
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Modal para ver as denúncias -->
+                <div class="modal fade" id="modalVerDenuncias{{ comentario.codigo }}" tabindex="-1"
+                    aria-labelledby="modalDenunciasLabel{{ comentario.codigo }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Denúncias para o Comentário: {{ comentario.comentario | safe }}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <ul>
+                                    {% if comentario.denuncias|length > 0 %}
+                                    {% for denuncia in comentario.denuncias %}
+                                    <li>{{ denuncia.descricao }} - {{ denuncia.data_criacao.strftime('%d/%m/%y') }}</li>
+                                    {% endfor %}
+                                    {% else %}
+                                    <li>Nenhuma denúncia registrada para este comentário.</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de Denunciar -->
+                <div class="modal fade" id="modalDenunciar{{ comentario.codigo }}" tabindex="-1"
+                    aria-labelledby="modalDenunciaLabel{{ comentario.codigo }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalDenunciaLabel{{ comentario.codigo }}">Denunciar
+                                    comentário?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form
+                                    action="{{ url_for('denuncia_route.denunciar', comentario_id=comentario.codigo) }}"
+                                    method="POST">
+                                    <div class="form-group">
+                                        <label for="descricao">Explique o motivo da denúncia:</label>
+                                        <textarea class="form-control" id="descricao" name="descricao" rows="4"
+                                            required></textarea>
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger">Denunciar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de excluir (se o usuário for dono do comentário) -->
                 {% if current_user.codigo == comentario.codUsuario %}
-                <form action="{{ url_for('blog_route.excluir_comentario', comentario_id=comentario.codigo) }}"
-                    method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');"
-                    style="display:inline;">
-                    <button type="submit">Excluir</button>
-                </form>
+                <div class="modal fade" id="modalExcluir{{ comentario.codigo }}" tabindex="-1"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Excluir comentário?</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Você quer mesmo excluir o comentário?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <form
+                                    action="{{ url_for('blog_route.excluir_comentario_blog', comentario_id=comentario.codigo) }}" method="POST">
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
             </li>
             {% endfor %}
@@ -150,4 +283,5 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
