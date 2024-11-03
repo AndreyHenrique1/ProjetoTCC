@@ -16,6 +16,7 @@ class Usuario(db.Model, UserMixin):
     nomeCompleto = db.Column(db.String(50))
     nomeUsuario = db.Column(db.String(50), nullable=False, unique=True)
     senha = db.Column(db.String(255), nullable=False)
+    sobre = db.Column(db.String(500), nullable=True)
     quantidadePontos = db.Column(db.Integer, default=0)
     foto_perfil = db.Column(db.Text, nullable=True)
     cor_avatar = db.Column(db.String(7), nullable=True)
@@ -26,7 +27,7 @@ class Usuario(db.Model, UserMixin):
     notificacao_relacionada = db.relationship('Notificacao', back_populates='usuario_relacionado')
     pergunta_relacionada = db.relationship('Pergunta', backref='autor', lazy=True)
 
-    def __init__(self, email, nomeCompleto, nomeUsuario, senha, foto_perfil=None, quantidadePontos=0, cor_avatar=None):
+    def __init__(self, email, nomeCompleto, nomeUsuario, senha, foto_perfil=None, quantidadePontos=0, cor_avatar=None, sobre=None):
         self.email = email
         self.nomeCompleto = nomeCompleto
         self.nomeUsuario = nomeUsuario
@@ -34,6 +35,7 @@ class Usuario(db.Model, UserMixin):
         self.foto_perfil = foto_perfil
         self.quantidadePontos = quantidadePontos
         self.cor_avatar = cor_avatar
+        self.sobre = sobre
 
     # Método para verificar a senha
     def verificar_senha(self, senha):
@@ -56,5 +58,6 @@ class Usuario(db.Model, UserMixin):
             'nomeUsuario': self.nomeUsuario,
             'quantidadePontos': self.quantidadePontos,
             'foto_perfil': self.foto_perfil,
+            'sobre': self.sobre,
             'cor_avatar': self.cor_avatar
         }

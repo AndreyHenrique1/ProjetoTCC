@@ -129,14 +129,14 @@
                 <ul>
                     <li class="pergunta-item">
                         <div class="img_usuario">
-                            <img src="{{ pergunta.usuario_relacionado.foto_perfil if pergunta.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                                alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
+                            <a href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=pergunta.usuario_relacionado.codigo) }}">
+                                <img src="{{ pergunta.usuario_relacionado.foto_perfil if pergunta.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                                     alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
+                            </a>
                         </div>
-                        <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}"
-                            class="links">
+                        <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}" class="links">
                             <strong>{{ pergunta.titulo }}</strong>
-                            <p>{{ pergunta.descricao[:80] | safe }}{% if pergunta.descricao|length > 100 %}...{% endif
-                                %}</p>
+                            <p>{{ pergunta.descricao[:80] | safe }}{% if pergunta.descricao|length > 100 %}...{% endif %}</p>
                             <p>Leia mais</p>
                             <br>
                             <p>{{ pergunta.categoria_relacionada.nome }}</p>
@@ -148,11 +148,10 @@
                     {% endfor %}
                 </ul>
             </div>
-        </ul>
+        </ul> 
     </main>
 
     <!--Bootstrap-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

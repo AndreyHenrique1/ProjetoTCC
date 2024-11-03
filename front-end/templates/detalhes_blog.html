@@ -85,15 +85,40 @@
                 </div>
 
                 <!-- Ícone de excluir -->
-                <form action="{{ url_for('blog_route.excluir_blog', blog_id=blog.codigo) }}" method="POST"
-                    style="display:inline;">
-                    <button type="submit" style="border: none; background: none;">
-                        <i class="bi bi-trash" style="color:black; font-size: 25px; margin-left: 10px;"></i>
-                    </button>
-                </form>
+                <button type="button" class="btn p-0" style="border: none; background-color: transparent;"
+                    data-bs-toggle="modal" data-bs-target="#ExcluirBlog{{ blog.codigo }}">
+                    <i class="bi bi-trash" style="color:black; font-size: 25px; margin-left: 10px;"></i>
+                </button>
+
+                <!-- Modal de excluir blog (se o usuário for dono do blog) -->
+                {% if current_user.codigo == blog.codUsuario %}
+                <div class="modal fade" id="ExcluirBlog{{ blog.codigo }}" tabindex="-1"
+                    aria-labelledby="modalExcluirBlogLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Excluir blog?</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Você quer mesmo excluir este blog?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <form action="{{ url_for('blog_route.excluir_blog', blog_id=blog.codigo) }}"
+                                    method="POST">
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
             </div>
         </div>
+        {% endif %}
 
         <br>
 
@@ -158,8 +183,7 @@
                 <!-- Botões de curtida, descurtir e denúncia -->
                 <div class="d-flex align-items-center ms-5" style="gap: 10px;">
                     <!-- Botão de Curtir -->
-                    <form action="#"
-                        method="POST" style="display:inline;">
+                    <form action="#" method="POST" style="display:inline;">
                         <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
                             <i class="bi bi-hand-thumbs-up" style="font-size: 20px;"></i>
                         </button>
@@ -174,10 +198,10 @@
                     </button>
                     {% endif %}
 
-                    <!-- Botão de Excluir (se o usuário for dono do comentário) -->
+                    <!-- Botão de Excluir comentario (se o usuário for dono do comentário) -->
                     {% if current_user.codigo == comentario.codUsuario %}
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#modalExcluir{{ comentario.codigo }}"
-                        class="btn_denunciar_excluir">
+                    <button type="button" data-bs-toggle="modal"
+                        data-bs-target="#modalExcluirComentario{{ comentario.codigo }}" class="btn_denunciar_excluir">
                         Excluir
                     </button>
                     {% endif %}
@@ -243,14 +267,14 @@
                     </div>
                 </div>
 
-                <!-- Modal de excluir (se o usuário for dono do comentário) -->
+                <!-- Modal de excluir comentario (se o usuário for dono do comentário) -->
                 {% if current_user.codigo == comentario.codUsuario %}
-                <div class="modal fade" id="modalExcluir{{ comentario.codigo }}" tabindex="-1"
-                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="modalExcluirComentario{{ comentario.codigo }}" tabindex="-1"
+                    aria-labelledby="modalExcluirComentarioLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Excluir comentário?</h1>
+                                <h1 class="modal-title fs-5">Excluir comentário?</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -261,7 +285,8 @@
                                 <button type="button" class="btn btn-secondary"
                                     data-bs-dismiss="modal">Cancelar</button>
                                 <form
-                                    action="{{ url_for('blog_route.excluir_comentario_blog', comentario_id=comentario.codigo) }}" method="POST">
+                                    action="{{ url_for('blog_route.excluir_comentario_blog', comentario_id=comentario.codigo) }}"
+                                    method="GET">
                                     <button type="submit" class="btn btn-danger">Excluir</button>
                                 </form>
                             </div>

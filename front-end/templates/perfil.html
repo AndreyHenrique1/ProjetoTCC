@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil de {{ current_user.nomeUsuario }} - DevSolve</title>
+    <title>Perfil de {{ usuario.nomeUsuario }} - DevSolve</title>
 
     <!--Link do bootstrap-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -35,92 +35,146 @@
                 </a>
             </div>
         </div>
-
-        <!-- Botão de Logout à direita -->
-        <div class="header-right">
-            <a href="{{ url_for('login_route.logout') }}" class="btn btn-danger">Logout</a>
-        </div>
     </header>
 
     <!--Chamando o arquivo menu_lateral.html-->
     {% include 'menu_lateral.html' %}
 
     <main>
-        <div class="container mt-3">
-            <h1>Perfil de {{ current_user.nomeUsuario }}</h1>
-            <br>
-            <!-- Alterar Imagem de Perfil -->
-            <div class="text-center mb-2 position-relative">
-                <img src="{{ current_user.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}" 
-                     alt="Foto de Perfil" width="150" height="150" class="rounded-circle">
-                <!-- Ícone de Edição -->
-                <button type="button" class="btn btn-link position-absolute" style="bottom: 20px; left: 53%;" 
-                        data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    <i class="fas fa-pencil-alt" style="font-size: 18px; color: black;"></i>
-                </button>
-            </div>
-            
+        <!--Foto do usuário-->
+        <div class="d-flex align-items-center mb-4 justify-content-between position-relative">
+            <div class="d-flex align-items-center">
+                <div class="position-relative me-3">
+                    <img src="{{ usuario.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                        alt="Foto de Perfil" width="150" height="150" style="border-radius: 20px;">
+                </div>
 
-            <!-- Modal de edição de usuário -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar perfil</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form action="{{ url_for('usuario_route.editar_perfil') }}" method="POST"
-                                enctype="multipart/form-data">
-                                <div class="mb-3">
-                                    <label for="nomeUsuario">Nome de Usuário Atual:</label>
-                                    <input type="text" name="nomeUsuario" id="nomeUsuario"
-                                        value="{{ current_user.nomeUsuario }}" class="form-control">
-                                </div>
-                                <label for="imagem">Selecione uma nova foto:</label>
-                                <input class="form-control" type="file" id="imagem" name="imagem" accept="image/*">
-                                <br>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
-                            <button type="submit" class="btn_roxo">Salvar alterações</button>
-                            </form>
-                        </div>
+                <!-- Nome do usuário e estatísticas -->
+                <div>
+                    <div class="d-flex align-items-center">
+                        <h2 class="me-2">{{ usuario.nomeUsuario }}</h2>
+                        <!--Se o usuário for o dono do perfil, poderá editar e fazer o logout-->
+                        {% if current_user.is_authenticated and current_user.codigo == usuario.codigo %}
+                        <!--Icone de Editar-->
+                        <button type="button" class="btn btn-link p-0" style="color: black;" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">
+                            <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
+                        </button>
+                        <!--Icone de logout-->
+                        <a href="{{ url_for('login_route.logout') }}" class="btn btn-link p-0 ms-2"
+                            style="color: black;">
+                            <i class="bi bi-box-arrow-left" style="font-size: 22px;"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                    <!--Desde quando o usuário está no DevSolve-->
+                    <p>Membro do DevSolve desde </p>
+                    <!--Contagem de suas estatisticas-->
+                    <div class="d-flex gap-3">
+                        <div>{{ perguntas_count or 0 }} Perguntas</div>
+                        <div>{{ respostas_count or 0 }} Respostas</div>
+                        <div>{{ votos_total or 0 }} Verificados</div>
+                        <div>{{ blogs_count or 0 }} Blogs</div>
+                        <div>{{ denuncias_count or 0 }} Denúncias</div>
+                        <div>{{ current_user.quantidadePontos or 0 }} Pontos</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Minhas Perguntas -->
-            <h2 class="mt-5">Minhas Perguntas</h2>
-            <ul class="list-group mb-5">
-                {% for pergunta in perguntas %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}">
-                        {{ pergunta.titulo }}
-                    </a>
-                    <small class="text-muted"> - Publicada em {{ pergunta.data_criacao.strftime('%d/%m/%Y') }}</small>
-                </li>
-                {% else %}
-                <p class="text-muted">Você ainda não fez nenhuma pergunta.</p>
-                {% endfor %}
-            </ul>
-
-            <!-- Meus Blogs -->
-            <h2>Meus Blogs</h2>
-            <ul class="list-group mb-5">
-                {% for blog in blogs %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}">
-                        {{ blog.titulo }}
-                    </a>
-                    <small class="text-muted"> - Publicado em {{ blog.data_criacao.strftime('%d/%m/%Y') }}</small>
-                </li>
-                {% else %}
-                <p class="text-muted">Você ainda não escreveu nenhum blog.</p>
-                {% endfor %}
-            </ul>
+            <!-- Medalha de classificação -->
+            <div class="position-absolute end-4" style="right: 20px; top: 50%; transform: translateY(-50%);">
+                <div class="d-flex flex-column align-items-center">
+                    <!-- Número da posição -->
+                    <span style="font-size: 30px; color: {{ medalha.cor }};">{{ medalha.numero }}</span>
+                    <!-- Ícone do troféu com a cor apropriada -->
+                    <i class="bi bi-trophy-fill" style="font-size: 50px; color: {{ medalha.cor }};"></i>
+                </div>
+            </div>
         </div>
+
+        <!-- Seção "Sobre Mim" -->
+        <h2 class="mt-5">Sobre mim</h2>
+        <p>{{ usuario.sobre if usuario.sobre else 'Nada aqui ainda.' }}</p>
+
+        <!-- Modal de edição de usuário -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar perfil</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ url_for('usuario_route.editar_perfil') }}" method="POST"
+                            enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <!--Mudar o nome de usuário-->
+                                <label for="nomeUsuario">Nome de Usuário Atual:</label>
+                                <input type="text" name="nomeUsuario" id="nomeUsuario"
+                                    value="{{ current_user.nomeUsuario }}" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <!--Sobre Você-->
+                                <label for="sobre">Sobre você:</label>
+                                <textarea name="sobre" id="sobre" class="form-control"
+                                    style="height: 200px;">{{ current_user.sobre }}</textarea>
+                            </div>
+                            <!--Adicionar foto-->
+                            <label for="imagem">Selecione uma nova foto:</label>
+                            <input class="form-control" type="file" id="imagem" name="imagem" accept="image/*">
+                            <br>
+                            <div class="modal-footer">
+                                <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn_roxo">Salvar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Minhas Perguntas -->
+        <h2 class="mt-5">Minhas Perguntas</h2>
+        <ul class="list-group mb-5">
+            {% for pergunta in perguntas %}
+            <li class="list-group-item">
+                <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}">
+                    {{ pergunta.titulo }}
+                </a>
+                <small class="text-muted"> - Publicada em {{ pergunta.data_criacao.strftime('%d/%m/%Y') }}</small>
+            </li>
+            {% else %}
+            <p class="text-muted">Você ainda não fez nenhuma pergunta.</p>
+            {% endfor %}
+        </ul>
+
+        <!-- Meus Blogs -->
+        <h2>Meus Blogs</h2>
+        <ul class="list-group mb-5">
+            {% for blog in blogs %}
+            <li class="list-group-item">
+                <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}">
+                    {{ blog.titulo }}
+                </a>
+                <small class="text-muted"> - Publicado em {{ blog.data_criacao.strftime('%d/%m/%Y') }}</small>
+            </li>
+            {% else %}
+            <p class="text-muted">Você ainda não escreveu nenhum blog.</p>
+            {% endfor %}
+        </ul>
+
+        <!-- Etiquetas Mais Usadas -->
+        <h2>Etiquetas Mais Usadas</h2>
+        <ul class="list-group mb-5">
+            {% for etiqueta, count in etiquetas_mais_usadas %}
+            <li class="list-group-item">
+                <p>{{ etiqueta }} foi usado {{ count }} {{ 'vez' if count == 1 else 'vezes' }}</p>
+            </li>
+            {% else %}
+            <p class="list-group-item text-muted">Nenhuma etiqueta usada ainda.</p>
+            {% endfor %}
+        </ul>
     </main>
 
     <!-- Bootstrap JS -->

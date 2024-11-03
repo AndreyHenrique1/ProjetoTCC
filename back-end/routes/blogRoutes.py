@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from database.db import db
 from models.blog import Blog
 from models.comentariosBlog import comentariosBlog
 from models.categoria import Categoria
+from models.etiqueta import Etiqueta
+from models.blogsEtiquetas import BlogsEtiquetas
 from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 import cloudinary.uploader
@@ -36,7 +38,11 @@ def criar_blog():
         titulo = request.form['titulo']
         descricao = request.form['descricao']
         codCategoria = request.form['categorias']
+        etiquetas_input = request.form['Etiqueta']
         codUsuario = current_user.codigo
+
+        # Separando as etiquetas por # e removendo espaços 
+        etiquetas_lista = [et.strip().lstrip('#') for et in etiquetas_input.split('#') if et.strip()]  
 
         # Verifique se o arquivo está presente na requisição
         if 'imagem' not in request.files:
@@ -65,11 +71,33 @@ def criar_blog():
         db.session.add(novo_blog)
         db.session.commit()
 
+        # Pega cada etiqueta separadamente
+        for nome_etiqueta in etiquetas_lista:
+            etiqueta_objeto = Etiqueta.query.filter_by(nome=nome_etiqueta).first()
+
+            # Verifica se a etiqueta já existe
+            if etiqueta_objeto:
+                # Caso exista a etiqueta aumenta +1 na popularidade
+                etiqueta_objeto.popularidade += 1
+            else:
+                # Cria uma nova etiqueta
+                etiqueta_objeto = Etiqueta(nome=nome_etiqueta, popularidade=1)
+                db.session.add(etiqueta_objeto)
+                db.session.commit() 
+
+            # Associa a etiqueta à pergunta
+            nova_pergunta_etiqueta = BlogsEtiquetas(codBlog=novo_blog.codigo, codEtiqueta=etiqueta_objeto.codigo)
+            db.session.add(nova_pergunta_etiqueta)
+
+        # Commit final para associar etiquetas e pergunta
+        db.session.commit()
+
         # Redireciona para a página de lista de blogs
         return redirect(url_for('blog_route.listar_blogs'))
 
     categorias = Categoria.query.all()
-    return render_template('criar_blog.html', categorias=categorias)
+    etiquetas = Etiqueta.query.all()
+    return render_template('criar_blog.html', categorias=categorias, etiquetas=etiquetas)
 
 # Rota para editar um blog
 @blog_route.route('/blogs/<int:blog_id>/editar', methods=['GET', 'POST'])
@@ -98,6 +126,30 @@ def excluir_blog(blog_id):
     # Caso não seja o usuário que tenha criado blog, não poderá excluir o blog
     if blog.codUsuario != current_user.codigo:
         return redirect(url_for('blog_route.listar_blogs'))
+    
+    # Obter todas as etiquetas associadas ao blog
+    etiquetas_associadas = BlogsEtiquetas.query.filter_by(codBlog=blog.codigo).all()
+
+    # Excluir todas as associações que possuem na tabela BlogsEtiquetas
+    for associacao in etiquetas_associadas:
+        # Verifica se a etiqueta ainda está associada a outros blogs
+        etiqueta = Etiqueta.query.get(associacao.codEtiqueta)
+        
+        if etiqueta:
+            # Diminui a popularidade
+            etiqueta.popularidade -= 1
+            
+            # Verifica se a popularidade é igual a 0, ou seja, não possui nenhum usuário com essa etiqueta
+            if etiqueta.popularidade == 0:
+                # Se não estiver associada a outros blogs, exclui a etiqueta
+                if not BlogsEtiquetas.query.filter(BlogsEtiquetas.codEtiqueta == etiqueta.codigo).filter(BlogsEtiquetas.codBlog != blog.codigo).first():
+                    db.session.delete(etiqueta)
+
+        # Exclui a associação do BlogsEtiquetas
+        db.session.delete(associacao)
+
+    # Comita as mudanças para as associações e etiquetas processadas
+    db.session.commit()
 
     # Excluindo os comentários associados ao blog
     comentariosBlog.query.filter_by(codBlog=blog.codigo).delete()
@@ -129,7 +181,7 @@ def comentario_blog(blog_id):
     return render_template('detalhes_blog.html', blog=blog, comentarios=comentarios)
 
 # Rota para excluir comentário do blog
-@blog_route.route('/comentario/<int:comentario_id>/excluir', methods=['POST'])
+@blog_route.route('/comentario/<int:comentario_id>/excluir', methods=['POST', 'GET'])
 @login_required
 def excluir_comentario_blog(comentario_id):
     comentario = comentariosBlog.query.get_or_404(comentario_id)
@@ -148,3 +200,24 @@ def excluir_comentario_blog(comentario_id):
         db.session.rollback()
 
     return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+
+# Rota para aparecer as etiquetas no banco de dados ao clicar no input
+@blog_route.route('/etiquetas_iniciais')
+def etiquetas_iniciais():
+    # Pega as cinco primeiras etiquetas do banco de dados
+    etiquetas = Etiqueta.query.limit(5).all()
+    etiquetas_json = [{'codigo': etiqueta.codigo, 'nome': etiqueta.nome} for etiqueta in etiquetas]
+    return jsonify(etiquetas_json)
+
+# Rota para pegar as etiquetas relacionadas de acordo com a pesquisa
+@blog_route.route('/etiquetas_relacionadas')
+def etiquetas_relacionadas():
+    termo = request.args.get('termo', '')
+    
+    if termo:
+        etiquetas = Etiqueta.query.filter(Etiqueta.nome.ilike(f'%{termo}%')).limit(5).all()
+    else:
+        etiquetas = []
+
+    etiquetas_json = [{'codigo': etiqueta.codigo, 'nome': etiqueta.nome} for etiqueta in etiquetas]
+    return jsonify(etiquetas_json)

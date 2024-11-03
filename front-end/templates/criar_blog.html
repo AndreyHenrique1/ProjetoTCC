@@ -19,6 +19,9 @@
     <!-- Link do Quill -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <!--Arquivo JS da pesquisa de etiquetas-->
+    <script src="{{ url_for('static', filename='js/etiquetas.js') }}"></script>
 </head>
 
 <body>
@@ -48,6 +51,17 @@
                 </option>
                 {% endfor %}
             </select>
+
+            <br>
+
+            <!-- Etiquetas -->
+            <div style="position: relative;">
+                <label for="etiquetas_input">Etiquetas</label>
+                <input type="text" id="etiquetas_input" name="Etiqueta"
+                    placeholder="Selecione ou crie novas etiquetas. Inicie cada etiqueta com #" autocomplete="off"
+                    class="form-control" />
+                <ul id="etiquetas_sugestoes" style="display: none;"></ul>
+            </div>
 
             <br>
 

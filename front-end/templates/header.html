@@ -40,7 +40,7 @@
         <!-- Adicionar o redirecionamento para o perfil do usuário -->
         <a href="{{ url_for('usuario_route.perfil') }}">
             <img src="{{ current_user.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
+                 alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
         </a>
     </div>
     {% else %}
