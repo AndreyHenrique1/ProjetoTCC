@@ -16,6 +16,9 @@
     <!--Link do favicoon-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
         type="image/x-icon">
+
+    <!--Arquivo JS das etiquetas-->
+    <script src="{{ url_for('static', filename='js/etiquetas.js') }}"></script>
 </head>
 
 <body>
@@ -49,7 +52,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form method="GET" action="#" id="filter-form">
+                        <form method="GET" action="{{ url_for('blog_route.listar_blogs') }}" id="filter-form">
                             <!-- Filtro por categorias -->
                             <div class="mb-3">
                                 <h6>Categorias</h6>

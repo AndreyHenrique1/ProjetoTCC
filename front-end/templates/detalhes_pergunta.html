@@ -215,7 +215,7 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Denúncias para o Comentário: {{ comentario.comentario | safe }}</h5>
+                                <h5 class="modal-title">Comentário denunciado!!!</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Fechar"></button>
                             </div>
@@ -223,7 +223,7 @@
                                 <ul>
                                     {% if comentario.denuncias|length > 0 %}
                                     {% for denuncia in comentario.denuncias %}
-                                    <li>{{ denuncia.descricao }} - {{ denuncia.data_criacao.strftime('%d/%m/%y') }}</li>
+                                    <li>{{ denuncia.descricao | safe }} - {{ denuncia.data_criacao.strftime('%d/%m/%y') }}</li>
                                     {% endfor %}
                                     {% else %}
                                     <li>Nenhuma denúncia registrada para este comentário.</li>
