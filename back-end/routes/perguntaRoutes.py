@@ -10,23 +10,8 @@ from models.perguntasEtiquetas import PerguntasEtiquetas
 from models.notificacao import enviar_notificacao
 from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
-import openai
-import os
-
-openai_api_key = os.getenv("OPENAI_API_KEY")
 
 pergunta_route = Blueprint('pergunta_route', __name__)
-
-# Função para obter a resposta do ChatGPT
-def obter_resposta_ia(pergunta):
-    resposta = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Você é um assistente especializado em programação e ajudará com respostas técnicas."},
-            {"role": "user", "content": pergunta}
-        ]
-    )
-    return resposta['choices'][0]['message']['content']
 
 # Rota para criar perguntas e etiquetas recebidas
 @pergunta_route.route('/perguntar', methods=['GET', 'POST'])
@@ -58,12 +43,6 @@ def perguntar():
                 db.session.commit()
             nova_pergunta_etiqueta = PerguntasEtiquetas(codPergunta=nova_pergunta.codigo, codEtiqueta=etiqueta_objeto.codigo)
             db.session.add(nova_pergunta_etiqueta)
-        db.session.commit()
-
-        # Obter resposta da IA e adicionar como comentário
-        resposta_ia = obter_resposta_ia(descricao)
-        comentario_ia = comentariosPerguntas(comentario=resposta_ia, codPergunta=nova_pergunta.codigo, codUsuario=None)
-        db.session.add(comentario_ia)
         db.session.commit()
 
         return redirect(url_for('home.homePergunta', pergunta_id=nova_pergunta.codigo, sucesso="pergunta_enviada"))
