@@ -8,20 +8,47 @@ from models.blogsEtiquetas import BlogsEtiquetas
 from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 import cloudinary.uploader
+from sqlalchemy import func
 
 blog_route = Blueprint('blog_route', __name__)
 
 # Rota para listar todos os blogs
 @blog_route.route('/blogs')
 def listar_blogs():
+    categorias_selecionadas = request.args.getlist('categorias')
+    etiquetas_selecionadas = request.args.get('etiquetas')
+    ordenar_por = request.args.get('ordenar', 'recentes')  # Define 'recentes' como padrão
+
+    blogs = Blog.query 
+
+    # Filtra por categorias
+    if categorias_selecionadas:
+        blogs = blogs.filter(Blog.codCategoria.in_(categorias_selecionadas))
+
+    # Filtra por etiquetas
+    if etiquetas_selecionadas:
+        etiquetas_selecionadas = [etiqueta.lstrip('#').strip() for etiqueta in etiquetas_selecionadas.split(',')]
+        blogs = blogs.join(BlogsEtiquetas).join(Etiqueta)\
+                             .filter(Etiqueta.nome.in_(etiquetas_selecionadas))\
+                             .group_by(Blog.codigo)\
+                             .having(func.count(Etiqueta.codigo) == len(etiquetas_selecionadas))
+
+    # Ordena os blogs
+    if ordenar_por == 'recentes':
+        blogs = blogs.order_by(Blog.data_criacao.desc())
+    elif ordenar_por == 'antigas':
+        blogs = blogs.order_by(Blog.data_criacao.asc())
+    elif ordenar_por == 'sem_respostas':
+        blogs = blogs.filter(Blog.respostas == 0)
+
+    blogs = blogs.all()
+    categorias = Categoria.query.all()
+    etiquetas = Etiqueta.query.all()  
+
     categoria_id = request.args.get('categoria')
     categorias = Categoria.query.all()
-    
-    if categoria_id:
-        blogs = Blog.query.filter_by(codCategoria=categoria_id).order_by(Blog.data_criacao.desc()).all()
-    else:
-        blogs = Blog.query.order_by(Blog.data_criacao.desc()).all()
-    return render_template('listar_blogs.html', blogs=blogs, categorias=categorias)
+
+    return render_template('listar_blogs.html', blogs=blogs, categorias=categorias, etiquetas=etiquetas)
 
 # Rota para exibir os detalhes de um blog específico
 @blog_route.route('/blogs/<int:blog_id>')
