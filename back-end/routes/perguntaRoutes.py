@@ -1,19 +1,33 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from database.db import db
 from models.pergunta import Pergunta
-from models.comentariosPerguntas import comentariosPerguntas 
+from models.comentariosPerguntas import comentariosPerguntas
 from models.categoria import Categoria
 from models.etiqueta import Etiqueta
-from models.curtidasComentarios import CurtidasComentarios  
+from models.curtidasComentarios import CurtidasComentarios
 from models.usuario import Usuario
 from models.perguntasEtiquetas import PerguntasEtiquetas
 from models.notificacao import enviar_notificacao
 from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
+import openai
+
+openai.api_key = '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'
 
 pergunta_route = Blueprint('pergunta_route', __name__)
 
-# Rota para criar as perguntas e etiquetas recebidas
+# Função para obter a resposta do ChatGPT
+def obter_resposta_ia(pergunta):
+    resposta = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Você é um assistente especializado em programação e ajudará com respostas técnicas."},
+            {"role": "user", "content": pergunta}
+        ]
+    )
+    return resposta['choices'][0]['message']['content']
+
+# Rota para criar perguntas e etiquetas recebidas
 @pergunta_route.route('/perguntar', methods=['GET', 'POST'])
 @login_required
 def perguntar():
@@ -21,39 +35,36 @@ def perguntar():
         titulo = request.form['titulo']
         descricao = request.form['descricao']
         codCategoria = request.form['categorias']
-        etiquetas_input = request.form['Etiqueta']  
+        etiquetas_input = request.form['Etiqueta']
         codUsuario = current_user.codigo
 
         # Separando as etiquetas por # e removendo espaços 
-        etiquetas_lista = [et.strip().lstrip('#') for et in etiquetas_input.split('#') if et.strip()]  
+        etiquetas_lista = [et.strip().lstrip('#') for et in etiquetas_input.split('#') if et.strip()]
 
         # Adiciona a pergunta no banco de dados
         nova_pergunta = Pergunta(titulo=titulo, descricao=descricao, codCategoria=codCategoria, codUsuario=codUsuario)
         db.session.add(nova_pergunta)
         db.session.commit()
 
-        # Pega cada etiqueta separadamente
+        # Adicionar etiquetas à pergunta
         for nome_etiqueta in etiquetas_lista:
             etiqueta_objeto = Etiqueta.query.filter_by(nome=nome_etiqueta).first()
-
-            # Verifica se a etiqueta já existe
             if etiqueta_objeto:
-                # Caso exista a etiqueta aumenta +1 na popularidade
                 etiqueta_objeto.popularidade += 1
             else:
-                # Cria uma nova etiqueta
                 etiqueta_objeto = Etiqueta(nome=nome_etiqueta, popularidade=1)
                 db.session.add(etiqueta_objeto)
-                db.session.commit() 
-
-            # Associa a etiqueta à pergunta
+                db.session.commit()
             nova_pergunta_etiqueta = PerguntasEtiquetas(codPergunta=nova_pergunta.codigo, codEtiqueta=etiqueta_objeto.codigo)
             db.session.add(nova_pergunta_etiqueta)
-
-        # Commit final para associar etiquetas e pergunta
         db.session.commit()
 
-        # Redireciona para a página com um parâmetro de sucesso
+        # Obter resposta da IA e adicionar como comentário
+        resposta_ia = obter_resposta_ia(descricao)
+        comentario_ia = comentariosPerguntas(comentario=resposta_ia, codPergunta=nova_pergunta.codigo, codUsuario=None)
+        db.session.add(comentario_ia)
+        db.session.commit()
+
         return redirect(url_for('home.homePergunta', pergunta_id=nova_pergunta.codigo, sucesso="pergunta_enviada"))
 
     etiquetas = Etiqueta.query.all()
@@ -64,8 +75,8 @@ def perguntar():
 @pergunta_route.route('/pergunta/<int:pergunta_id>', methods=['GET'])
 def detalhes_pergunta(pergunta_id):
     pergunta = Pergunta.query.get_or_404(pergunta_id)
-    comentarios = comentariosPerguntas.query.filter_by(codPergunta=pergunta_id).all()  # Adicione esta linha
-    return render_template('detalhes_pergunta.html', pergunta=pergunta, comentarios=comentarios)  # Passando os comentários
+    comentarios = comentariosPerguntas.query.filter_by(codPergunta=pergunta_id).all()
+    return render_template('detalhes_pergunta.html', pergunta=pergunta, comentarios=comentarios)
 
 # Rota para editar as perguntas
 @pergunta_route.route('/pergunta/<int:pergunta_id>/editar', methods=['GET', 'POST'])
