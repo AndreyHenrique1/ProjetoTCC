@@ -11,8 +11,9 @@ from models.notificacao import enviar_notificacao
 from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 import openai
+import os
 
-openai.api_key = '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'
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
 pergunta_route = Blueprint('pergunta_route', __name__)
 
