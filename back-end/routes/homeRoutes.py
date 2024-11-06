@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template, Blueprint
 from database.db import db
 from models.pergunta import Pergunta
 from models.categoria import Categoria
-from models.Etiqueta import Etiqueta
+from models.etiqueta import Etiqueta
 
 home_route = Blueprint('home', __name__, template_folder='../../front-end/templates')
 

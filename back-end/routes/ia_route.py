@@ -14,9 +14,16 @@ def pagina_ia():
     return render_template('ia.html')
 
 def gerar_resposta_ia(pergunta_texto):
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=pergunta_texto,
-        max_tokens=150
+    prompt = (
+        "Você é um assistente de IA especializado em responder perguntas de programação. "
+        "Responda de forma clara e técnica. Pergunta: " + pergunta_texto
     )
-    return response['choices'][0]['text'].strip()
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Você é um assistente de IA especializado em programação."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=500
+    )
+    return response['choices'][0]['message']['content'].strip()
