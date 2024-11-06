@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat com IA</title>
+
+    <!--Link do favicon-->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}" type="image/x-icon">
+    
+    <!--Arquivo do CSS-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
+
+    <!--Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!--Arquivo JS da página home (Menu Lateral)-->
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="{{ url_for('home.homePergunta') }}">
+                <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
+            </a>
+        </div>
+    </header>
+
+    <!-- Chamando o arquivo menu_lateral.html -->
+    {% include 'menu_lateral.html' %}
+
+    <main class="chat">
+        <h1>Comece uma conversa</h1>
+        <div id="resposta-container" class="resposta-container"></div>
+        
+        <div class="input-container">
+            <input type="text" id="input-pergunta" class="input-pergunta" placeholder="Digite sua pergunta aqui">
+            <button id="btn-enviar" class="btn-enviar"><i class="bi bi-send"></i> Enviar</button>
+        </div>
+    </main>
+
+    <!-- JavaScript para enviar a pergunta e atualizar a resposta -->
+    <script>
+        document.getElementById('btn-enviar').addEventListener('click', enviarPergunta);
+        
+        async function enviarPergunta() {
+            const pergunta = document.getElementById('input-pergunta').value;
+            if (!pergunta) return;
+
+            // Exibir um indicador de carregamento (opcional)
+            const respostaContainer = document.getElementById('resposta-container');
+            respostaContainer.innerHTML += `<p><em>Carregando...</em></p>`;
+
+            try {
+                const response = await fetch('/ia', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pergunta })
+                });
+
+                const data = await response.json();
+                respostaContainer.innerHTML += `<p><strong>Pergunta:</strong> ${pergunta}</p><p><strong>Resposta:</strong> ${data.resposta}</p>`;
+            } catch (error) {
+                respostaContainer.innerHTML += `<p><strong>Erro:</strong> Não foi possível obter a resposta.</p>`;
+            }
+
+            document.getElementById('input-pergunta').value = ''; // Limpar o campo de input
+        }
+    </script>
+</body>
+</html>
