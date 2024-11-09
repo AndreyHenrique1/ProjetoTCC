@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,16 +45,16 @@
                 </div>
             </div>
 
-            <!-- Direita: Ícones de edição e exclusão -->
+            <!-- Direita: Ícones de edição, exclusão e denúncia -->
             <div class="d-flex align-items-center p-2">
-                <!--Somente para quer for o dono do blog-->
+                <!-- Botões de edição e exclusão - visíveis apenas para o dono do blog -->
                 {% if current_user.codigo == blog.codUsuario %}
                 <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal"
                     style="color: black;">
                     <i class="bi bi-pencil-square" style="font-size: 25px;"></i>
                 </button>
 
-                <!--Modal de editar pergunta-->
+                <!-- Modal de editar blog -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-lg">
@@ -66,10 +67,8 @@
                             <div class="modal-body">
                                 <form action="{{ url_for('blog_route.editar_blog', blog_id=blog.codigo) }}"
                                     method="POST">
-                                    <!--Titulo do blog do usuário-->
                                     <input type="text" name="titulo" id="titulo" class="form-control"
                                         value="{{ blog.titulo }}"><br>
-                                    <!--Descrição do blog do usuário-->
                                     <div id="editor-geral" style="height: 300px;">{{ blog.descricao | safe }}</div>
                                     <input type="hidden" name="descricao" id="descricao">
                                     <br>
@@ -89,8 +88,7 @@
                     <i class="bi bi-trash" style="color:black; font-size: 25px; margin-left: 10px;"></i>
                 </button>
 
-                <!-- Modal de excluir blog (se o usuário for dono do blog) -->
-                {% if current_user.codigo == blog.codUsuario %}
+                <!-- Modal de excluir blog -->
                 <div class="modal fade" id="ExcluirBlog{{ blog.codigo }}" tabindex="-1"
                     aria-labelledby="modalExcluirBlogLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -115,9 +113,48 @@
                     </div>
                 </div>
                 {% endif %}
+
+                <!-- Botão de Denunciar - visível apenas para usuários não proprietários do blog -->
+                {% if current_user.is_authenticated and current_user.codigo != blog.codUsuario %}
+                <button type="button" class="btn p-0" style="border: none; background-color: transparent;"
+                    data-bs-toggle="modal" data-bs-target="#modalDenunciar{{ blog.codigo }}">
+                    <i class="bi bi-flag" style="color:rgb(255, 0, 0); font-size: 25px; margin-left: 10px;"></i>
+                </button>
+                {% endif %}
+
+                {% if current_user.is_authenticated and current_user.codigo != blog.codUsuario %}
+                <!-- Modal de Denunciar -->
+                <div class="modal fade" id="modalDenunciar{{ blog.codigo }}" tabindex="-1"
+                    aria-labelledby="modalDenunciaLabel{{ blog.codigo }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalDenunciaLabel{{ blog.codigo }}">Denunciar
+                                    blog?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ url_for('denuncia_route.denunciar_blog', blog_id=blog.codigo) }}"
+                                    method="POST">
+                                    <div class="form-group">
+                                        <label for="descricao">Explique o motivo da denúncia:</label>
+                                        <textarea class="form-control" id="descricao_denuncia" name="descricao_denuncia"
+                                            rows="4" required></textarea>
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger">Denunciar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
 
         <br>
 
@@ -128,6 +165,30 @@
 
         <!--Conteúdo do blog-->
         <div>{{ blog.descricao | safe }}</div>
+
+        <br>
+
+        <!-- Botões de Curtir e Descurtir para o Blog -->
+        <div class="d-flex align-items-center" style="gap: 10px;">
+            <!-- Formulário de Curtir para o Blog -->
+            <form action="{{ url_for('blog_route.like_blog', blog_id=blog.codigo) }}" method="POST"
+                style="display:inline;">
+                <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
+                    <i class="bi bi-hand-thumbs-up" style="font-size: 20px;"></i>
+                </button>
+            </form>
+            <span>{{ blog.quantidade_likes }}</span> <!-- Exibe a quantidade de likes -->
+
+            <!-- Formulário de Descurtir para o Blog -->
+            <form action="{{ url_for('blog_route.deslike_blog', blog_id=blog.codigo) }}" method="POST"
+                style="display:inline;">
+                <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
+                    <i class="bi bi-hand-thumbs-down" style="font-size: 20px;"></i>
+                </button>
+            </form>
+            <span>{{ blog.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
+        </div>
+
 
         <br>
 
@@ -181,21 +242,23 @@
 
                 <!-- Botões de curtida, descurtir e denúncia -->
                 <div class="d-flex align-items-center ms-5" style="gap: 10px;">
-                    <!-- Botão de Curtir -->
-                    <form action="#" method="POST" style="display:inline;">
+                    <!-- Botão de Curtir para Comentário do Blog -->
+                    <form action="{{ url_for('blog_route.like_comentario_blog', comentario_id=comentario.codigo) }}"
+                        method="POST" style="display:inline;">
                         <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
                             <i class="bi bi-hand-thumbs-up" style="font-size: 20px;"></i>
                         </button>
                     </form>
-                    <span>{{ comentario.quantidadeCurtidas }}</span>
+                    <span>{{ comentario.quantidade_likes }}</span> <!-- Exibe a quantidade de likes -->
 
-                    <!-- Botão de Denunciar -->
-                    {% if current_user.is_authenticated and current_user.codigo != comentario.codUsuario %}
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#modalDenunciar{{ comentario.codigo }}"
-                        style="font-size: 14px;" class="btn_denunciar_excluir">
-                        Denunciar
-                    </button>
-                    {% endif %}
+                    <!-- Botão de Descurtir para Comentário do Blog -->
+                    <form action="{{ url_for('blog_route.deslike_comentario_blog', comentario_id=comentario.codigo) }}"
+                        method="POST" style="display:inline;">
+                        <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
+                            <i class="bi bi-hand-thumbs-down" style="font-size: 20px;"></i>
+                        </button>
+                    </form>
+                    <span>{{ comentario.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
 
                     <!-- Botão de Excluir comentario (se o usuário for dono do comentário) -->
                     {% if current_user.codigo == comentario.codUsuario %}
@@ -230,37 +293,6 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal de Denunciar -->
-                <div class="modal fade" id="modalDenunciar{{ comentario.codigo }}" tabindex="-1"
-                    aria-labelledby="modalDenunciaLabel{{ comentario.codigo }}" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="modalDenunciaLabel{{ comentario.codigo }}">Denunciar
-                                    comentário?</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Fechar"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form
-                                    action="{{ url_for('denuncia_route.denunciar', comentario_id=comentario.codigo) }}"
-                                    method="POST">
-                                    <div class="form-group">
-                                        <label for="descricao">Explique o motivo da denúncia:</label>
-                                        <textarea class="form-control" id="descricao" name="descricao" rows="4"
-                                            required></textarea>
-                                    </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary"
-                                    data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-danger">Denunciar</button>
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -307,4 +339,5 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

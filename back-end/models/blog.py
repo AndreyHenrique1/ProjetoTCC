@@ -1,7 +1,9 @@
 from database.db import db
 from datetime import datetime
 from sqlalchemy.orm import relationship
+from models.likes_deslikes import Likes_deslikes
 
+# Modelo Blog
 class Blog(db.Model):
     __tablename__ = 'blog'
 
@@ -17,8 +19,19 @@ class Blog(db.Model):
     usuario_relacionado = db.relationship('Usuario', back_populates='blog_relacionado')
     categoria_relacionada = db.relationship('Categoria', backref='blogs', lazy=True)
 
+    # Propriedade para contar likes
+    @property
+    def quantidade_likes(self):
+        return Likes_deslikes.query.filter_by(codBlog=self.codigo, tipo='like', origem='blog').count()
+
+    # Propriedade para contar deslikes
+    @property
+    def quantidade_deslikes(self):
+        return Likes_deslikes.query.filter_by(codBlog=self.codigo, tipo='deslike', origem='blog').count()
+
     def __repr__(self):
         return f'<Blog {self.titulo}>'
+
 
    
 

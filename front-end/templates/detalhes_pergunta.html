@@ -160,11 +160,12 @@
                     <div class="d-flex align-items-center">
                         <div class="me-2">
                             <img src="{{ comentario.usuario_relacionado.foto_perfil if comentario.usuario_relacionado and comentario.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                            alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
+                                alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
                         </div>
                         <div>
                             <p class="mb-1">
-                                <strong>{{ comentario.usuario_relacionado.nomeUsuario if comentario.usuario_relacionado else "IA Assistente" }}</strong>
+                                <strong>{{ comentario.usuario_relacionado.nomeUsuario if comentario.usuario_relacionado
+                                    }}</strong>
                                 {% if comentario.denuncias|length > 0 %}
                                 <button class="badge bg-danger text-white" style="margin-left: 10px; border: 0px;"
                                     data-bs-toggle="modal"
@@ -184,13 +185,23 @@
                 <!-- Botões de curtida, descurtir e denúncia -->
                 <div class="d-flex align-items-center ms-5" style="gap: 10px;">
                     <!-- Botão de Curtir -->
-                    <form action="{{ url_for('pergunta_route.curtir_comentario', comentario_id=comentario.codigo) }}"
+                    <form action="{{ url_for('pergunta_route.like_comentario', comentario_id=comentario.codigo) }}"
                         method="POST" style="display:inline;">
                         <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
                             <i class="bi bi-hand-thumbs-up" style="font-size: 20px;"></i>
                         </button>
                     </form>
-                    <span>{{ comentario.quantidadeCurtidas }}</span>
+                    <span>{{ comentario.quantidade_likes }}</span> <!-- Exibe a quantidade de likes -->
+
+                    <!-- Botão de Descurtir -->
+                    <form action="{{ url_for('pergunta_route.deslike_comentario', comentario_id=comentario.codigo) }}"
+                        method="POST" style="display:inline;">
+                        <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
+                            <i class="bi bi-hand-thumbs-down" style="font-size: 20px;"></i>
+                        </button>
+                    </form>
+                    <span>{{ comentario.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
+
 
                     <!-- Botão de Denunciar -->
                     {% if current_user.is_authenticated and current_user.codigo != comentario.codUsuario %}
@@ -223,7 +234,8 @@
                                 <ul>
                                     {% if comentario.denuncias|length > 0 %}
                                     {% for denuncia in comentario.denuncias %}
-                                    <li>{{ denuncia.descricao | safe }} - {{ denuncia.data_criacao.strftime('%d/%m/%y') }}</li>
+                                    <li>{{ denuncia.descricao | safe }} - {{ denuncia.data_criacao.strftime('%d/%m/%y')
+                                        }}</li>
                                     {% endfor %}
                                     {% else %}
                                     <li>Nenhuma denúncia registrada para este comentário.</li>
@@ -250,12 +262,12 @@
                             </div>
                             <div class="modal-body">
                                 <form
-                                    action="{{ url_for('denuncia_route.denunciar', comentario_id=comentario.codigo) }}"
+                                    action="{{ url_for('denuncia_route.denunciar_comentario', comentario_id=comentario.codigo) }}"
                                     method="POST">
                                     <div class="form-group">
                                         <label for="descricao">Explique o motivo da denúncia:</label>
-                                        <textarea class="form-control" id="descricao" name="descricao" rows="4"
-                                            required></textarea>
+                                        <textarea class="form-control" id="descricao_denuncia" name="descricao_denuncia"
+                                            rows="4" required></textarea>
                                     </div>
                             </div>
                             <div class="modal-footer">
@@ -309,4 +321,5 @@
     <!--Arquivo JS do Editor Online-->
     <script src="{{ url_for('static', filename='js/editorOnline.js') }}"></script>
 </body>
+
 </html>

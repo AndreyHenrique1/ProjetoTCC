@@ -9,6 +9,8 @@ from flask_login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 import cloudinary.uploader
 from sqlalchemy import func
+from models.likes_deslikes import Likes_deslikes
+from models.usuario import Usuario
 
 blog_route = Blueprint('blog_route', __name__)
 
@@ -248,3 +250,127 @@ def etiquetas_relacionadas():
 
     etiquetas_json = [{'codigo': etiqueta.codigo, 'nome': etiqueta.nome} for etiqueta in etiquetas]
     return jsonify(etiquetas_json)
+
+@blog_route.route('/comentario_blog/<int:comentario_id>/curtir', methods=['POST'])
+@login_required
+def like_comentario_blog(comentario_id):
+    comentario = comentariosBlog.query.get_or_404(comentario_id)
+
+    # Verifica se o usuário já curtiu o comentário
+    curtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codComentarioBlog=comentario_id,  # Como é um comentário de blog
+        tipo='like',
+        origem='comentario_blog'  # Definindo a origem como comentário de blog
+    ).first()
+
+    if curtida_existente:
+        return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+
+    # Adiciona uma nova curtida
+    nova_curtida = Likes_deslikes(
+        codComentarioBlog=comentario_id,  # Associando ao comentário de blog
+        codUsuario=current_user.codigo,
+        tipo='like',
+        origem='comentario_blog'  # Definindo a origem como comentário de blog
+    )
+    db.session.add(nova_curtida)
+    db.session.commit()
+
+    # Incrementa pontos ao dono do comentário
+    dono_comentario = Usuario.query.get(comentario.codUsuario)
+    dono_comentario.quantidadePontos += 1
+    db.session.commit()
+
+    return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+
+@blog_route.route('/comentario_blog/<int:comentario_id>/descurtir', methods=['POST'])
+@login_required
+def deslike_comentario_blog(comentario_id):
+    comentario = comentariosBlog.query.get_or_404(comentario_id)
+
+    # Verifica se o usuário já deu deslike no comentário
+    descurtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codComentarioBlog=comentario_id,  # Como é um comentário de blog
+        tipo='deslike',
+        origem='comentario_blog'  # Definindo a origem como comentário de blog
+    ).first()
+
+    if descurtida_existente:
+        return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+
+    # Adiciona uma nova descurtida
+    nova_descurtida = Likes_deslikes(
+        codComentarioBlog=comentario_id,  # Associando ao comentário de blog
+        codUsuario=current_user.codigo,
+        tipo='deslike',
+        origem='comentario_blog'  # Definindo a origem como comentário de blog
+    )
+    db.session.add(nova_descurtida)
+    db.session.commit()
+
+    # Decrementa pontos ao dono do comentário (se necessário)
+    dono_comentario = Usuario.query.get(comentario.codUsuario)
+    dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+    db.session.commit()
+
+    return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+
+# Função para curtir o blog
+@blog_route.route('/like_blog/<int:blog_id>', methods=['POST'])
+@login_required
+def like_blog(blog_id):
+    blog = Blog.query.get(blog_id)
+    if blog:
+        # Verifica se o usuário já curtiu o blog
+        existing_like = db.session.query(Likes_deslikes).filter(
+            Likes_deslikes.codBlog == blog_id,
+            Likes_deslikes.codUsuario == current_user.codigo,
+            Likes_deslikes.tipo == 'like',
+            Likes_deslikes.origem == 'blog'
+        ).first()
+
+        if not existing_like:  # Se não houver o like registrado
+            # Registra o like na tabela
+            like = Likes_deslikes(
+                codBlog=blog_id,
+                codUsuario=current_user.codigo,
+                tipo='like',
+                origem='blog'
+            )
+            db.session.add(like)
+            db.session.commit()
+        
+        return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
+
+# Função para descurtir o blog
+@blog_route.route('/deslike_blog/<int:blog_id>', methods=['POST'])
+@login_required
+def deslike_blog(blog_id):
+    blog = Blog.query.get(blog_id)
+    if blog:
+        # Verifica se o usuário já descurtiu o blog
+        existing_deslike = db.session.query(Likes_deslikes).filter(
+            Likes_deslikes.codBlog == blog_id,
+            Likes_deslikes.codUsuario == current_user.codigo,
+            Likes_deslikes.tipo == 'deslike',
+            Likes_deslikes.origem == 'blog'
+        ).first()
+
+        if not existing_deslike:  # Se não houver o deslike registrado
+            # Registra o deslike na tabela
+            deslike = Likes_deslikes(
+                codBlog=blog_id,
+                codUsuario=current_user.codigo,
+                tipo='deslike',
+                origem='blog'
+            )
+            db.session.add(deslike)
+            db.session.commit()
+        
+        return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
+
+
+
+

@@ -4,7 +4,7 @@ from models.pergunta import Pergunta
 from models.comentariosPerguntas import comentariosPerguntas
 from models.categoria import Categoria
 from models.etiqueta import Etiqueta
-from models.curtidasComentarios import CurtidasComentarios
+from models.likes_deslikes import Likes_deslikes
 from models.usuario import Usuario
 from models.perguntasEtiquetas import PerguntasEtiquetas
 from models.notificacao import enviar_notificacao
@@ -187,19 +187,30 @@ def excluir_comentario_pergunta(comentario_id):
     
     return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
 
-# Rota para curtir um comentário
+# Rota para like um comentário
 @pergunta_route.route('/comentario/<int:comentario_id>/curtir', methods=['POST'])
 @login_required
-def curtir_comentario(comentario_id):
+def like_comentario(comentario_id):
     comentario = comentariosPerguntas.query.get_or_404(comentario_id)
 
     # Verifica se o usuário já curtiu o comentário
-    curtida_existente = CurtidasComentarios.query.filter_by(codUsuario=current_user.codigo, codComentario=comentario_id).first()
+    curtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codComentarioPergunta=comentario_id,  # Como é um comentário de pergunta
+        tipo='like',
+        origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
+    ).first()
+
     if curtida_existente:
         return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
 
     # Adiciona uma nova curtida
-    nova_curtida = CurtidasComentarios(codComentario=comentario_id, codUsuario=current_user.codigo)
+    nova_curtida = Likes_deslikes(
+        codComentarioPergunta=comentario_id,  # Associando ao comentário de pergunta
+        codUsuario=current_user.codigo,
+        tipo='like',
+        origem='comentario_pergunta'  # Definindo a origem como comentário de pergunta
+    )
     db.session.add(nova_curtida)
 
     # Incrementa a quantidade de curtidas no comentário
@@ -209,6 +220,42 @@ def curtir_comentario(comentario_id):
     # Incrementa pontos ao dono do comentário
     dono_comentario = Usuario.query.get(comentario.codUsuario)
     dono_comentario.quantidadePontos += 1 
+    db.session.commit()
+
+    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
+
+@pergunta_route.route('/comentario/<int:comentario_id>/descurtir', methods=['POST'])
+@login_required
+def deslike_comentario(comentario_id):
+    comentario = comentariosPerguntas.query.get_or_404(comentario_id)
+
+    # Verifica se o usuário já deu deslike no comentário
+    descurtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codComentarioPergunta=comentario_id,  # Como é um comentário de pergunta
+        tipo='deslike',
+        origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
+    ).first()
+
+    if descurtida_existente:
+        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
+
+    # Adiciona uma nova descurtida
+    nova_descurtida = Likes_deslikes(
+        codComentarioPergunta=comentario_id,  # Associando ao comentário de pergunta
+        codUsuario=current_user.codigo,
+        tipo='deslike',
+        origem='comentario_pergunta'  # Definindo a origem como comentário de pergunta
+    )
+    db.session.add(nova_descurtida)
+
+    # Decrementa a quantidade de curtidas no comentário
+    comentario.quantidadeCurtidas -= 1
+    db.session.commit()
+
+    # Decrementa pontos ao dono do comentário (se necessário)
+    dono_comentario = Usuario.query.get(comentario.codUsuario)
+    dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos que deseja aplicar
     db.session.commit()
 
     return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
