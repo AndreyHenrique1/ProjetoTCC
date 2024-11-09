@@ -159,6 +159,7 @@
                     <!-- Esquerda: Foto, Nome e Data -->
                     <div class="d-flex align-items-center">
                         <div class="me-2">
+<<<<<<< HEAD
                             <img src="{{ comentario.usuario_relacionado.foto_perfil if comentario.usuario_relacionado and comentario.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
                                 alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
                         </div>
@@ -166,6 +167,14 @@
                             <p class="mb-1">
                                 <strong>{{ comentario.usuario_relacionado.nomeUsuario if comentario.usuario_relacionado
                                     }}</strong>
+=======
+                            <img src="{{ comentario.usuario_relacionado.foto_perfil }}"
+                            alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
+                        </div>
+                        <div>
+                            <p class="mb-1">
+                                <strong>{{ comentario.usuario_relacionado.nomeUsuario }}</strong>
+>>>>>>> 52bb0200d9c286799445f8ec698ef69cbb0ddd1b
                                 {% if comentario.denuncias|length > 0 %}
                                 <button class="badge bg-danger text-white" style="margin-left: 10px; border: 0px;"
                                     data-bs-toggle="modal"

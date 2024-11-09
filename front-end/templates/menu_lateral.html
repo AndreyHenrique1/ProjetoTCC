@@ -17,13 +17,13 @@
         </li>
     </ul>
     <ul>
-        <li class="item-menu">
-            <a href="#">
+        <li class="item-menu {% if request.endpoint == 'pagina_ia' %}ativo{% endif %}">
+            <a href="{{ url_for('pagina_ia') }}">
                 <span class="icon"><i class="bi bi-robot"></i></span>
                 <span class="txt-link">I.A</span>
             </a>
         </li>
-    </ul>
+    </ul>    
     <ul>
         <li class="item-menu {% if request.endpoint == 'usuario_route.listar_usuarios' %}ativo{% endif %}">
             <a href="{{ url_for('usuario_route.listar_usuarios') }}">
