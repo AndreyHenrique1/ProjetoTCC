@@ -14,6 +14,7 @@ class Blog(db.Model):
     codCategoria = db.Column(db.Integer, db.ForeignKey('categorias.codigo'), nullable=False)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     fotoCapa_blog = db.Column(db.Text, nullable=True)
+    quantidadeCurtidas = db.Column(db.Integer, default=0)
 
     # Relacionamentos de tabelas
     usuario_relacionado = db.relationship('Usuario', back_populates='blog_relacionado')

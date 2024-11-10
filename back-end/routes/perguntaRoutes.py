@@ -164,9 +164,8 @@ def excluir_comentario_pergunta(comentario_id):
         # Caso tenha um erro, volta novamente 
         db.session.rollback()
     
-    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
+    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="comentario_excluido"))
 
-# Rota para like um comentário
 @pergunta_route.route('/comentario/<int:comentario_id>/curtir', methods=['POST'])
 @login_required
 def like_comentario(comentario_id):
@@ -180,8 +179,35 @@ def like_comentario(comentario_id):
         origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
     ).first()
 
+    # Verifica se o usuário já deu deslike no comentário
+    descurtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codComentarioPergunta=comentario_id,  # Como é um comentário de pergunta
+        tipo='deslike',
+        origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
+    ).first()
+
     if curtida_existente:
-        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
+        # Se o usuário já deu like, retira o like e não faz nada
+        db.session.delete(curtida_existente)
+        comentario.quantidadeCurtidas -= 1
+        db.session.commit()
+
+        # Decrementa pontos ao dono do comentário
+        dono_comentario = Usuario.query.get(comentario.codUsuario)
+        dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
+
+    if descurtida_existente:
+        # Se o usuário já deu deslike, retira o deslike e adiciona o like
+        db.session.delete(descurtida_existente)  # Exclui o deslike
+        comentario.quantidadeCurtidas += 1  # Incrementa a quantidade de curtidas
+        db.session.commit()
+
+        # Incrementa pontos ao dono do comentário
+        dono_comentario = Usuario.query.get(comentario.codUsuario)
+        dono_comentario.quantidadePontos += 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
 
     # Adiciona uma nova curtida
     nova_curtida = Likes_deslikes(
@@ -201,7 +227,7 @@ def like_comentario(comentario_id):
     dono_comentario.quantidadePontos += 1 
     db.session.commit()
 
-    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
+    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="like_realizado"))
 
 @pergunta_route.route('/comentario/<int:comentario_id>/descurtir', methods=['POST'])
 @login_required
@@ -216,8 +242,35 @@ def deslike_comentario(comentario_id):
         origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
     ).first()
 
+    # Verifica se o usuário já deu like no comentário
+    curtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codComentarioPergunta=comentario_id,  # Como é um comentário de pergunta
+        tipo='like',
+        origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
+    ).first()
+
     if descurtida_existente:
-        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
+        # Se o usuário já deu deslike, retira o deslike e não faz nada
+        db.session.delete(descurtida_existente)
+        comentario.quantidadeCurtidas += 1  # Incrementa a quantidade de curtidas
+        db.session.commit()
+
+        # Incrementa pontos ao dono do comentário
+        dono_comentario = Usuario.query.get(comentario.codUsuario)
+        dono_comentario.quantidadePontos += 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
+
+    if curtida_existente:
+        # Se o usuário já deu like, retira o like e adiciona o deslike
+        db.session.delete(curtida_existente)  # Exclui o like
+        comentario.quantidadeCurtidas -= 1  # Decrementa a quantidade de curtidas
+        db.session.commit()
+
+        # Decrementa pontos ao dono do comentário (se necessário)
+        dono_comentario = Usuario.query.get(comentario.codUsuario)
+        dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
 
     # Adiciona uma nova descurtida
     nova_descurtida = Likes_deslikes(
@@ -234,24 +287,23 @@ def deslike_comentario(comentario_id):
 
     # Decrementa pontos ao dono do comentário (se necessário)
     dono_comentario = Usuario.query.get(comentario.codUsuario)
-    dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos que deseja aplicar
+    dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
     db.session.commit()
 
-    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
+    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="deslike_realizado"))
 
 # Rota para a barra de pesquisa
-@pergunta_route.route('/pesquisar', methods=['POST'])
+@pergunta_route.route('/pesquisar_pergunta', methods=['POST'])
 def pergunta_pesquisar():
     pesquisa = request.form.get('pesquisar')
 
     if pesquisa:
-        # Busca as perguntas cujo título ou descrição que contenham no banco de dados 
+        # Busca as perguntas cujo título ou descrição contenham o termo pesquisado no banco de dados 
         perguntas_encontradas = Pergunta.query.filter(
             (Pergunta.titulo.ilike(f'%{pesquisa}%')) | 
-            (Pergunta.descricao.ilike(f'%{pesquisa}%'))
+            (Pergunta.descricao.ilike(f'%{pesquisa}'))
         ).all()
 
-        # Renderiza a página principal com as perguntas filtradas
         return render_template('homePergunta.html', perguntas=perguntas_encontradas, pesquisa=pesquisa)
 
     # Se a pesquisa estiver vazia, redireciona para a página inicial
@@ -277,8 +329,3 @@ def etiquetas_relacionadas():
 
     etiquetas_json = [{'codigo': etiqueta.codigo, 'nome': etiqueta.nome} for etiqueta in etiquetas]
     return jsonify(etiquetas_json)
-
-
-
-
-

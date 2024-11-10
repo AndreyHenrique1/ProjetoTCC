@@ -21,7 +21,7 @@ def listar_blogs():
     etiquetas_selecionadas = request.args.get('etiquetas')
     ordenar_por = request.args.get('ordenar', 'recentes')  # Define 'recentes' como padrão
 
-    blogs = Blog.query 
+    blogs = Blog.query
 
     # Filtra por categorias
     if categorias_selecionadas:
@@ -228,7 +228,7 @@ def excluir_comentario_blog(comentario_id):
         # Caso tenha um erro na hora de excluir, volta o comentario novamente
         db.session.rollback()
 
-    return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+    return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog, sucesso="comentario_excluido"))
 
 # Rota para aparecer as etiquetas no banco de dados ao clicar no input
 @blog_route.route('/etiquetas_iniciais')
@@ -264,8 +264,35 @@ def like_comentario_blog(comentario_id):
         origem='comentario_blog'  # Definindo a origem como comentário de blog
     ).first()
 
+    # Verifica se o usuário já deu deslike no comentário
+    descurtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codComentarioBlog=comentario_id,  # Como é um comentário de blog
+        tipo='deslike',
+        origem='comentario_blog'  # Definindo a origem como comentário de blog
+    ).first()
+
     if curtida_existente:
-        return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+        # Se o usuário já deu like, retira o like e não faz nada
+        db.session.delete(curtida_existente)
+        comentario.quantidadeCurtidas -= 1
+        db.session.commit()
+
+        # Decrementa pontos ao dono do comentário
+        dono_comentario = Usuario.query.get(comentario.codUsuario)
+        dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
+
+    if descurtida_existente:
+        # Se o usuário já deu deslike, retira o deslike e adiciona o like
+        db.session.delete(descurtida_existente)  # Exclui o deslike
+        comentario.quantidadeCurtidas += 1  # Incrementa a quantidade de curtidas
+        db.session.commit()
+
+        # Incrementa pontos ao dono do comentário
+        dono_comentario = Usuario.query.get(comentario.codUsuario)
+        dono_comentario.quantidadePontos += 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
 
     # Adiciona uma nova curtida
     nova_curtida = Likes_deslikes(
@@ -275,14 +302,17 @@ def like_comentario_blog(comentario_id):
         origem='comentario_blog'  # Definindo a origem como comentário de blog
     )
     db.session.add(nova_curtida)
+
+    # Incrementa a quantidade de curtidas no comentário
+    comentario.quantidadeCurtidas += 1
     db.session.commit()
 
     # Incrementa pontos ao dono do comentário
     dono_comentario = Usuario.query.get(comentario.codUsuario)
-    dono_comentario.quantidadePontos += 1
+    dono_comentario.quantidadePontos += 1 
     db.session.commit()
 
-    return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+    return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog, sucesso="like_realizado"))
 
 @blog_route.route('/comentario_blog/<int:comentario_id>/descurtir', methods=['POST'])
 @login_required
@@ -297,8 +327,35 @@ def deslike_comentario_blog(comentario_id):
         origem='comentario_blog'  # Definindo a origem como comentário de blog
     ).first()
 
+    # Verifica se o usuário já deu like no comentário
+    curtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codComentarioBlog=comentario_id,  # Como é um comentário de blog
+        tipo='like',
+        origem='comentario_blog'  # Definindo que a origem é comentário de blog
+    ).first()
+
     if descurtida_existente:
-        return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+        # Se o usuário já deu deslike, retira o deslike e não faz nada
+        db.session.delete(descurtida_existente)
+        comentario.quantidadeCurtidas += 1  # Incrementa a quantidade de curtidas
+        db.session.commit()
+
+        # Incrementa pontos ao dono do comentário
+        dono_comentario = Usuario.query.get(comentario.codUsuario)
+        dono_comentario.quantidadePontos += 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
+
+    if curtida_existente:
+        # Se o usuário já deu like, retira o like e adiciona o deslike
+        db.session.delete(curtida_existente)  # Exclui o like
+        comentario.quantidadeCurtidas -= 1  # Decrementa a quantidade de curtidas
+        db.session.commit()
+
+        # Decrementa pontos ao dono do comentário (se necessário)
+        dono_comentario = Usuario.query.get(comentario.codUsuario)
+        dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
 
     # Adiciona uma nova descurtida
     nova_descurtida = Likes_deslikes(
@@ -308,6 +365,9 @@ def deslike_comentario_blog(comentario_id):
         origem='comentario_blog'  # Definindo a origem como comentário de blog
     )
     db.session.add(nova_descurtida)
+
+    # Decrementa a quantidade de curtidas no comentário
+    comentario.quantidadeCurtidas -= 1
     db.session.commit()
 
     # Decrementa pontos ao dono do comentário (se necessário)
@@ -315,62 +375,151 @@ def deslike_comentario_blog(comentario_id):
     dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
     db.session.commit()
 
-    return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog))
+    return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog, sucesso="deslike_realizado"))
+
 
 # Função para curtir o blog
 @blog_route.route('/like_blog/<int:blog_id>', methods=['POST'])
 @login_required
 def like_blog(blog_id):
-    blog = Blog.query.get(blog_id)
-    if blog:
-        # Verifica se o usuário já curtiu o blog
-        existing_like = db.session.query(Likes_deslikes).filter(
-            Likes_deslikes.codBlog == blog_id,
-            Likes_deslikes.codUsuario == current_user.codigo,
-            Likes_deslikes.tipo == 'like',
-            Likes_deslikes.origem == 'blog'
-        ).first()
+    blog = Blog.query.get_or_404(blog_id)
 
-        if not existing_like:  # Se não houver o like registrado
-            # Registra o like na tabela
-            like = Likes_deslikes(
-                codBlog=blog_id,
-                codUsuario=current_user.codigo,
-                tipo='like',
-                origem='blog'
-            )
-            db.session.add(like)
-            db.session.commit()
-        
-        return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
+    # Verifica se o usuário já curtiu o blog
+    curtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codBlog=blog_id,
+        tipo='like',
+        origem='blog'
+    ).first()
+
+    # Verifica se o usuário já deu deslike no blog
+    descurtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codBlog=blog_id,
+        tipo='deslike',
+        origem='blog'
+    ).first()
+
+    if curtida_existente:
+        # Se o usuário já deu like, retira o like e não faz nada
+        db.session.delete(curtida_existente)
+        blog.quantidadeCurtidas -= 1
+        db.session.commit()
+
+        # Decrementa pontos ao autor do blog
+        autor_blog = Usuario.query.get(blog.codUsuario)
+        autor_blog.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
+
+    if descurtida_existente:
+        # Se o usuário já deu deslike, retira o deslike e adiciona o like
+        db.session.delete(descurtida_existente)
+        blog.quantidadeCurtidas += 1  # Incrementa a quantidade de curtidas
+        db.session.commit()
+
+        # Incrementa pontos ao autor do blog
+        autor_blog = Usuario.query.get(blog.codUsuario)
+        autor_blog.quantidadePontos += 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
+
+    # Adiciona uma nova curtida
+    nova_curtida = Likes_deslikes(
+        codBlog=blog_id,
+        codUsuario=current_user.codigo,
+        tipo='like',
+        origem='blog'
+    )
+    db.session.add(nova_curtida)
+
+    # Incrementa a quantidade de curtidas no blog
+    blog.quantidadeCurtidas += 1
+    db.session.commit()
+
+    # Incrementa pontos ao autor do blog
+    autor_blog = Usuario.query.get(blog.codUsuario)
+    autor_blog.quantidadePontos += 1
+    db.session.commit()
+
+    return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id, sucesso="like_realizado"))
 
 # Função para descurtir o blog
 @blog_route.route('/deslike_blog/<int:blog_id>', methods=['POST'])
 @login_required
 def deslike_blog(blog_id):
-    blog = Blog.query.get(blog_id)
-    if blog:
-        # Verifica se o usuário já descurtiu o blog
-        existing_deslike = db.session.query(Likes_deslikes).filter(
-            Likes_deslikes.codBlog == blog_id,
-            Likes_deslikes.codUsuario == current_user.codigo,
-            Likes_deslikes.tipo == 'deslike',
-            Likes_deslikes.origem == 'blog'
-        ).first()
+    blog = Blog.query.get_or_404(blog_id)
 
-        if not existing_deslike:  # Se não houver o deslike registrado
-            # Registra o deslike na tabela
-            deslike = Likes_deslikes(
-                codBlog=blog_id,
-                codUsuario=current_user.codigo,
-                tipo='deslike',
-                origem='blog'
-            )
-            db.session.add(deslike)
-            db.session.commit()
-        
-        return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
+    # Verifica se o usuário já deu deslike no blog
+    descurtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codBlog=blog_id,
+        tipo='deslike',
+        origem='blog'
+    ).first()
 
+    # Verifica se o usuário já deu like no blog
+    curtida_existente = Likes_deslikes.query.filter_by(
+        codUsuario=current_user.codigo,
+        codBlog=blog_id,
+        tipo='like',
+        origem='blog'
+    ).first()
 
+    if descurtida_existente:
+        # Se o usuário já deu deslike, retira o deslike e não faz nada
+        db.session.delete(descurtida_existente)
+        blog.quantidadeCurtidas += 1  # Incrementa a quantidade de curtidas
+        db.session.commit()
 
+        # Incrementa pontos ao autor do blog
+        autor_blog = Usuario.query.get(blog.codUsuario)
+        autor_blog.quantidadePontos += 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
 
+    if curtida_existente:
+        # Se o usuário já deu like, retira o like e adiciona o deslike
+        db.session.delete(curtida_existente)
+        blog.quantidadeCurtidas -= 1  # Decrementa a quantidade de curtidas
+        db.session.commit()
+
+        # Decrementa pontos ao autor do blog (se necessário)
+        autor_blog = Usuario.query.get(blog.codUsuario)
+        autor_blog.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+        db.session.commit()
+
+    # Adiciona uma nova descurtida
+    nova_descurtida = Likes_deslikes(
+        codBlog=blog_id,
+        codUsuario=current_user.codigo,
+        tipo='deslike',
+        origem='blog'
+    )
+    db.session.add(nova_descurtida)
+
+    # Decrementa a quantidade de curtidas no blog
+    blog.quantidadeCurtidas -= 1
+    db.session.commit()
+
+    # Decrementa pontos ao autor do blog (se necessário)
+    autor_blog = Usuario.query.get(blog.codUsuario)
+    autor_blog.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+    db.session.commit()
+
+    return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id, sucesso="deslike_realizado"))
+
+# Rota para a barra de pesquisa
+@blog_route.route('/pesquisar_blog', methods=['POST'])
+def blog_pesquisar():
+    pesquisa = request.form.get('pesquisar')
+
+    if pesquisa:
+        # Busca os blogs cujo título ou descrição contenham o termo pesquisado no banco de dados 
+        blogs_encontrados = Blog.query.filter(
+            (Blog.titulo.ilike(f'%{pesquisa}%')) | 
+            (Blog.descricao.ilike(f'%{pesquisa}%'))
+        ).all()
+
+        # Renderiza o template passando a lista de blogs encontrados
+        return render_template('listar_blogs.html', blogs=blogs_encontrados, pesquisa=pesquisa)
+
+    # Se a pesquisa estiver vazia, redireciona para a página inicial de blogs
+    return redirect(url_for('blog_route.listar_blogs'))

@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Inicialização do editor Quill para os comentários
     var quillComentario = new Quill('#editor-comentario', {
         theme: 'snow',
+        placeholder: 'Explique e escreva aqui sua resposta de forma clara e objetiva...',
         modules: {
             toolbar: [
                 [{ 'header': [1, 2, false] }],
@@ -18,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Inicialização do editor Quill para as perguntas e blogs
     var quillEdicao = new Quill('#editor-geral', {
         theme: 'snow',
+        placeholder: 'Escreva aqui de forma clara e objetiva...',
         modules: {
             toolbar: [
                 [{ 'header': [1, 2, false] }],
@@ -47,15 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
             this.submit(); 
         };
     });
-
-    // Atualização de visualização em tempo real (se necessário)
-    function updatePreview() {
-        var content = quillEdicao.root.innerHTML; // Utilize o quillEdicao aqui
-        document.querySelector('#Visualizacao-tempoReal').innerHTML = content;
-    }
-
-    // Atualizar visualização ao carregar a página
-    updatePreview();
 
     // Adicionar listener para mudança de texto no Quill
     quillEdicao.on('text-change', updatePreview);

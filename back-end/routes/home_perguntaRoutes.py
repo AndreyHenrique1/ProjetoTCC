@@ -1,8 +1,9 @@
-from flask import request, render_template, Blueprint
+from flask import request, render_template, Blueprint, redirect, url_for
 from database.db import db
 from models.pergunta import Pergunta
 from models.categoria import Categoria
 from models.etiqueta import Etiqueta  
+from models.blog import Blog 
 from models.perguntasEtiquetas import PerguntasEtiquetas
 from sqlalchemy import func
 

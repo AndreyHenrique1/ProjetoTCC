@@ -10,6 +10,7 @@ class comentariosBlog(db.Model):
     codBlog = db.Column(db.Integer, db.ForeignKey('blog.codigo'), nullable=False)
     codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    quantidadeCurtidas = db.Column(db.Integer, default=0)
 
     # Relacionamentos de tabelas
     usuario_relacionado = db.relationship('Usuario', backref='comentariosBlog', lazy=True)

@@ -26,6 +26,15 @@ body {
     overflow-x: hidden; /* Impede a rolagem horizontal */
 }
 
+@media screen and (max-width: 1250px)
+{
+    /*Menu lateral*/
+    .menu-lateral 
+    {
+        display: none;
+    }
+}
+
 /* Cabeçalho do projeto */
 header {
     display: flex;
@@ -173,7 +182,7 @@ header {
 
 /*Menu lateral*/
 .menu-lateral {
-    width: 60px;
+    width: 70px; /* Largura inicial do menu lateral */
     height: 100%;
     background-color: #fff;
     border-right: solid 3px var(--cor1);
@@ -182,16 +191,16 @@ header {
     top: 80px;
     left: 0;
     overflow: hidden;
-    transition: .5s;
     z-index: 1000;
+    transition: width 0.5s ease-in-out;
 }
 
-.menu-lateral:hover {
-    width: 250px;
+.main-conteudo.expandido {
+    margin-left: 250px; 
 }
 
 .menu-lateral.expandir {
-    width: 250px;
+    width: 250px; 
 }
 
 .btn-expandir {
@@ -245,7 +254,11 @@ ul li.item-menu a .txt-link {
     transition: .5s;
 }
 
-.menu-lateral.expandir .txt-link{
+.menu-lateral .txt-link {
+    transition: margin-left 0.5s ease; 
+}
+
+.menu-lateral.expandir .txt-link {
     margin-left: 40px;
 }
 
@@ -255,10 +268,14 @@ ul li.item-menu a .icon > i {
 
 /*Div principal do site*/
 main {
-    padding-top: 121px;
-    padding-left: 120px;
-    padding-right: 120px;
-    padding-bottom: 70px;
+    min-width: 300px;
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-bottom: 30px;
+    padding-top: 120px;
 }
 
 /* Estilizando a logo */
@@ -400,12 +417,6 @@ nav ul {
     transition: .2s;
 }
 
-/* Divide a tela */
-.dividir_tela {
-    display: flex;
-    gap: 20px; 
-}
-
 /* Visualização em tempo real */
 #Visualizacao-tempoReal {
     flex: 1;
@@ -417,17 +428,15 @@ nav ul {
     max-height: 600px; 
 }
 
-/* Adiciona uma borda em cima e embaixo de cada pergunta */
 .pergunta-item {
     display: flex;
-    padding: 10px; 
-    padding-top: 20px;
-    padding-bottom: 20px;
-    margin: 0; 
-    border: solid 1px var(--cor1);
-    border-left: none;
-    border-right: none;
+    padding: 20px; 
+    margin: 10px 0; 
+    border: solid 1px var(--cor1); 
+    border-radius: 8px; 
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.386);
 }
+
 
 /* Remover a borda superior do primeiro item e a borda inferior do último item */
 .container_perguntas ul {
@@ -467,34 +476,46 @@ nav ul {
     flex-wrap: wrap; 
 }
 
-/* Cards do blog */
 .card {
-    width: 100%; 
-    min-height: 410px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1); 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.5s, box-shadow 0.5s;
+}
+
+.card img {
+    width: 100%;
+    height: 180px; /* Define a altura da imagem para manter a proporção */
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
 }
 
 .card:hover {
-    transform: scale(1.05); 
+    transform: scale(1.05);
     box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Estilo para o título do card */
 .card .card-title {
-    color: black; 
-    text-decoration: none; 
+    color: black;
+    text-decoration: none;
 }
 
 .card .card-title:hover > h5 {
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
-i:hover {
+
+
+/*Ficar roxo quando o mouse estiver no icone*/
+.icon_roxo:hover {
     color: var(--cor3);
 }
 
-#Excluir:hover {
+/*Ficar vermelho quando o mouse estiver no icone*/
+.icon_vermelho:hover {
     color: #ff0000;
 }
 

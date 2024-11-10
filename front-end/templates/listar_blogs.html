@@ -23,23 +23,71 @@
 
 <body>
     <header>
-        <!--Chamando o arquivo do cabeçalho-->
-        {% include 'header.html' %}
+        <!-- Botão de expandir e logo alinhados à esquerda -->
+        <div class="header-left">
+            <div class="btn-expandir">
+                <i class="bi bi-list" id="btn-exp"></i>
+            </div>
+            <div class="logo">
+                <a href="{{ url_for('home.homePergunta') }}">
+                    <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
+                </a>
+            </div>
+        </div>
+
+        <!-- Ícones e imagem de usuário à direita -->
+        <div class="header-right">
+            {% if current_user.is_authenticated %}
+
+            <!-- Barra de pesquisa em blogs -->
+            <form action="{{ url_for('blog_route.blog_pesquisar') }}" method="POST" class="pesquisar">
+                <input type="search" name="pesquisar" id="inputPesquisar" placeholder="O que você procura?"
+                    autocomplete="on">
+                <label for="inputPesquisar">
+                    <span class="icon"></span>
+                </label>
+            </form>
+
+            <div class="notificacao">
+                <a href="{{ url_for('notificacao_route.listar_notificacoes') }}">
+                    <i class="bi bi-bell-fill" style="font-size: 25px; color: black; position: relative;">
+                        {% if notificacoes_nao_lidas %}
+                        <!-- Ponto vermelho indicando notificações não lidas -->
+                        <span class="badge-notificacao"></span>
+                        {% endif %}
+                    </i>
+                </a>
+            </div>
+
+
+            <div class="img_usuario">
+                <!-- Adicionar o redirecionamento para o perfil do usuário -->
+                <a href="{{ url_for('usuario_route.perfil') }}">
+                    <img src="{{ current_user.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                        alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
+                </a>
+            </div>
+            {% else %}
+            <li><a href="{{ url_for('cadastrar_route.cadastrar') }}" class="btn_cinza">Cadastrar</a></li>
+            <li><a href="{{ url_for('login_route.login') }}" class="btn_cinza">Entrar</a></li>
+            {% endif %}
+        </div>
     </header>
 
     <!--Chamando o arquivo menu_lateral.html-->
     {% include 'menu_lateral.html' %}
 
-    <main>
+    <main class="main-conteudo" style="max-width: 1200px;">
+        <div class="conteudo">
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('blog_route.criar_blog') }}" class="btn_roxo">Adicionar Blog</a>
+        <a href="{{ url_for('blog_route.criar_blog') }}" class="btn_roxo" style="margin-left: 12px;">Adicionar Blog</a>
         {% endif %}
 
         <br>
 
         <!-- Botão de Filtro -->
         <button type="button" data-bs-toggle="modal" data-bs-target="#filtroBlog" class="btn_filtro"
-            style="margin-top: 20px;">
+            style="margin-top: 20px; margin-left: 12px;">
             Filtrar
         </button>
 
@@ -111,27 +159,39 @@
             </div>
         </div>
 
-        <!--Card de blogs com bootstrap-->
-        <div class="container" style="margin-top: 50px;">
-            <div class="row justify-content-center"> <!-- Adicione a classe justify-content-center -->
+        <!--Cards dos blogs-->
+        <div class="container mt-5">
+            {% if blogs %}
+            <div class="row justify-content-center">
                 {% for blog in blogs %}
-                <div class="col-md-3 mb-3">
-                    <div class="card">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex">
+                    <div class="card flex-fill">
                         <img src="{{ blog.fotoCapa_blog if blog.fotoCapa_blog else url_for('static', filename='Imagens/default_blog_cover.png') }}"
-                            alt="Foto da Capa do Blog" width="300" height="200" style="border-radius: 5px 5px 0px 0px;"
-                            class="img-fluid">
-                        <div class="card-body">
+                            alt="Foto da Capa do Blog" class="img-fluid card-img-top">
+                        <div class="card-body d-flex flex-column">
                             <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}" class="card-title">
                                 <h5>{{ blog.titulo }}</h5>
                             </a>
-                            <p class="card-text">{{ blog.descricao[:90] | safe }}{% if blog.descricao|length > 100
-                                %}...{% else %}...{% endif %} Leia mais</p>
+                            <p class="card-text">{{ blog.descricao[:40] | safe }}{% if blog.descricao|length > 40
+                                %}...{% endif %} Leia mais</p>
                             <p>{{ blog.categoria_relacionada.nome }}</p>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
+            {% else %}
+            <h2 style="text-align: center;">Não encontramos resultados para '{{ pesquisa }}'. Experimente ajustar os
+                termos da pesquisa ou explore outras perguntas!</h2>
+            {% endif %}
+        </div>
+        {% if pesquisa %}
+        <!-- Botão para voltar à lista completa -->
+        <br>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ url_for('blog_route.listar_blogs') }}" class="btn_roxo">Voltar para todos os blogs</a>
+        </div>
+        {% endif %}
         </div>
     </main>
 

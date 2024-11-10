@@ -20,12 +20,15 @@
     <!--Link do quilljs, editor de texto online-->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <!--Arquivo JS dos avisos-->
+    <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
 </head>
 
 <body>
     <header>
         <div class="logo">
-            <a href="{{ url_for('home.homePergunta') }}">
+            <a href="{{ url_for('blog_route.listar_blogs') }}">
                 <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
             </a>
         </div>
@@ -51,7 +54,7 @@
                 {% if current_user.codigo == blog.codUsuario %}
                 <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal"
                     style="color: black;">
-                    <i class="bi bi-pencil-square" style="font-size: 25px;"></i>
+                    <i class="bi bi-pencil-square icon_roxo" style="font-size: 25px;"></i>
                 </button>
 
                 <!-- Modal de editar blog -->
@@ -84,8 +87,8 @@
 
                 <!-- Ícone de excluir -->
                 <button type="button" class="btn p-0" style="border: none; background-color: transparent;"
-                    data-bs-toggle="modal" data-bs-target="#ExcluirBlog{{ blog.codigo }}">
-                    <i class="bi bi-trash" style="color:black; font-size: 25px; margin-left: 10px;"></i>
+                    data-bs-toggle="modal" data-bs-target="#ExcluirBlog{{ blog.codigo }}" style="color:black;">
+                    <i class="bi bi-trash icon_vermelho" style="font-size: 25px;"></i>
                 </button>
 
                 <!-- Modal de excluir blog -->
@@ -112,13 +115,32 @@
                         </div>
                     </div>
                 </div>
+
+                {% else %}
+
+                <!-- Exibir os botões de Like e Deslike apenas para quem não é o dono do blog -->
+                <form action="{{ url_for('blog_route.like_blog', blog_id=blog.codigo) }}" method="POST"
+                    style="display:inline;">
+                    <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
+                        <i class="bi bi-hand-thumbs-up icon_roxo" style="font-size: 25px; margin-right: 10px;"></i>
+                    </button>
+                </form>
+                <span style="margin-right: 12px;">{{ blog.quantidade_likes }}</span> <!-- Exibe a quantidade de likes -->
+
+                <form action="{{ url_for('blog_route.deslike_blog', blog_id=blog.codigo) }}" method="POST"
+                    style="display:inline;">
+                    <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
+                        <i class="bi bi-hand-thumbs-down icon_vermelho" style="font-size: 25px; margin-left: 10px;"></i>
+                    </button>
+                </form>
+                <span style="margin-left: 10px;">{{ blog.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
                 {% endif %}
 
                 <!-- Botão de Denunciar - visível apenas para usuários não proprietários do blog -->
                 {% if current_user.is_authenticated and current_user.codigo != blog.codUsuario %}
                 <button type="button" class="btn p-0" style="border: none; background-color: transparent;"
                     data-bs-toggle="modal" data-bs-target="#modalDenunciar{{ blog.codigo }}">
-                    <i class="bi bi-flag" style="color:rgb(255, 0, 0); font-size: 25px; margin-left: 10px;"></i>
+                    <i class="bi bi-flag" style="color:rgb(255, 0, 0); font-size: 25px; margin-left: 30px;"></i>
                 </button>
                 {% endif %}
 
@@ -165,30 +187,6 @@
 
         <!--Conteúdo do blog-->
         <div>{{ blog.descricao | safe }}</div>
-
-        <br>
-
-        <!-- Botões de Curtir e Descurtir para o Blog -->
-        <div class="d-flex align-items-center" style="gap: 10px;">
-            <!-- Formulário de Curtir para o Blog -->
-            <form action="{{ url_for('blog_route.like_blog', blog_id=blog.codigo) }}" method="POST"
-                style="display:inline;">
-                <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
-                    <i class="bi bi-hand-thumbs-up" style="font-size: 20px;"></i>
-                </button>
-            </form>
-            <span>{{ blog.quantidade_likes }}</span> <!-- Exibe a quantidade de likes -->
-
-            <!-- Formulário de Descurtir para o Blog -->
-            <form action="{{ url_for('blog_route.deslike_blog', blog_id=blog.codigo) }}" method="POST"
-                style="display:inline;">
-                <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
-                    <i class="bi bi-hand-thumbs-down" style="font-size: 20px;"></i>
-                </button>
-            </form>
-            <span>{{ blog.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
-        </div>
-
 
         <br>
 
@@ -246,7 +244,7 @@
                     <form action="{{ url_for('blog_route.like_comentario_blog', comentario_id=comentario.codigo) }}"
                         method="POST" style="display:inline;">
                         <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
-                            <i class="bi bi-hand-thumbs-up" style="font-size: 20px;"></i>
+                            <i class="bi bi-hand-thumbs-up icon_roxo" style="font-size: 20px;"></i>
                         </button>
                     </form>
                     <span>{{ comentario.quantidade_likes }}</span> <!-- Exibe a quantidade de likes -->
@@ -255,7 +253,7 @@
                     <form action="{{ url_for('blog_route.deslike_comentario_blog', comentario_id=comentario.codigo) }}"
                         method="POST" style="display:inline;">
                         <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
-                            <i class="bi bi-hand-thumbs-down" style="font-size: 20px;"></i>
+                            <i class="bi bi-hand-thumbs-down icon_vermelho" style="font-size: 20px;"></i>
                         </button>
                     </form>
                     <span>{{ comentario.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->

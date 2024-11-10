@@ -1,7 +1,7 @@
 <!-- Menu lateral -->
 <nav class="menu-lateral">
     <ul>
-        <li class="item-menu {% if request.endpoint == 'home.home' %}ativo{% endif %}">
+        <li class="item-menu {% if request.endpoint == 'home.homePergunta' %}ativo{% endif %}">
             <a href="{{ url_for('home.homePergunta') }}">
                 <span class="icon"><i class="bi bi-person-raised-hand"></i></span>
                 <span class="txt-link">Perguntas</span>
@@ -17,13 +17,13 @@
         </li>
     </ul>
     <ul>
-        <li class="item-menu {% if request.endpoint == 'pagina_ia' %}ativo{% endif %}">
-            <a href="{{ url_for('pagina_ia') }}">
+        <li class="item-menu {% if request.endpoint == 'ia.pagina_ia' %}ativo{% endif %}">
+            <a href="{{ url_for('ia.pagina_ia') }}">
                 <span class="icon"><i class="bi bi-robot"></i></span>
                 <span class="txt-link">I.A</span>
             </a>
         </li>
-    </ul>    
+    </ul>
     <ul>
         <li class="item-menu {% if request.endpoint == 'usuario_route.listar_usuarios' %}ativo{% endif %}">
             <a href="{{ url_for('usuario_route.listar_usuarios') }}">

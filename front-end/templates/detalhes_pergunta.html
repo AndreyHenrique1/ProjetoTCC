@@ -5,15 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ pergunta.titulo }}</title>
+
     <!-- Link do CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
+
     <!-- Link do bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <!-- Link do favicon -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
         type="image/x-icon">
+        
     <!-- Link do Quill.js, editor de texto online -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
@@ -49,7 +53,7 @@
                 {% if current_user.codigo == pergunta.codUsuario %}
                 <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal"
                     style="color: black;">
-                    <i class="bi bi-pencil-square" style="font-size: 25px;"></i>
+                    <i class="bi bi-pencil-square icon_roxo" style="font-size: 25px;"></i>
                 </button>
 
                 <!-- Modal de editar pergunta -->
@@ -87,7 +91,7 @@
                     <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
                         data-bs-target="#modalExcluirPergunta{{ pergunta.codigo }}"
                         style="border: none; background: none; color: black;">
-                        <i class="bi bi-trash" style="font-size: 25px; margin-left: 10px;" id="Excluir"></i>
+                        <i class="bi bi-trash icon_vermelho" style="font-size: 25px; margin-left: 10px;" id="Excluir"></i>
                     </button>
                 </form>
 
@@ -159,7 +163,6 @@
                     <!-- Esquerda: Foto, Nome e Data -->
                     <div class="d-flex align-items-center">
                         <div class="me-2">
-<<<<<<< HEAD
                             <img src="{{ comentario.usuario_relacionado.foto_perfil if comentario.usuario_relacionado and comentario.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
                                 alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
                         </div>
@@ -167,14 +170,6 @@
                             <p class="mb-1">
                                 <strong>{{ comentario.usuario_relacionado.nomeUsuario if comentario.usuario_relacionado
                                     }}</strong>
-=======
-                            <img src="{{ comentario.usuario_relacionado.foto_perfil }}"
-                            alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
-                        </div>
-                        <div>
-                            <p class="mb-1">
-                                <strong>{{ comentario.usuario_relacionado.nomeUsuario }}</strong>
->>>>>>> 52bb0200d9c286799445f8ec698ef69cbb0ddd1b
                                 {% if comentario.denuncias|length > 0 %}
                                 <button class="badge bg-danger text-white" style="margin-left: 10px; border: 0px;"
                                     data-bs-toggle="modal"
@@ -197,7 +192,7 @@
                     <form action="{{ url_for('pergunta_route.like_comentario', comentario_id=comentario.codigo) }}"
                         method="POST" style="display:inline;">
                         <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
-                            <i class="bi bi-hand-thumbs-up" style="font-size: 20px;"></i>
+                            <i class="bi bi-hand-thumbs-up icon_roxo" style="font-size: 20px;"></i>
                         </button>
                     </form>
                     <span>{{ comentario.quantidade_likes }}</span> <!-- Exibe a quantidade de likes -->
@@ -206,7 +201,7 @@
                     <form action="{{ url_for('pergunta_route.deslike_comentario', comentario_id=comentario.codigo) }}"
                         method="POST" style="display:inline;">
                         <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
-                            <i class="bi bi-hand-thumbs-down" style="font-size: 20px;"></i>
+                            <i class="bi bi-hand-thumbs-down icon_vermelho" style="font-size: 20px;"></i>
                         </button>
                     </form>
                     <span>{{ comentario.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
