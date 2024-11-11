@@ -23,8 +23,14 @@ window.onload = function() {
             case "deslike_realizado":
                 alert("Deslike realizado com sucesso!!!");
                 break;
+            case 'comentario_realizado':
+                alert("Comentário realizado com sucesso!!!")
             case "comentario_excluido":
                 alert("Comentário excluído com sucesso!!!")
+            case "blog_enviado":
+                alert("Seu blog foi enviado com sucesso!!!")
+            case "blog_editado":
+                alert("Seu blog foi editado com sucesso!!!")
             default:
                 break;
         }

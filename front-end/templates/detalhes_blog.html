@@ -39,8 +39,11 @@
             <!-- Esquerda: Foto, Nome e Data -->
             <div class="d-flex align-items-center">
                 <div class="p-2">
-                    <img src="{{ blog.usuario_relacionado.foto_perfil if blog.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                        alt="Foto de Perfil" width="70" height="70" class="rounded-circle">
+                    <a
+                        href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=blog.usuario_relacionado.codigo) }}">
+                        <img src="{{ blog.usuario_relacionado.foto_perfil if blog.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                            alt="Foto de perfil" width="70" height="70" class="rounded-circle mb-3">
+                    </a>
                 </div>
                 <div class="p-2">
                     <p class="mb-0"><strong>{{ blog.usuario_relacionado.nomeUsuario }}</strong></p>
@@ -125,7 +128,8 @@
                         <i class="bi bi-hand-thumbs-up icon_roxo" style="font-size: 25px; margin-right: 10px;"></i>
                     </button>
                 </form>
-                <span style="margin-right: 12px;">{{ blog.quantidade_likes }}</span> <!-- Exibe a quantidade de likes -->
+                <span style="margin-right: 12px;">{{ blog.quantidade_likes }}</span>
+                <!-- Exibe a quantidade de likes -->
 
                 <form action="{{ url_for('blog_route.deslike_blog', blog_id=blog.codigo) }}" method="POST"
                     style="display:inline;">
@@ -133,7 +137,8 @@
                         <i class="bi bi-hand-thumbs-down icon_vermelho" style="font-size: 25px; margin-left: 10px;"></i>
                     </button>
                 </form>
-                <span style="margin-left: 10px;">{{ blog.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
+                <span style="margin-left: 10px;">{{ blog.quantidade_deslikes }}</span>
+                <!-- Exibe a quantidade de deslikes -->
                 {% endif %}
 
                 <!-- Botão de Denunciar - visível apenas para usuários não proprietários do blog -->
@@ -216,8 +221,11 @@
                     <!-- Esquerda: Foto, Nome e Data -->
                     <div class="d-flex align-items-center">
                         <div class="me-2">
-                            <img src="{{ comentario.usuario_relacionado.foto_perfil if comentario.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                                alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
+                            <a
+                                href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=blog.usuario_relacionado.codigo) }}">
+                                <img src="{{ blog.usuario_relacionado.foto_perfil if blog.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                                    alt="Foto de perfil" width="50" height="50" class="rounded-circle mb-3">
+                            </a>
                         </div>
                         <div>
                             <p class="mb-1">

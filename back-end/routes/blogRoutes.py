@@ -122,7 +122,7 @@ def criar_blog():
         db.session.commit()
 
         # Redireciona para a página de lista de blogs
-        return redirect(url_for('blog_route.listar_blogs'))
+        return redirect(url_for('blog_route.listar_blogs', sucesso="blog_enviado"))
 
     categorias = Categoria.query.all()
     etiquetas = Etiqueta.query.all()
@@ -142,7 +142,7 @@ def editar_blog(blog_id):
         blog.titulo = request.form['titulo']
         blog.descricao = request.form['descricao']
         db.session.commit()
-        return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
+        return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id, sucesso="blog_editado"))
 
     return render_template('editar_blog.html', blog=blog)
 

@@ -38,16 +38,17 @@
     <main>
         <ul>
             {% for notificacao in notificacoes %}
-            <li id="notificacao-{{ notificacao.codigo }}">
-                {{ notificacao.mensagem }} - <em>{{ notificacao.data_criacao.strftime('%d-%m-%Y %H:%M') }}</em>
-                <form action="{{ url_for('notificacao_route.deletar_notificacao', notificacao_id=notificacao.codigo) }}" method="POST" 
-                    onsubmit="deletarNotificacao({{ notificacao.codigo }}); return false;" style="display:inline;">
-                    <button type="submit" class="btn btn-link">Marcar como lida</button>
-                </form>
-
-                <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=notificacao.codPergunta) }}" 
-                   class="btn btn-link">Ver Pergunta</a>
-            </li>
+            <div class="pergunta-item">
+                <li id="notificacao-{{ notificacao.codigo }}">
+                    {{ notificacao.mensagem }} - <em>{{ notificacao.data_criacao.strftime('%d/%m/%Y') }}</em>
+                    <form action="{{ url_for('notificacao_route.deletar_notificacao', notificacao_id=notificacao.codigo) }}" method="POST"
+                        onsubmit="deletarNotificacao({{ notificacao.codigo }}); return false;" style="display:inline;">
+                        <button type="submit" class="btn btn-link">Marcar como lida</button>
+                    </form>
+                    <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=notificacao.codPergunta) }}"
+                       class="btn btn-link">Ver Pergunta</a>
+                </li>
+            </div>
             {% endfor %}
         </ul>
     </main>

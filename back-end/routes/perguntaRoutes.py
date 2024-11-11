@@ -139,7 +139,7 @@ def comentarios_pergunta(pergunta_id):
                 enviar_notificacao(pergunta.codUsuario, mensagem, link_pergunta, pergunta.codigo)
 
 
-            return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id))
+            return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id, sucesso="comentario_realizado"))
 
     comentarios = comentariosPerguntas.query.filter_by(codPergunta=pergunta_id).all()
 
