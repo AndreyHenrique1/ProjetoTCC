@@ -220,6 +220,9 @@ def excluir_comentario_blog(comentario_id):
         return redirect(url_for('home.homePergunta'))
 
     try:
+        # Excluir registros relacionados na tabela 'likes_deslikes'
+        db.session.query(Likes_deslikes).filter(Likes_deslikes.codComentarioBlog == comentario_id).delete()
+
         # Excluir comentario do blog
         db.session.delete(comentario)
         db.session.commit()
@@ -229,6 +232,7 @@ def excluir_comentario_blog(comentario_id):
         db.session.rollback()
 
     return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog, sucesso="comentario_excluido"))
+
 
 # Rota para aparecer as etiquetas no banco de dados ao clicar no input
 @blog_route.route('/etiquetas_iniciais')

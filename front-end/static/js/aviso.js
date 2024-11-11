@@ -25,12 +25,16 @@ window.onload = function() {
                 break;
             case 'comentario_realizado':
                 alert("Comentário realizado com sucesso!!!")
+                break;
             case "comentario_excluido":
                 alert("Comentário excluído com sucesso!!!")
+                break;
             case "blog_enviado":
                 alert("Seu blog foi enviado com sucesso!!!")
+                break;
             case "blog_editado":
                 alert("Seu blog foi editado com sucesso!!!")
+                break;
             default:
                 break;
         }

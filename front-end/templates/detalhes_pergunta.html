@@ -102,16 +102,23 @@
                 <!-- Modal de confirmação de exclusão da pergunta -->
                 <div class="modal fade" id="modalExcluirPergunta{{ pergunta.codigo }}" tabindex="-1"
                     aria-labelledby="modalExcluirLabel{{ pergunta.codigo }}" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="modalExcluirLabel{{ pergunta.codigo }}">Excluir Pergunta?
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="modalExcluirLabel{{ pergunta.codigo }}">
+                                    Excluir pergunta?
                                 </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                    aria-label="Fechar"></button>
                             </div>
                             <div class="modal-body">
-                                Você quer mesmo excluir a pergunta <strong>"{{ pergunta.titulo }}"</strong> ?
+                                <p class="fw-bold text-danger">Atenção!</p>
+                                <p>Você está prestes a excluir permanentemente a pergunta:</p>
+                                <blockquote class="blockquote border-start border-danger ps-3">
+                                    <p class="mb-0">“{{ pergunta.titulo }}”</p>
+                                </blockquote>
+                                <p class="mt-3">Essa ação não pode ser desfeita. Tem certeza de que deseja prosseguir?
+                                </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary"
@@ -119,7 +126,7 @@
                                 <form
                                     action="{{ url_for('pergunta_route.excluir_pergunta', pergunta_id=pergunta.codigo) }}"
                                     method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                    <button type="submit" class="btn btn-danger">Sim, excluir</button>
                                 </form>
                             </div>
                         </div>
@@ -167,11 +174,8 @@
                     <!-- Esquerda: Foto, Nome e Data -->
                     <div class="d-flex align-items-center">
                         <div class="me-2">
-                            <a
-                                href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=pergunta.usuario_relacionado.codigo) }}">
-                                <img src="{{ pergunta.usuario_relacionado.foto_perfil if pergunta.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                                    alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
-                            </a>
+                            <img src="{{ comentario.usuario_relacionado.foto_perfil if comentario.usuario_relacionado and comentario.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                                alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
                         </div>
                         <div>
                             <p class="mb-1">
@@ -234,22 +238,32 @@
                 <!-- Modal para ver as denúncias -->
                 <div class="modal fade" id="modalVerDenuncias{{ comentario.codigo }}" tabindex="-1"
                     aria-labelledby="modalDenunciasLabel{{ comentario.codigo }}" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Comentário denunciado!!!</h5>
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="modalDenunciasLabel{{ comentario.codigo }}">
+                                    Denúncias sobre o comentário
+                                </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Fechar"></button>
                             </div>
                             <div class="modal-body">
-                                <ul>
+                                <p class="mb-3 text-muted">
+                                    Este comentário recebeu denúncias. Verifique abaixo os detalhes da denúncia
+                                </p>
+                                <ul class="list-group">
                                     {% if comentario.denuncias|length > 0 %}
                                     {% for denuncia in comentario.denuncias %}
-                                    <li>{{ denuncia.descricao | safe }} - {{ denuncia.data_criacao.strftime('%d/%m/%y')
-                                        }}</li>
+                                    <li class="list-group-item">
+                                        <p class="mb-1"><strong>Motivo:</strong> {{ denuncia.descricao | safe }}</p>
+                                        <small class="text-muted">Denunciado em: {{
+                                            denuncia.data_criacao.strftime('%d/%m/%Y') }}</small>
+                                    </li>
                                     {% endfor %}
                                     {% else %}
-                                    <li>Nenhuma denúncia registrada para este comentário.</li>
+                                    <li class="list-group-item text-center text-muted">
+                                        Nenhuma denúncia registrada para este comentário.
+                                    </li>
                                     {% endif %}
                                 </ul>
                             </div>
@@ -260,31 +274,43 @@
                     </div>
                 </div>
 
+
                 <!-- Modal de Denunciar -->
                 <div class="modal fade" id="modalDenunciar{{ comentario.codigo }}" tabindex="-1"
                     aria-labelledby="modalDenunciaLabel{{ comentario.codigo }}" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="modalDenunciaLabel{{ comentario.codigo }}">Denunciar
-                                    comentário?</h5>
+                            <div class="modal-header bg-warning">
+                                <h5 class="modal-title" id="modalDenunciaLabel{{ comentario.codigo }}">
+                                    Denunciar comentário
+                                </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Fechar"></button>
                             </div>
                             <div class="modal-body">
+                                <p class="mb-3 text-muted">
+                                    Agradecemos por ajudar a manter nossa comunidade segura e confiável. Use este
+                                    formulário para relatar comentários com conteúdo abusivo, ofensivo ou informações
+                                    incorretas.
+                                </p>
                                 <form
                                     action="{{ url_for('denuncia_route.denunciar_comentario', comentario_id=comentario.codigo) }}"
                                     method="POST">
                                     <div class="form-group">
-                                        <label for="descricao">Explique o motivo da denúncia:</label>
+                                        <label for="descricao_denuncia" class="form-label">Motivo da denúncia:</label>
                                         <textarea class="form-control" id="descricao_denuncia" name="descricao_denuncia"
-                                            rows="4" required></textarea>
+                                            rows="4" required
+                                            placeholder="Explique por que este comentário é inadequado ou falso..."></textarea>
                                     </div>
+                                    <small class="text-muted d-block mt-2">
+                                        Todas as denúncias são analisadas por nossos moderadores. Relatos falsos ou sem
+                                        fundamento podem levar a penalidades.
+                                    </small>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary"
                                     data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-danger">Denunciar</button>
+                                <button type="submit" class="btn btn-danger">Enviar Denúncia</button>
                                 </form>
                             </div>
                         </div>

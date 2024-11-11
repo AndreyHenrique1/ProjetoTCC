@@ -1,3 +1,4 @@
+# Certifique-se de que a classe 'ComentariosPerguntas' está definida corretamente antes de ser usada.
 from database.db import db
 from datetime import datetime
 
@@ -14,10 +15,11 @@ class Likes_deslikes(db.Model):
     data = db.Column(db.TIMESTAMP, default=datetime.utcnow)
 
     # Relacionamentos com tabelas
-    comentario_pergunta = db.relationship('comentariosPerguntas', backref='likes_relacionados_comentarios', lazy=True)
-    comentario_blog = db.relationship('comentariosBlog', backref='likes_relacionados_blog', lazy=True)  # Relacionamento corrigido
+    comentario_pergunta = db.relationship('ComentariosPerguntas', backref='likes_relacionados_comentarios', lazy=True)
+    comentario_blog = db.relationship('ComentariosBlog', backref='likes_relacionados_blog', lazy=True)
     blog = db.relationship('Blog', backref='likes_relacionados_blog', lazy=True)
     usuario = db.relationship('Usuario', backref='likes_relacionados_usuario', lazy=True)
+    comentario = db.relationship('ComentariosBlog', backref='likes_deslikes', cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<Likes_deslikes {self.codigo}>'

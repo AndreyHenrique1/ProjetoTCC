@@ -39,11 +39,8 @@
             <!-- Esquerda: Foto, Nome e Data -->
             <div class="d-flex align-items-center">
                 <div class="p-2">
-                    <a
-                        href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=blog.usuario_relacionado.codigo) }}">
-                        <img src="{{ blog.usuario_relacionado.foto_perfil if blog.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                            alt="Foto de perfil" width="70" height="70" class="rounded-circle mb-3">
-                    </a>
+                    <img src="{{ blog.usuario_relacionado.foto_perfil if blog.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                        alt="Foto de Perfil" width="70" height="70" class="rounded-circle">
                 </div>
                 <div class="p-2">
                     <p class="mb-0"><strong>{{ blog.usuario_relacionado.nomeUsuario }}</strong></p>

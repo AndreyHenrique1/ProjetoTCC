@@ -72,7 +72,7 @@ def editar_pergunta(pergunta_id):
         pergunta.titulo = request.form['titulo']
         pergunta.descricao = request.form['descricao']
         db.session.commit()
-        return redirect(url_for('pergunta_route.pergunta_detalhe', pergunta_id=pergunta_id, sucesso="pergunta_editada"))
+        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id, sucesso="pergunta_editada"))
 
 # Rota para excluir a pergunta
 @pergunta_route.route('/pergunta/<int:pergunta_id>/excluir', methods=['POST'])
