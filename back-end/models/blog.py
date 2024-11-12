@@ -19,6 +19,7 @@ class Blog(db.Model):
     # Relacionamentos de tabelas
     usuario_relacionado = db.relationship('Usuario', back_populates='blog_relacionado')
     categoria_relacionada = db.relationship('Categoria', backref='blogs', lazy=True)
+    denuncia_relacionada = db.relationship('Denuncia', backref='blogs', lazy=True)
 
     # Propriedade para contar likes
     @property

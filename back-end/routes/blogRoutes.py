@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
 from database.db import db
 from models.blog import Blog
 from models.comentariosBlog import comentariosBlog
@@ -180,12 +180,18 @@ def excluir_blog(blog_id):
     # Comita as mudanças para as associações e etiquetas processadas
     db.session.commit()
 
+    # Excluir registros de `likes_deslikes` antes de excluir os comentários
+    comentarios = comentariosBlog.query.filter_by(codBlog=blog.codigo).all()
+    for comentario in comentarios:
+        Likes_deslikes.query.filter_by(codComentarioBlog=comentario.codigo).delete()
+
     # Excluindo os comentários associados ao blog
     comentariosBlog.query.filter_by(codBlog=blog.codigo).delete()
 
     db.session.delete(blog)
     db.session.commit()
-    return redirect(url_for('blog_route.listar_blogs'))
+
+    return redirect(url_for('blog_route.listar_blogs', sucesso="blog_excluido"))
 
 # Rota comentários do blog
 @blog_route.route('/blog/<int:blog_id>', methods=['GET', 'POST'])
@@ -203,9 +209,9 @@ def comentario_blog(blog_id):
             db.session.add(novo_comentario)
             db.session.commit()
 
-            return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
+            return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id, sucesso="comentario_realizado"))
 
-    comentarios = comentariosBlog.query.filter_by(codBlog=blog_id).all()  # Busca os comentários relacionados ao blog
+    comentarios = comentariosBlog.query.filter_by(codBlog=blog_id).all()  
 
     return render_template('detalhes_blog.html', blog=blog, comentarios=comentarios)
 

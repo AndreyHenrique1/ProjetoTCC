@@ -79,10 +79,10 @@
         </div>
     </header>
 
-    <!--Chamando o arquivo menu_lateral.html-->
-    {% include 'menu_lateral.html' %}
-
     <main class="main-conteudo">
+        <!--Chamando o arquivo menu_lateral.html-->
+        {% include 'menu_lateral.html' %}
+
         <!--Se o usuário estiver logado-->
         {% if current_user.is_authenticated %}
         <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_roxo">Adicionar pergunta</a>

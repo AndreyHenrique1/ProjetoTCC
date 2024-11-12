@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,8 +64,11 @@
                     <!-- Exibe a classificação -->
                     <td>{{ loop.index }}</td>
                     <td style="margin-right: 50px;">
-                        <img src="{{ usuario.foto_perfil if usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                            alt="Foto de Perfil" width="50" height="50" class="rounded-circle">
+                        <a
+                            href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=usuario.codigo if usuario else 0) }}">
+                            <img src="{{ usuario.foto_perfil if usuario.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                                alt="Foto de perfil do usuário" width="50" height="50" class="rounded-circle mb-3">
+                        </a>
                     </td>
                     <td>{{ usuario.nomeUsuario }}</td>
                     <td>{{ usuario.quantidadePontos }}</td>
@@ -81,4 +85,5 @@
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 
 </body>
+
 </html>

@@ -14,8 +14,7 @@ homePergunta_route = Blueprint('home', __name__, template_folder='../../front-en
 def homePergunta():
     categorias_selecionadas = request.args.getlist('categorias')
     etiquetas_selecionadas = request.args.get('etiquetas')
-    ordenar_por = request.args.get('ordenar', 'recentes')  # Define 'recentes' como padrão
-
+    ordenar_por = request.args.get('ordenar', 'recentes')  
     perguntas = Pergunta.query  
 
     # Filtra por categorias

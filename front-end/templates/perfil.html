@@ -20,6 +20,9 @@
     <!--Link do favicoon-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
         type="image/x-icon">
+
+    <!--Arquivo JS dos avisos-->
+    <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
 </head>
 
 <body>
@@ -37,10 +40,10 @@
         </div>
     </header>
 
-    <!--Chamando o arquivo menu_lateral.html-->
-    {% include 'menu_lateral.html' %}
-
     <main>
+        <!--Chamando o arquivo menu_lateral.html-->
+        {% include 'menu_lateral.html' %}
+
         <!--Foto do usuário-->
         <div class="d-flex align-items-center mb-4 justify-content-between position-relative">
             <div class="d-flex align-items-center">
@@ -68,7 +71,7 @@
                         {% endif %}
                     </div>
                     <!--Desde quando o usuário está no DevSolve-->
-                    <p>Membro do DevSolve desde </p>
+                    <p>Membro do DevSolve desde {{ usuario.data_criacao.strftime('%Y') }}</p>
                     <!--Contagem de suas estatisticas-->
                     <div class="d-flex gap-3">
                         <div>{{ perguntas_count or 0 }} Perguntas</div>
@@ -117,7 +120,7 @@
                                 <!--Sobre Você-->
                                 <label for="sobre">Sobre você:</label>
                                 <textarea name="sobre" id="sobre" class="form-control"
-                                    style="height: 200px;">{{ current_user.sobre }}</textarea>
+                                    style="height: 200px;" placeholder="Escreva sobre sua trajetória profissional, as linguagens de programação que você estudou ou com as quais trabalha atualmente...">{{ sobre }}</textarea>
                             </div>
                             <!--Adicionar foto-->
                             <label for="imagem">Selecione uma nova foto:</label>

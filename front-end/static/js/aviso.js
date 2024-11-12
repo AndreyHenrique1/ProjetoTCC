@@ -35,6 +35,27 @@ window.onload = function() {
             case "blog_editado":
                 alert("Seu blog foi editado com sucesso!!!")
                 break;
+            case "blog_excluido":
+                alert("Seu blog foi excluído com sucesso!!!")
+                break;
+            case "comentario_denunciado":
+                alert("O comentário foi denunciado com sucesso! Obrigado por ajudar a manter nossa comunidade segura e confiável!!!")
+                break;
+            case "comentario_ja_denunciado":
+                alert("Você já denunciou este comentário!! Você não pode denunciar novamente!!")
+                break;
+            case "blog_denunciado":
+                alert("Blog denunciado com sucesso! Obrigado por ajudar a manter nossa comunidade segura e confiável!!!")
+                break;
+            case "blog_ja_denunciado":
+                alert("Você já denunciou este blog!! Você não pode denunciar novamente!!!")
+                break;
+            case "usuario_cadastrado":
+                alert("Cadastro realizado com sucesso!!!")
+                break;
+            case "usuario_editado":
+                alert("Usuário editado com sucesso!!!")
+                break;
             default:
                 break;
         }
