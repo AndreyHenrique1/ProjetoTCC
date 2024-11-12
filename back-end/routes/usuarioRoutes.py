@@ -8,6 +8,7 @@ from models.blog import Blog
 from models.perguntasEtiquetas import PerguntasEtiquetas
 from models.etiqueta import Etiqueta
 from models.comentariosPerguntas import comentariosPerguntas
+from models.denuncia import Denuncia
 import cloudinary.uploader
 from collections import Counter
 from sqlalchemy import desc
@@ -46,6 +47,7 @@ def perfil():
     perguntas_count = Pergunta.query.filter_by(codUsuario=current_user.codigo).count()
     blogs_count = Blog.query.filter_by(codUsuario=current_user.codigo).count()
     respostas_count = comentariosPerguntas.query.filter_by(codUsuario=current_user.codigo).count()
+    denuncias_count = Denuncia.query.filter_by(codUsuario=current_user.codigo).count()
 
     # Obtém o ranking e a medalha do usuário atual
     ranking, medalha = obter_ranking_e_medalha(current_user.codigo)
@@ -58,6 +60,7 @@ def perfil():
         perguntas_count=perguntas_count,
         blogs_count=blogs_count,
         respostas_count=respostas_count,
+        denuncias_count=denuncias_count,
         sobre=sobre_usuario,
         ranking=ranking,
         medalha=medalha,
@@ -94,7 +97,7 @@ def editar_perfil():
 
     db.session.commit()
 
-    return redirect(url_for('usuario_route.perfil'))
+    return redirect(url_for('usuario_route.perfil', sucesso="usuario_editado"))
 
 # Rota da lista de usuários
 @usuario_route.route('/usuarios')

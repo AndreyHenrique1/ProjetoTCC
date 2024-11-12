@@ -2,6 +2,7 @@ from database.db import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from extensions import login_manager
+from datetime import datetime
 
 # Carrega o usuário logado
 @login_manager.user_loader
@@ -20,6 +21,7 @@ class Usuario(db.Model, UserMixin):
     quantidadePontos = db.Column(db.Integer, default=0)
     foto_perfil = db.Column(db.Text, nullable=True)
     cor_avatar = db.Column(db.String(7), nullable=True)
+    data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relacionamentos de tabelas
     blog_relacionado = db.relationship("Blog", back_populates="usuario_relacionado")

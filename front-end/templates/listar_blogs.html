@@ -176,15 +176,14 @@
                             </a>
                             <p class="card-text">{{ blog.descricao[:40] | safe }}{% if blog.descricao|length > 40
                                 %}...{% endif %} Leia mais</p>
-                            <p>{{ blog.categoria_relacionada.nome }}</p>
+                            <p><i class="bi bi-bookmark-fill icon_categoria"></i>{{ blog.categoria_relacionada.nome }}</p>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <h2 style="text-align: center;">Não encontramos resultados para '{{ pesquisa }}'. Experimente ajustar os
-                termos da pesquisa ou explore outras perguntas!</h2>
+            <h2 style="text-align: center;">Não encontramos resultados para '{{ pesquisa }}'. Experimente ajustar os termos da pesquisa ou explore outras perguntas!</h2>
             {% endif %}
         </div>
         {% if pesquisa %}

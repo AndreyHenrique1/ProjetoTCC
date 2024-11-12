@@ -15,6 +15,7 @@ class comentariosBlog(db.Model):
     # Relacionamentos de tabelas
     usuario_relacionado = db.relationship('Usuario', backref='comentariosBlog', lazy=True)
     blog_relacionado = db.relationship('Blog', backref='comentarios', lazy=True)
+    likes_relacionados = db.relationship('Likes_deslikes', backref='likes_comentarios_blog', lazy=True)
 
     # Contagem de likes
     @property

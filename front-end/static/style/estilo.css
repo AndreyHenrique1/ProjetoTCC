@@ -507,7 +507,11 @@ nav ul {
     text-decoration: underline;
 }
 
-
+/*Icone categoria*/
+.icon_categoria {
+    color: var(--cor3);
+    margin-right: 5px;
+}
 
 /*Ficar roxo quando o mouse estiver no icone*/
 .icon_roxo:hover {

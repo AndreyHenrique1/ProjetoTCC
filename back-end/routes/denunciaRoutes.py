@@ -19,16 +19,14 @@ def denunciar_comentario(comentario_id):
         # Verifica se já existe uma denúncia para este comentário por este usuário
         existing_denuncia = Denuncia.query.filter_by(codComentario=comentario_id, codUsuario=current_user.codigo).first()
         if existing_denuncia:
-            flash('Você já denunciou este comentário.', 'warning')
-            return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
+            return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="comentario_ja_denunciado"))
         
         # Cria uma nova denúncia para o comentário
         nova_denuncia = Denuncia(codComentario=comentario_id, codPergunta=comentario.codPergunta, codUsuario=current_user.codigo, descricao=descricao_denuncia)
         db.session.add(nova_denuncia)
         db.session.commit()
         
-        flash('Denúncia enviada com sucesso!', 'success')
-        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta))
+        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="comentario_denunciado"))
     
     return render_template('detalhes_pergunta.html', comentario=comentario)
 
@@ -44,14 +42,14 @@ def denunciar_blog(blog_id):
         # Verifica se já existe uma denúncia para este blog por este usuário
         existing_denuncia = Denuncia.query.filter_by(codBlog=blog_id, codUsuario=current_user.codigo).first()
         if existing_denuncia:
-            return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
+            return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id, sucesso="blog_ja_denunciado"))
         
         # Cria uma nova denúncia para o blog
         nova_denuncia = Denuncia(codBlog=blog_id, codUsuario=current_user.codigo, descricao=descricao_denuncia)
         db.session.add(nova_denuncia)
         db.session.commit()
         
-        return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id))
+        return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id, sucesso="blog_denunciado"))
     
     return render_template('detalhes_blog.html', blog=blog)
 

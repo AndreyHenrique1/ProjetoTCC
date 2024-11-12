@@ -36,7 +36,7 @@ def cadastrar():
         db.session.add(usuario)
         db.session.commit()
 
-        return redirect(url_for('login_route.login'))
+        return redirect(url_for('login_route.login', sucesso="usuario_cadastrado"))
 
     return render_template("cadastrar_usuario.html")
 

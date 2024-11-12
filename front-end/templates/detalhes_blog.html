@@ -39,8 +39,11 @@
             <!-- Esquerda: Foto, Nome e Data -->
             <div class="d-flex align-items-center">
                 <div class="p-2">
-                    <img src="{{ blog.usuario_relacionado.foto_perfil if blog.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                        alt="Foto de Perfil" width="70" height="70" class="rounded-circle">
+                    <a
+                        href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=blog.usuario_relacionado.codigo) }}">
+                        <img src="{{ blog.usuario_relacionado.foto_perfil if blog.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                            alt="Foto de perfil" width="70" height="70" class="rounded-circle mb-3">
+                    </a>
                 </div>
                 <div class="p-2">
                     <p class="mb-0"><strong>{{ blog.usuario_relacionado.nomeUsuario }}</strong></p>
@@ -94,22 +97,28 @@
                 <!-- Modal de excluir blog -->
                 <div class="modal fade" id="ExcluirBlog{{ blog.codigo }}" tabindex="-1"
                     aria-labelledby="modalExcluirBlogLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header bg-danger text-white">
                                 <h1 class="modal-title fs-5">Excluir blog?</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                Você quer mesmo excluir este blog?
+                                <p class="fw-bold text-danger">Atenção!</p>
+                                <p>Você está prestes a excluir permanentemente o blog:</p>
+                                <blockquote class="blockquote border-start border-danger ps-3">
+                                    <p class="mb-0">“{{ blog.titulo }}”</p>
+                                </blockquote>
+                                <p class="mt-3">Essa ação não pode ser desfeita. Tem certeza de que deseja prosseguir?
+                                </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary"
                                     data-bs-dismiss="modal">Cancelar</button>
                                 <form action="{{ url_for('blog_route.excluir_blog', blog_id=blog.codigo) }}"
                                     method="POST">
-                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                    <button type="submit" class="btn btn-danger">Sim, excluir</button>
                                 </form>
                             </div>
                         </div>
@@ -150,22 +159,32 @@
                 <!-- Modal de Denunciar -->
                 <div class="modal fade" id="modalDenunciar{{ blog.codigo }}" tabindex="-1"
                     aria-labelledby="modalDenunciaLabel{{ blog.codigo }}" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header bg-warning">
                                 <h5 class="modal-title" id="modalDenunciaLabel{{ blog.codigo }}">Denunciar
                                     blog?</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Fechar"></button>
                             </div>
                             <div class="modal-body">
+                                <p class="mb-3 text-muted">
+                                    Agradecemos por ajudar a manter nossa comunidade segura e confiável. Use este
+                                    formulário para relatar blogs com conteúdo abusivo, ofensivo ou informações
+                                    incorretas.
+                                </p>
                                 <form action="{{ url_for('denuncia_route.denunciar_blog', blog_id=blog.codigo) }}"
                                     method="POST">
                                     <div class="form-group">
-                                        <label for="descricao">Explique o motivo da denúncia:</label>
+                                        <label for="descricao">Motivo da denúncia:</label>
                                         <textarea class="form-control" id="descricao_denuncia" name="descricao_denuncia"
-                                            rows="4" required></textarea>
+                                            rows="4"
+                                            placeholder="Explique por que este blog é inadequado ou falso..."></textarea>
                                     </div>
+                                    <small class="text-muted d-block mt-2">
+                                        Todas as denúncias são analisadas por nossos moderadores. Relatos falsos ou sem
+                                        fundamento podem levar a penalidades.
+                                    </small>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary"
@@ -183,7 +202,54 @@
         <br>
 
         <!--Aqui está marcado a categoria do blog, arrumar para aparecer a cor correspondente depois-->
-        <p>Categoria: {{ blog.categoria_relacionada.nome }}</p>
+        <p><i class="bi bi-bookmark-fill icon_categoria"></i>{{ blog.categoria_relacionada.nome }}</p>
+
+        {% if blog.denuncias|length > 0 %}
+        <div data-bs-toggle="modal" data-bs-target="#modalVerDenuncias{{ blog.codigo }}" style="cursor: pointer;">
+            <i class="bi bi-exclamation-triangle-fill me-2" style="font-size: 25px; color:red;"></i>
+            <span>Blog denunciado. Clique aqui para mais detalhes</span>
+        </div>
+
+        <!-- Modal para ver as denúncias -->
+        <div class="modal fade" id="modalVerDenuncias{{ blog.codigo }}" tabindex="-1"
+            aria-labelledby="modalDenunciasLabel{{ blog.codigo }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="modalDenunciasLabel{{ blog.codigo }}">
+                            Denúncias sobre o blog
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-3 text-muted">
+                            Este blog recebeu denúncias. Verifique abaixo os detalhes da denúncia
+                        </p>
+                        <ul class="list-group">
+                            {% if blog.denuncias|length > 0 %}
+                            {% for denuncia in blog.denuncias %}
+                            <li class="list-group-item">
+                                <p class="mb-1"><strong>Motivo:</strong> {{ denuncia.descricao | safe }}</p>
+                                <small class="text-muted">Denunciado em: {{
+                                    denuncia.data_criacao.strftime('%d/%m/%Y') }}</small>
+                            </li>
+                            {% endfor %}
+                            {% else %}
+                            <li class="list-group-item text-center text-muted">
+                                Nenhuma denúncia registrada para este blog.
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <br>
 
         <h1>{{ blog.titulo }}</h1>
 
@@ -219,9 +285,10 @@
                     <div class="d-flex align-items-center">
                         <div class="me-2">
                             <a
-                                href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=blog.usuario_relacionado.codigo) }}">
-                                <img src="{{ blog.usuario_relacionado.foto_perfil if blog.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                                    alt="Foto de perfil" width="50" height="50" class="rounded-circle mb-3">
+                                href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=comentario.usuario_relacionado.codigo if comentario.usuario_relacionado else 0) }}">
+                                <img src="{{ comentario.usuario_relacionado.foto_perfil if comentario.usuario_relacionado and comentario.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
+                                    alt="Foto de perfil do autor do comentário" width="50" height="50"
+                                    class="rounded-circle mb-3">
                             </a>
                         </div>
                         <div>
@@ -305,15 +372,15 @@
                 {% if current_user.codigo == comentario.codUsuario %}
                 <div class="modal fade" id="modalExcluirComentario{{ comentario.codigo }}" tabindex="-1"
                     aria-labelledby="modalExcluirComentarioLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header bg-danger text-white">
                                 <h1 class="modal-title fs-5">Excluir comentário?</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                Você quer mesmo excluir o comentário?
+                                Tem certeza de que deseja excluir este comentário? Esta ação não pode ser desfeita.
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary"
