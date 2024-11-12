@@ -19,11 +19,11 @@ def gerar_resposta_ia(pergunta_texto):
         "Responda de forma clara e técnica. Pergunta: " + pergunta_texto
     )
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "Você é um assistente de IA especializado em programação."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=500
+        max_tokens=1000
     )
     return response['choices'][0]['message']['content'].strip()

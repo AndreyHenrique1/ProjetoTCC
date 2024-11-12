@@ -582,22 +582,6 @@ em {
     margin-top: 8px;
 }
 
-.ia-input button {
-    padding: 10px 20px;
-    font-size: 1em;
-    color: #fff;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-    display: block;
-}
-
-.ia-input button:hover {
-    background-color: #45a049;
-}
-
 /* Estilo para a resposta da IA */
 .ia-resposta {
     margin-top: 20px;
