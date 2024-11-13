@@ -7,8 +7,7 @@
     <title>Chat com IA</title>
 
     <!--Link do favicon-->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
-        type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}" type="image/x-icon">
 
     <!--Arquivo do CSS-->
     <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
@@ -37,13 +36,13 @@
     {% include 'menu_lateral.html' %}
 
     <main>
-        <div class="d-flex align-items-center mb-4 justify-content-between position-relative">
-            <h1>Comece uma conversa</h1>
-                <div id="resposta-container" class="resposta-container"></div>
-                <div class="input-container">
-                    <input type="text" id="input-pergunta" class="input-pergunta" placeholder="Digite sua pergunta aqui">
-                    <input type="submit" value="Enviar" class="btn_roxo">
-                </div>
+        <h1>Comece uma conversa</h1>
+
+        <div id="resposta-container" class="resposta-container"></div>
+        
+        <div class="input-container">
+            <input type="text" id="input-pergunta" class="input-pergunta" placeholder="Digite sua pergunta aqui">
+            <input type="submit" value="Enviar" id="btn-enviar" class="btn_roxo"> <!-- Adiciona o ID aqui -->
         </div>
     </main>
 
