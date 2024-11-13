@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +31,6 @@
         </div>
     </header>
 
-    <!-- Chamando o arquivo menu_lateral.html -->
     {% include 'menu_lateral.html' %}
 
     <main>
@@ -42,11 +40,10 @@
         
         <div class="input-container">
             <input type="text" id="input-pergunta" class="input-pergunta" placeholder="Digite sua pergunta aqui">
-            <input type="submit" value="Enviar" id="btn-enviar" class="btn_roxo"> <!-- Adiciona o ID aqui -->
+            <input type="submit" value="Enviar" id="btn-enviar" class="btn_roxo"> 
         </div>
     </main>
 
-    <!-- JavaScript para enviar a pergunta e atualizar a resposta -->
     <script>
         document.getElementById('btn-enviar').addEventListener('click', enviarPergunta);
 
@@ -54,9 +51,7 @@
             const pergunta = document.getElementById('input-pergunta').value;
             if (!pergunta) return;
 
-            // Exibir um indicador de carregamento 
             const respostaContainer = document.getElementById('resposta-container');
-            respostaContainer.innerHTML += `<p><em>Carregando...</em></p>`;
 
             try {
                 const response = await fetch('/ia', {
@@ -64,18 +59,21 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ pergunta })
                 });
-
+                
                 const data = await response.json();
+                console.log(data); // Verifique a resposta no console do navegador
+
                 respostaContainer.innerHTML += `<p><strong>Pergunta:</strong> ${pergunta}</p><p><strong>Resposta:</strong> ${data.resposta}</p>`;
             } catch (error) {
+                console.error("Erro ao enviar a pergunta:", error);  // Log de erro no console
                 respostaContainer.innerHTML += `<p><strong>Erro:</strong> Não foi possível obter a resposta.</p>`;
             }
 
-            document.getElementById('input-pergunta').value = ''; // Limpar o campo de input
+            document.getElementById('input-pergunta').value = '';
         }
     </script>
 
-    <!--Menu lateral JS-->
+    <!-- Script do menu lateral -->
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
 </html>

@@ -19,10 +19,7 @@ class Likes_deslikes(db.Model):
     comentario_blog = db.relationship('comentariosBlog', backref='likes_relacionados_blog', lazy=True)
     blog = db.relationship('Blog', backref='likes_relacionados_blog', lazy=True)
     usuario = db.relationship('Usuario', backref='likes_relacionados_usuario', lazy=True)
-<<<<<<< HEAD
     comentario = db.relationship('comentariosBlog', backref='likes_deslikes')
-=======
->>>>>>> 7a8ed829e4c8e4d57234a6a76b10f9d4a997ab0e
 
     def __repr__(self):
         return f'<Likes_deslikes {self.codigo}>'
