@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Home - DevSolve</title>
 
     <!--Link do favicoon-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
@@ -42,25 +42,9 @@
         <!-- Ícones e imagem de usuário à direita -->
         <div class="header-right">
             {% if current_user.is_authenticated %}
-
-            <!--Barra de pesquisa-->
-            <form action="{{ url_for('pergunta_route.pergunta_pesquisar') }}" method="POST" class="pesquisar">
-                <input type="search" name="pesquisar" id="inputPesquisar" placeholder="O que você procura?"
-                    autocomplete="on">
-
-                <label for="inputPesquisar">
-                    <span class="icon"></span>
-                </label>
-            </form>
-
             <div class="notificacao">
                 <a href="{{ url_for('notificacao_route.listar_notificacoes') }}">
-                    <i class="bi bi-bell-fill" style="font-size: 25px; color: black; position: relative;">
-                        {% if notificacoes_nao_lidas %}
-                        <!-- Ponto vermelho indicando notificações não lidas -->
-                        <span class="badge-notificacao"></span>
-                        {% endif %}
-                    </i>
+                    <i class="bi bi-bell-fill" style="font-size: 25px; color: black; position: relative;"></i>
                 </a>
             </div>
 
@@ -83,18 +67,27 @@
         <!--Chamando o arquivo menu_lateral.html-->
         {% include 'menu_lateral.html' %}
 
-        <!--Se o usuário estiver logado-->
-        {% if current_user.is_authenticated %}
-        <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_roxo">Adicionar pergunta</a>
-        {% endif %}
+        <!-- Barra de Pesquisa -->
+        <form class="d-flex" role="search" action="{{ url_for('pergunta_route.pergunta_pesquisar') }}" method="POST"
+            style="margin-bottom: 25px;">
+            <input class="input_roxo me-2" type="search" name="pesquisar" id="inputPesquisar"
+                placeholder="O que você procura?" autocomplete="on" aria-label="Pesquisar">
+            <button class="btn_roxo" type="submit">Pesquisar</button>
+        </form>
 
-        <br>
+        <!-- Se o usuário estiver logado -->
+        <div class="mt-3" style="margin-bottom: 25px;">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_roxo">Adicionar pergunta</a>
+            {% endif %}
+        </div>
 
         <!-- Botão de Filtro -->
-        <button type="button" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn_filtro"
-            style="margin-top: 20px;">
-            Filtrar
-        </button>
+        <div class="mt-3">
+            <button type="button" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn_filtro">
+                Filtrar
+            </button>
+        </div>
 
         <!-- Modal para Filtro -->
         <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
@@ -164,7 +157,7 @@
             </div>
         </div>
 
-        <br><br><br>
+        <br>
 
         <!-- Campo de perguntas realizadas pelos usuários -->
         <div class="container_perguntas">
@@ -208,6 +201,9 @@
             {% endif %}
         </div>
     </main>
+
+    {% include 'footer.html' %}
+
 
     <!--Menu lateral JS-->
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>

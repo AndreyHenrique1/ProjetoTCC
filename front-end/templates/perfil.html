@@ -40,49 +40,55 @@
         </div>
     </header>
 
-    <main>
+    <main class="main-conteudo">
         <!--Chamando o arquivo menu_lateral.html-->
         {% include 'menu_lateral.html' %}
 
         <!--Foto do usuário-->
         <div class="d-flex align-items-center mb-4 justify-content-between position-relative">
-            <div class="d-flex align-items-center">
-                <div class="position-relative me-3">
+            <div class="d-flex flex-column flex-sm-row align-items-center">
+                <!-- Foto de Perfil -->
+                <div class="position-relative mb-3 mb-sm-0 me-sm-3">
                     <img src="{{ usuario.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                        alt="Foto de Perfil" width="150" height="150" style="border-radius: 20px;">
+                        alt="Foto de Perfil" width="150" height="150" class="rounded-3">
                 </div>
-
-                <!-- Nome do usuário e estatísticas -->
-                <div>
-                    <div class="d-flex align-items-center">
+            
+                <!-- Informações do usuário -->
+                <div class="text-center text-sm-start">
+                    <div class="d-flex align-items-center justify-content-center justify-content-sm-start mb-2">
                         <h2 class="me-2">{{ usuario.nomeUsuario }}</h2>
-                        <!--Se o usuário for o dono do perfil, poderá editar e fazer o logout-->
+            
+                        <!-- Se o usuário for o dono do perfil, poderá editar e fazer o logout -->
                         {% if current_user.is_authenticated and current_user.codigo == usuario.codigo %}
-                        <!--Icone de Editar-->
-                        <button type="button" class="btn btn-link p-0" style="color: black;" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal">
-                            <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
-                        </button>
-                        <!--Icone de logout-->
-                        <a href="{{ url_for('login_route.logout') }}" class="btn btn-link p-0 ms-2"
-                            style="color: black;">
-                            <i class="bi bi-box-arrow-left" style="font-size: 22px;"></i>
-                        </a>
+                        <div class="d-flex">
+                            <!-- Icone de Editar -->
+                            <button type="button" class="btn btn-link p-0" style="color: black;" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                                <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
+                            </button>
+                            <!-- Icone de Logout -->
+                            <a href="{{ url_for('login_route.logout') }}" class="btn btn-link p-0 ms-2" style="color: black;">
+                                <i class="bi bi-box-arrow-left" style="font-size: 22px;"></i>
+                            </a>
+                        </div>
                         {% endif %}
                     </div>
-                    <!--Desde quando o usuário está no DevSolve-->
-                    <p>Membro do DevSolve desde {{ usuario.data_criacao.strftime('%Y') }}</p>
-                    <!--Contagem de suas estatisticas-->
-                    <div class="d-flex gap-3">
+            
+                    <!-- Desde quando o usuário está no DevSolve -->
+                    <p class="mb-3">Membro do DevSolve desde {{ usuario.data_criacao.strftime('%Y') }}</p>
+            
+                    <!-- Contagem de estatísticas -->
+                    <div class="d-flex justify-content-center justify-content-sm-start gap-3">
                         <div>{{ perguntas_count or 0 }} Perguntas</div>
                         <div>{{ respostas_count or 0 }} Respostas</div>
-                        <div>{{ votos_total or 0 }} Verificados</div>
+                        <div>{{ usuario.votos_verificados or 0 }} Verificados</div>
                         <div>{{ blogs_count or 0 }} Blogs</div>
-                        <div>{{ denuncias_count or 0 }} Denúncias</div>
-                        <div>{{ current_user.quantidadePontos or 0 }} Pontos</div>
+                        <div>{{ usuario.denuncias_count or 0 }} Denúncias</div>
+                        <div>{{ usuario.quantidadePontos or 0 }} Pontos</div>
                     </div>
                 </div>
             </div>
+            
 
             <!-- Medalha de classificação -->
             <div class="position-absolute end-4" style="right: 20px; top: 50%; transform: translateY(-50%);">
@@ -119,8 +125,8 @@
                             <div class="mb-3">
                                 <!--Sobre Você-->
                                 <label for="sobre">Sobre você:</label>
-                                <textarea name="sobre" id="sobre" class="form-control"
-                                    style="height: 200px;" placeholder="Escreva sobre sua trajetória profissional, as linguagens de programação que você estudou ou com as quais trabalha atualmente...">{{ sobre }}</textarea>
+                                <textarea name="sobre" id="sobre" class="form-control" style="height: 200px;"
+                                    placeholder="Escreva sobre sua trajetória profissional, as linguagens de programação que você estudou ou com as quais trabalha atualmente...">{{ sobre }}</textarea>
                             </div>
                             <!--Adicionar foto-->
                             <label for="imagem">Selecione uma nova foto:</label>
@@ -186,5 +192,4 @@
     <!--Link do JS do menu lateral-->
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
-
 </html>

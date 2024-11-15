@@ -26,12 +26,32 @@ body {
     overflow-x: hidden; /* Impede a rolagem horizontal */
 }
 
-@media screen and (max-width: 1250px)
-{
-    /*Menu lateral*/
-    .menu-lateral 
-    {
+/* Esconde o menu lateral em telas menores que 1250px */
+@media (max-width: 1250px) {
+    .menu-lateral {
         display: none;
+        /* Esconde o menu lateral */
+    }
+
+    .menu-lateral.expandir {
+        display: block;
+        /* Exibe o menu lateral quando a classe 'expandir' for adicionada */
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .retangulo {
+        display: none !important;
+    }
+
+    .img {
+        display: none;
+    }
+
+    .formulario form {
+        padding: 30px !important;
+        width: 100% !important;
+        
     }
 }
 
@@ -61,6 +81,24 @@ header {
     align-items: center;
     margin-left: auto;
     gap: 40px;
+}
+
+footer {
+    width: 100%; 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    text-align: center; 
+    padding: 10px;
+}
+
+.icon_ajuda {
+    color: black; 
+    font-size: 30px; 
+    position: fixed; 
+    bottom: 20px; 
+    right: 30px;
+    cursor: pointer;
 }
 
 /*Icone de notificação*/
@@ -417,6 +455,32 @@ nav ul {
     transition: .2s;
 }
 
+/* Botão "Marcar como lida" */
+.btn-marcar-lida {
+    background-color: #fff;
+    color: var(--cor2);
+    border: 2px solid var(--cor2);
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-decoration: none;
+    margin-left: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.btn-marcar-lida:hover {
+    background-color: var(--cor2);
+    color: #fff;
+    box-shadow: 0px 4px 10px rgba(58, 42, 222, 0.2);
+}
+
+.btn-marcar-lida:focus {
+    outline: none;
+    box-shadow: 0px 0px 5px rgba(58, 42, 222, 0.4);
+}
+
 /* Visualização em tempo real */
 #Visualizacao-tempoReal {
     flex: 1;
@@ -602,6 +666,90 @@ em {
     background-color: #f1f1f1;
     padding: 15px;
     border-radius: 4px;
+}
+
+/*Input de lista de usuários*/
+.input_roxo {
+    border: 2px solid #6356e5;
+    border-radius: 25px;
+    padding: 10px;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+    width: 100%;
+}
+
+th,
+td {
+    text-align: center;
+}
+
+
+.btn-outline-success {
+    border-radius: 25px;
+}
+
+/*Tabela de lista de usuários*/
+.table {
+    color: #333;
+    margin-top: 20px;
+}
+
+.table th {
+    background-color: #6356e5;
+    color: #fff;
+    border: none;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f0f0f5;
+}
+
+/**Página de ajuda (explicação do site)/
+/* Estilo para as Seções */
+section {
+    margin-bottom: 40px;
+}
+
+.introducao h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.introducao p, .como-funciona p, .premios-e-beneficios p, .como-moderador p, .beneficios-moderadores p, .como-participar p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+
+.introducao ul li, .como-funciona ul li, .premios-e-beneficios ul li, .como-moderador ul li, .beneficios-moderadores ul li {
+    font-size: 1.1rem;
+}
+
+
+.tabs {
+    margin: 20px 0;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.tabs button {
+    padding: 10px 20px;
+    background-color: var(--cor2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.tabs button.active {
+    background-color: var(--cor3);
 }
 
 

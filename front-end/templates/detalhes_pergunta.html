@@ -24,6 +24,9 @@
 
     <!--Arquivo JS dos avisos-->
     <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
+
+    <!--Arquivo JS da pesquisa de etiquetas-->
+    <script src="{{ url_for('static', filename='js/etiquetas.js') }}"></script>
 </head>
 
 <body>
@@ -73,15 +76,22 @@
                                 <form
                                     action="{{ url_for('pergunta_route.editar_pergunta', pergunta_id=pergunta.codigo) }}"
                                     method="POST">
+                                    <!-- Campo de título -->
                                     <input type="text" name="titulo" id="titulo" class="form-control"
-                                        value="{{ pergunta.titulo }}"><br>
+                                        value="{{ pergunta.titulo }}">
+
+                                    <br>
+
+                                    <!-- Editor de descrição -->
+                                    <label for="descricao">Descrição</label>
                                     <div id="editor-geral" style="height: 300px;">{{ pergunta.descricao | safe }}</div>
                                     <input type="hidden" name="descricao" id="descricao">
-                                    <br>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn_roxo">Salvar alterações</button>
+
+                                    <!-- Botões de ações -->
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn_roxo">Salvar alterações</button>
+                                    </div>
                                 </form>
                             </div>
                         </div>

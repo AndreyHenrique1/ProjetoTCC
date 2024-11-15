@@ -20,6 +20,7 @@ class Blog(db.Model):
     usuario_relacionado = db.relationship('Usuario', back_populates='blog_relacionado')
     categoria_relacionada = db.relationship('Categoria', backref='blogs', lazy=True)
     denuncia_relacionada = db.relationship('Denuncia', backref='blogs', lazy=True)
+    etiqueta = db.relationship('Etiqueta', secondary='blog_etiqueta', backref=db.backref('blogs', lazy='dynamic'))
 
     # Propriedade para contar likes
     @property
@@ -33,8 +34,3 @@ class Blog(db.Model):
 
     def __repr__(self):
         return f'<Blog {self.titulo}>'
-
-
-   
-
-   

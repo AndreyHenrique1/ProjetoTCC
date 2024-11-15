@@ -9,25 +9,25 @@ notificacao_route = Blueprint('notificacao_route', __name__)
 @notificacao_route.route('/notificacoes')
 @login_required
 def listar_notificacoes():
-    # Busca notificações do usuário autenticado, ordenadas por data de criação
-    notificacoes = Notificacao.query.filter_by(codUsuario=current_user.codigo).order_by(Notificacao.data_criacao.desc()).all()
+    # Busca apenas notificações não lidas
+    notificacoes = Notificacao.query.filter_by(codUsuario=current_user.codigo, lida=False).order_by(Notificacao.data_criacao.desc()).all()
     return render_template('notificacoes.html', notificacoes=notificacoes)
 
-# Rota para excluir notificacao
-@notificacao_route.route('/notificacao/<int:notificacao_id>/deletar', methods=['POST'])
-@login_required
-def deletar_notificacao(notificacao_id):
-    notificacao = Notificacao.query.get_or_404(notificacao_id)
+@notificacao_route.route('/notificacao/marcar_como_lida/<int:notificacao_id>', methods=['POST'])
+def marcar_como_lida(notificacao_id):
+    # Encontrando a notificação no banco de dados
+    notificacao = Notificacao.query.get(notificacao_id)
+    
+    if notificacao:
+        # Marcando como lida
+        notificacao.lida = True
+        db.session.commit()  # Persistindo a mudança no banco de dados
+    
+    # Retornando para a lista de notificações
+    return redirect(url_for('notificacao_route.listar_notificacoes'))
 
-    # Caso a notficação não esteja associada ao usuário
-    if notificacao.codUsuario != current_user.codigo:
-        return redirect(url_for('notificacao_route.listar_notificacoes'))
 
-    # Remove a notificação
-    db.session.delete(notificacao) 
-    db.session.commit()
 
-    return redirect(url_for('notificacao_route.listar_notificacoes'))  
 
 
 

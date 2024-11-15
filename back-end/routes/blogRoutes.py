@@ -11,6 +11,7 @@ import cloudinary.uploader
 from sqlalchemy import func
 from models.likes_deslikes import Likes_deslikes
 from models.usuario import Usuario
+from models.notificacao import enviar_notificacao
 
 blog_route = Blueprint('blog_route', __name__)
 
@@ -114,12 +115,18 @@ def criar_blog():
                 db.session.add(etiqueta_objeto)
                 db.session.commit() 
 
-            # Associa a etiqueta à pergunta
+            # Associa a etiqueta ao blog
             nova_pergunta_etiqueta = BlogsEtiquetas(codBlog=novo_blog.codigo, codEtiqueta=etiqueta_objeto.codigo)
             db.session.add(nova_pergunta_etiqueta)
 
-        # Commit final para associar etiquetas e pergunta
+        # Commit final para associar etiquetas e blog
         db.session.commit()
+
+        # Aumentar 3 pontos para o dono do blog
+        usuario_blog = Usuario.query.get(novo_blog.codUsuario)  # Usuário que criou o blog
+        if usuario_blog:
+            usuario_blog.quantidadePontos += 3  # Adiciona 3 pontos
+            db.session.commit()
 
         # Redireciona para a página de lista de blogs
         return redirect(url_for('blog_route.listar_blogs', sucesso="blog_enviado"))
@@ -146,7 +153,7 @@ def editar_blog(blog_id):
 
     return render_template('editar_blog.html', blog=blog)
 
-# Rota para exluir blog
+# Rota para excluir blog
 @blog_route.route('/blogs/<int:blog_id>/excluir', methods=['POST'])
 @login_required
 def excluir_blog(blog_id):
@@ -188,12 +195,19 @@ def excluir_blog(blog_id):
     # Excluindo os comentários associados ao blog
     comentariosBlog.query.filter_by(codBlog=blog.codigo).delete()
 
+    # Diminui 3 pontos do usuário que criou o blog
+    usuario_blog = Usuario.query.get(blog.codUsuario)  # Usuário que criou o blog
+    if usuario_blog:
+        usuario_blog.quantidadePontos -= 3  # Diminui 3 pontos
+        db.session.commit()
+
+    # Excluindo o blog
     db.session.delete(blog)
     db.session.commit()
 
     return redirect(url_for('blog_route.listar_blogs', sucesso="blog_excluido"))
 
-# Rota comentários do blog
+# Rota para comentários do blog
 @blog_route.route('/blog/<int:blog_id>', methods=['GET', 'POST'])
 def comentario_blog(blog_id):
     blog = Blog.query.get_or_404(blog_id)  # Busca o blog ou retorna 404
@@ -209,11 +223,24 @@ def comentario_blog(blog_id):
             db.session.add(novo_comentario)
             db.session.commit()
 
+            # Atualizando a quantidade de pontos do usuário que fez o comentário (1 ponto)
+            usuario_comentario = Usuario.query.get(current_user.codigo)
+            if usuario_comentario:
+                usuario_comentario.quantidadePontos += 1  # Adiciona 1 ponto ao usuário
+                db.session.commit()
+
+            # Enviar notificação para o dono do blog
+            if current_user.codigo != blog.codUsuario:  # Evita notificar o próprio usuário
+                mensagem = f"Novo comentário no seu blog: {blog.titulo}"
+                link_blog = url_for('blog_route.detalhes_blog', blog_id=blog_id)
+                enviar_notificacao(blog.codUsuario, mensagem, link_blog, blog.codigo)
+
             return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id, sucesso="comentario_realizado"))
 
     comentarios = comentariosBlog.query.filter_by(codBlog=blog_id).all()  
 
     return render_template('detalhes_blog.html', blog=blog, comentarios=comentarios)
+
 
 # Rota para excluir comentário do blog
 @blog_route.route('/comentario/<int:comentario_id>/excluir', methods=['POST', 'GET'])
@@ -221,24 +248,29 @@ def comentario_blog(blog_id):
 def excluir_comentario_blog(comentario_id):
     comentario = comentariosBlog.query.get_or_404(comentario_id)
 
-    # Caso não seja o usuário que tenha criado blog, não poderá excluir o comentario do blog
+    # Caso não seja o usuário que tenha criado o comentário, não poderá excluir
     if comentario.codUsuario != current_user.codigo:
         return redirect(url_for('home.homePergunta'))
 
     try:
+        # Decrementa 1 ponto do usuário que excluiu o comentário
+        usuario_comentario = Usuario.query.get(comentario.codUsuario)
+        if usuario_comentario:
+            usuario_comentario.quantidadePontos -= 1  # Remove 1 ponto do usuário
+            db.session.commit()
+
         # Excluir registros relacionados na tabela 'likes_deslikes'
         db.session.query(Likes_deslikes).filter(Likes_deslikes.codComentarioBlog == comentario_id).delete()
 
-        # Excluir comentario do blog
+        # Excluir comentário do blog
         db.session.delete(comentario)
         db.session.commit()
 
     except IntegrityError:
-        # Caso tenha um erro na hora de excluir, volta o comentario novamente
+        # Caso tenha um erro na hora de excluir, volta o comentário novamente
         db.session.rollback()
 
     return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog, sucesso="comentario_excluido"))
-
 
 # Rota para aparecer as etiquetas no banco de dados ao clicar no input
 @blog_route.route('/etiquetas_iniciais')

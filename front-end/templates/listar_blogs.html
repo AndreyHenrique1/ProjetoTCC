@@ -23,6 +23,7 @@
     <!--Arquivo JS dos avisos-->
     <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
 </head>
+
 <body>
     <header>
         <!-- Botão de expandir e logo alinhados à esquerda -->
@@ -40,16 +41,6 @@
         <!-- Ícones e imagem de usuário à direita -->
         <div class="header-right">
             {% if current_user.is_authenticated %}
-
-            <!-- Barra de pesquisa em blogs -->
-            <form action="{{ url_for('blog_route.blog_pesquisar') }}" method="POST" class="pesquisar">
-                <input type="search" name="pesquisar" id="inputPesquisar" placeholder="O que você procura?"
-                    autocomplete="on">
-                <label for="inputPesquisar">
-                    <span class="icon"></span>
-                </label>
-            </form>
-
             <div class="notificacao">
                 <a href="{{ url_for('notificacao_route.listar_notificacoes') }}">
                     <i class="bi bi-bell-fill" style="font-size: 25px; color: black; position: relative;">
@@ -81,120 +72,138 @@
 
     <main class="main-conteudo" style="max-width: 1200px;">
         <div class="conteudo">
-        {% if current_user.is_authenticated %}
-        <a href="{{ url_for('blog_route.criar_blog') }}" class="btn_roxo" style="margin-left: 12px;">Adicionar Blog</a>
-        {% endif %}
 
-        <br>
+            <!-- Barra de Pesquisa -->
+            <form class="d-flex" role="search" action="{{ url_for('blog_route.blog_pesquisar') }}" method="POST"
+                style="margin-bottom: 25px;">
+                <input class="input_roxo me-2" type="search" name="pesquisar" id="inputPesquisar"
+                    placeholder="O que você procura?" autocomplete="on" aria-label="Pesquisar">
+                <button class="btn_roxo" type="submit">Pesquisar</button>
+            </form>
 
-        <!-- Botão de Filtro -->
-        <button type="button" data-bs-toggle="modal" data-bs-target="#filtroBlog" class="btn_filtro"
-            style="margin-top: 20px; margin-left: 12px;">
-            Filtrar
-        </button>
-
-        <!-- Modal para Filtro -->
-        <div class="modal fade" id="filtroBlog" tabindex="-1" aria-labelledby="filtroBloglLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="filterModalLabel">Filtrar Perguntas</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="GET" action="{{ url_for('blog_route.listar_blogs') }}" id="filter-form">
-                            <!-- Filtro por categorias -->
-                            <div class="mb-3">
-                                <h6>Categorias</h6>
-                                <div class="form-check">
-                                    {% for categoria in categorias %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="categorias"
-                                            value="{{ categoria.codigo }}" {% if categoria.codigo in
-                                            request.args.getlist('categorias') %}checked{% endif %}>
-                                        <label class="form-check-label">
-                                            {{ categoria.nome }}
-                                        </label>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-
-                            <div style="position: relative;">
-                                <label for="etiquetas_input">Etiquetas</label>
-                                <input type="text" id="etiquetas_input" name="etiquetas"
-                                    placeholder="Digite uma etiqueta" autocomplete="off" class="form-control">
-                                <ul id="etiquetas_sugestoes" class="sugestoes-lista"></ul>
-                            </div>
-
-                            <br>
-
-                            <!-- Ordenar por -->
-                            <div class="mb-3">
-                                <h6>Ordenar por</h6>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ordenar" value="recentes" {% if
-                                        request.args.get('ordenar')=='recentes' or request.args.get('ordenar') is none
-                                        %}checked{% endif %}>
-                                    <label class="form-check-label">Mais Recentes</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ordenar" value="antigas" {% if
-                                        request.args.get('ordenar')=='antigas' %}checked{% endif %}>
-                                    <label class="form-check-label">Mais Antigas</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ordenar" value="sem_respostas" {%
-                                        if request.args.get('ordenar')=='sem_respostas' %}checked{% endif %}>
-                                    <label class="form-check-label">Sem Respostas</label>
-                                </div>
-                            </div>
-
-                            <!-- Botão Aplicar Filtros -->
-                            <div class="modal-footer">
-                                <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn_roxo">Aplicar Filtros</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <!-- Se o usuário estiver logado -->
+            {% if current_user.is_authenticated %}
+            <div class="mt-3" style="margin-bottom: 25px;">
+                <a href="{{ url_for('blog_route.criar_blog') }}" class="btn_roxo">Adicionar Blog</a>
             </div>
-        </div>
+            {% endif %}
 
-        <!--Cards dos blogs-->
-        <div class="container mt-5">
-            {% if blogs %}
-            <div class="row justify-content-center">
-                {% for blog in blogs %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex">
-                    <div class="card flex-fill">
-                        <img src="{{ blog.fotoCapa_blog if blog.fotoCapa_blog else url_for('static', filename='Imagens/default_blog_cover.png') }}"
-                            alt="Foto da Capa do Blog" class="img-fluid card-img-top">
-                        <div class="card-body d-flex flex-column">
-                            <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}" class="card-title">
-                                <h5>{{ blog.titulo }}</h5>
-                            </a>
-                            <p class="card-text">{{ blog.descricao[:40] | safe }}{% if blog.descricao|length > 40
-                                %}...{% endif %} Leia mais</p>
-                            <p><i class="bi bi-bookmark-fill icon_categoria"></i>{{ blog.categoria_relacionada.nome }}</p>
+            <!-- Botão de Filtro -->
+            <div class="mt-3">
+                <button type="button" data-bs-toggle="modal" data-bs-target="#filtroBlog" class="btn_filtro">
+                    Filtrar
+                </button>
+            </div>
+
+
+            <!-- Modal para Filtro -->
+            <div class="modal fade" id="filtroBlog" tabindex="-1" aria-labelledby="filtroBloglLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="filterModalLabel">Filtrar Perguntas</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="GET" action="{{ url_for('blog_route.listar_blogs') }}" id="filter-form">
+                                <!-- Filtro por categorias -->
+                                <div class="mb-3">
+                                    <h6>Categorias</h6>
+                                    <div class="form-check">
+                                        {% for categoria in categorias %}
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="categorias"
+                                                value="{{ categoria.codigo }}" {% if categoria.codigo in
+                                                request.args.getlist('categorias') %}checked{% endif %}>
+                                            <label class="form-check-label">
+                                                {{ categoria.nome }}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <div style="position: relative;">
+                                    <label for="etiquetas_input">Etiquetas</label>
+                                    <input type="text" id="etiquetas_input" name="etiquetas"
+                                        placeholder="Digite uma etiqueta" autocomplete="off" class="form-control">
+                                    <ul id="etiquetas_sugestoes" class="sugestoes-lista"></ul>
+                                </div>
+
+                                <br>
+
+                                <!-- Ordenar por -->
+                                <div class="mb-3">
+                                    <h6>Ordenar por</h6>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ordenar" value="recentes" {%
+                                            if request.args.get('ordenar')=='recentes' or request.args.get('ordenar') is
+                                            none %}checked{% endif %}>
+                                        <label class="form-check-label">Mais Recentes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ordenar" value="antigas" {%
+                                            if request.args.get('ordenar')=='antigas' %}checked{% endif %}>
+                                        <label class="form-check-label">Mais Antigas</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ordenar"
+                                            value="sem_respostas" {% if request.args.get('ordenar')=='sem_respostas'
+                                            %}checked{% endif %}>
+                                        <label class="form-check-label">Sem Respostas</label>
+                                    </div>
+                                </div>
+
+                                <!-- Botão Aplicar Filtros -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn_cinza" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn_roxo">Aplicar Filtros</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
             </div>
-            {% else %}
-            <h2 style="text-align: center;">Não encontramos resultados para '{{ pesquisa }}'. Experimente ajustar os termos da pesquisa ou explore outras perguntas!</h2>
+
+            <!--Cards dos blogs-->
+            <div class="container mt-5">
+                {% if blogs %}
+                <div class="row justify-content-center">
+                    {% for blog in blogs %}
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex">
+                        <div class="card flex-fill">
+                            <img src="{{ blog.fotoCapa_blog if blog.fotoCapa_blog else url_for('static', filename='Imagens/default_blog_cover.png') }}"
+                                alt="Foto da Capa do Blog" class="img-fluid card-img-top">
+                            <div class="card-body d-flex flex-column">
+                                <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}"
+                                    class="card-title">
+                                    <h5>{{ blog.titulo }}</h5>
+                                </a>
+                                <p class="card-text">{{ blog.descricao[:40] | safe }}{% if blog.descricao|length > 40
+                                    %}...{% endif %} Leia mais</p>
+                                <p><i class="bi bi-bookmark-fill icon_categoria"></i>{{ blog.categoria_relacionada.nome
+                                    }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <h2 style="text-align: center;">Não encontramos resultados para '{{ pesquisa }}'. Experimente ajustar os
+                    termos da pesquisa ou explore outras perguntas!</h2>
+                {% endif %}
+            </div>
+            {% if pesquisa %}
+            <!-- Botão para voltar à lista completa -->
+            <br>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="{{ url_for('blog_route.listar_blogs') }}" class="btn_roxo">Voltar para todos os blogs</a>
+            </div>
             {% endif %}
         </div>
-        {% if pesquisa %}
-        <!-- Botão para voltar à lista completa -->
-        <br>
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="{{ url_for('blog_route.listar_blogs') }}" class="btn_roxo">Voltar para todos os blogs</a>
-        </div>
-        {% endif %}
-        </div>
     </main>
+
+    {% include 'footer.html' %}
 
     <!--Menu lateral JS-->
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
@@ -202,4 +211,5 @@
     <!--Bootstrap-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

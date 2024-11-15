@@ -17,10 +17,9 @@ usuario_route = Blueprint('usuario_route', __name__)
 
 # Função para obter o ranking e a medalha correspondente
 def obter_ranking_e_medalha(user_id):
-    usuarios = Usuario.query.order_by(Usuario.quantidadePontos.desc()).all()
+    usuarios = Usuario.query.order_by(Usuario.quantidadePontos.desc()).all()  # Ordena todos os usuários
     for posicao, usuario in enumerate(usuarios, start=1):
         if usuario.codigo == user_id:
-            # Define a cor da medalha com base na classificação
             if posicao == 1:
                 medalha = {"cor": "gold", "numero": posicao}
             elif posicao == 2:
@@ -30,7 +29,7 @@ def obter_ranking_e_medalha(user_id):
             else:
                 medalha = {"cor": "black", "numero": posicao}
             return posicao, medalha
-    return None, None  
+    return None, None
 
 # Rota para exibir o perfil do usuário
 @usuario_route.route('/perfil')
@@ -103,14 +102,17 @@ def editar_perfil():
 @usuario_route.route('/usuarios')
 def listar_usuarios():
     search_query = request.args.get('search')  # Obtém o nome do usuário a partir da query string
-    if search_query:
-        # Filtra os usuários que contêm a string da pesquisa no nome
-        usuarios = Usuario.query.filter(Usuario.nomeUsuario.ilike(f'%{search_query}%')).order_by(desc(Usuario.quantidadePontos)).all()
-    else:
-        # Se não houver pesquisa, obtém todos os usuários ordenados por quantidade de pontos
-        usuarios = Usuario.query.order_by(desc(Usuario.quantidadePontos)).all()
+    
+    # Obtém todos os usuários ordenados pela quantidade de pontos
+    usuarios = Usuario.query.order_by(desc(Usuario.quantidadePontos)).all()
 
-    return render_template('listar_usuarios.html', usuarios=usuarios)
+    # Se houver uma pesquisa, filtra os usuários pela string de pesquisa no nome
+    if search_query:
+        usuarios = [usuario for usuario in usuarios if search_query.lower() in usuario.nomeUsuario.lower()]
+    
+    # Passa a função 'obter_ranking_e_medalha' para o template
+    return render_template('listar_usuarios.html', usuarios=usuarios, obter_ranking_e_medalha=obter_ranking_e_medalha)
+
 
 # Função para obter as etiquetas mais usadas
 def obter_etiquetas_mais_usadas(user_id):

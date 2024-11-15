@@ -5,7 +5,9 @@ from models.comentariosPerguntas import comentariosPerguntas
 from models.categoria import Categoria
 from models.etiqueta import Etiqueta
 from models.likes_deslikes import Likes_deslikes
+from models.denuncia import Denuncia
 from models.usuario import Usuario
+from models.notificacao import Notificacao
 from models.perguntasEtiquetas import PerguntasEtiquetas
 from models.notificacao import enviar_notificacao
 from flask_login import current_user, login_required
@@ -13,7 +15,6 @@ from sqlalchemy.exc import IntegrityError
 
 pergunta_route = Blueprint('pergunta_route', __name__)
 
-# Rota para criar perguntas e etiquetas recebidas
 @pergunta_route.route('/perguntar', methods=['GET', 'POST'])
 @login_required
 def perguntar():
@@ -30,7 +31,6 @@ def perguntar():
         # Adiciona a pergunta no banco de dados
         nova_pergunta = Pergunta(titulo=titulo, descricao=descricao, codCategoria=codCategoria, codUsuario=codUsuario)
         db.session.add(nova_pergunta)
-        db.session.commit()
 
         # Adicionar etiquetas à pergunta
         for nome_etiqueta in etiquetas_lista:
@@ -40,15 +40,27 @@ def perguntar():
             else:
                 etiqueta_objeto = Etiqueta(nome=nome_etiqueta, popularidade=1)
                 db.session.add(etiqueta_objeto)
-                db.session.commit()
+            
+            # Adicionando a associação PerguntasEtiquetas
             nova_pergunta_etiqueta = PerguntasEtiquetas(codPergunta=nova_pergunta.codigo, codEtiqueta=etiqueta_objeto.codigo)
             db.session.add(nova_pergunta_etiqueta)
+
+        # Commit para salvar pergunta e etiquetas associadas
         db.session.commit()
 
+        # Atualizando a quantidade de pontos do dono da pergunta (dando 3 pontos)
+        dono_pergunta = Usuario.query.get(nova_pergunta.codUsuario)  # Obtém o dono da pergunta
+        if dono_pergunta:  # Verifica se o dono da pergunta existe
+            dono_pergunta.quantidadePontos += 3  # Adiciona 3 pontos ao dono da pergunta
+            db.session.commit()
+
+        # Retorna para a página de detalhes da pergunta com as etiquetas atualizadas
         return redirect(url_for('home.homePergunta', pergunta_id=nova_pergunta.codigo, sucesso="pergunta_enviada"))
 
+    # Carregar todas as etiquetas para exibição no formulário
     etiquetas = Etiqueta.query.all()
     categorias = Categoria.query.all()
+
     return render_template('criar_pergunta.html', categorias=categorias, etiquetas=etiquetas)
 
 # Rota de detalhes da pergunta
@@ -74,15 +86,31 @@ def editar_pergunta(pergunta_id):
         db.session.commit()
         return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id, sucesso="pergunta_editada"))
 
-# Rota para excluir a pergunta
+# Rota para excluir pergunta
 @pergunta_route.route('/pergunta/<int:pergunta_id>/excluir', methods=['POST'])
 @login_required
 def excluir_pergunta(pergunta_id):
     pergunta = Pergunta.query.get_or_404(pergunta_id)
     
-    # Caso a pergunta não seja associada ao usuário, a pergunta não poderá ser editada
+    # Caso a pergunta não seja associada ao usuário, a pergunta não poderá ser excluída
     if pergunta.codUsuario != current_user.codigo:
         return redirect(url_for('home.homePergunta'))
+
+    # Atualizando a quantidade de pontos do dono da pergunta (dando 3 pontos)
+    dono_pergunta = Usuario.query.get(pergunta.codUsuario)  # Obtém o dono da pergunta
+    if dono_pergunta:  # Verifica se o dono da pergunta existe
+        dono_pergunta.quantidadePontos -= 3  # Retira 3 pontos do dono da pergunta
+        db.session.commit()
+
+    # Obter todas as notificações associadas à pergunta
+    notificacoes = Notificacao.query.filter_by(codPergunta=pergunta.codigo).all()
+
+    # Excluir ou atualizar notificações
+    for notificacao in notificacoes:
+        db.session.delete(notificacao)
+
+    # Comita as mudanças para as notificações
+    db.session.commit()
 
     # Obter todas as etiquetas associadas à pergunta
     etiquetas_associadas = PerguntasEtiquetas.query.filter_by(codPergunta=pergunta.codigo).all()
@@ -108,8 +136,24 @@ def excluir_pergunta(pergunta_id):
     # Comita as mudanças para as associações e etiquetas processadas
     db.session.commit()
 
+    # Excluir todas as denúncias relacionadas aos comentários da pergunta
+    denuncias = Denuncia.query.filter_by(codPergunta=pergunta.codigo).all()
+    for denuncia in denuncias:
+        db.session.delete(denuncia)
+
     # Excluir todos os comentários relacionados à pergunta
-    comentariosPerguntas.query.filter_by(codPergunta=pergunta.codigo).delete()
+    comentarios = comentariosPerguntas.query.filter_by(codPergunta=pergunta.codigo).all()
+    for comentario in comentarios:
+        # Exclui as denúncias associadas ao comentário, se existirem
+        denuncias_comentario = Denuncia.query.filter_by(codComentario=comentario.codigo).all()
+        for denuncia in denuncias_comentario:
+            db.session.delete(denuncia)
+
+        # Exclui o comentário
+        db.session.delete(comentario)
+
+    # Comita as mudanças para as denúncias e comentários processados
+    db.session.commit()
 
     # Excluir a pergunta
     db.session.delete(pergunta)
@@ -125,19 +169,25 @@ def comentarios_pergunta(pergunta_id):
     if request.method == 'POST':
         conteudo_comentario = request.form.get('conteudo_comentario')
 
+        # Verificar se o conteúdo do comentário foi fornecido e se o usuário está autenticado
         if conteudo_comentario and current_user.is_authenticated:
             novo_comentario = comentariosPerguntas(
-            comentario=conteudo_comentario, codPergunta=pergunta_id, codUsuario=current_user.codigo
+                comentario=conteudo_comentario, codPergunta=pergunta_id, codUsuario=current_user.codigo
             )
             db.session.add(novo_comentario)
             db.session.commit()
 
-            # Enviar notificação para o dono da pergunta
-            if current_user.codigo != pergunta.codUsuario:  # Evitar notificar o próprio usuário
-                mensagem = f"Você recebeu uma nova resposta para sua pergunta: {pergunta.titulo}"
+            # Aumentar 1 ponto para o dono do comentário
+            usuario_comentario = Usuario.query.get(current_user.codigo)  # Pega o usuário que fez o comentário
+            if usuario_comentario:  # Verifica se o usuário existe
+                usuario_comentario.quantidadePontos += 1  # Adiciona 1 ponto
+                db.session.commit()
+
+            # Enviar notificação para o dono da pergunta, se for um comentário
+            if current_user.codigo != pergunta.codUsuario:  # Evita notificar o próprio usuário
+                mensagem = f"Nova resposta para sua pergunta: {pergunta.titulo}"
                 link_pergunta = url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id)
                 enviar_notificacao(pergunta.codUsuario, mensagem, link_pergunta, pergunta.codigo)
-
 
             return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id, sucesso="comentario_realizado"))
 
@@ -145,23 +195,28 @@ def comentarios_pergunta(pergunta_id):
 
     return render_template('detalhes_pergunta.html', pergunta=pergunta, comentarios=comentarios)
 
-# Rota para excluir comentário
 @pergunta_route.route('/comentario/<int:comentario_id>/excluir', methods=['POST'])
 @login_required
 def excluir_comentario_pergunta(comentario_id):
     comentario = comentariosPerguntas.query.get_or_404(comentario_id)
 
-    # Caso o comentario da pergunta não seja associada ao usuário, o comentario não poderá ser excluido
+    # Caso o comentario da pergunta não seja associada ao usuário, o comentario não poderá ser excluído
     if comentario.codUsuario != current_user.codigo:
         return redirect(url_for('home.homePergunta'))
 
     try:
-        # Excluir comentario
+        # Excluir o comentário
         db.session.delete(comentario)
         db.session.commit()
 
+        # Diminuir 1 ponto do usuário que excluiu o comentário
+        usuario_comentario = Usuario.query.get(comentario.codUsuario)  # Usuário que fez o comentário
+        if usuario_comentario:  # Verifica se o usuário existe
+            usuario_comentario.quantidadePontos -= 1  # Subtrai 1 ponto
+            db.session.commit()
+
     except IntegrityError:
-        # Caso tenha um erro, volta novamente 
+        # Caso tenha um erro, volta novamente
         db.session.rollback()
     
     return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="comentario_excluido"))

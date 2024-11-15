@@ -17,10 +17,10 @@
         </li>
     </ul>
     <ul>
-        <li class="item-menu {% if request.endpoint == 'ia.pagina_ia' %}ativo{% endif %}">
-            <a href="{{ url_for('ia.pagina_ia') }}">
-                <span class="icon"><i class="bi bi-robot"></i></span>
-                <span class="txt-link">I.A</span>
+        <li class="item-menu {% if request.endpoint == 'etiqueta.etiqueta' or request.endpoint == 'etiqueta.mostrar_etiqueta' %}ativo{% endif %}">
+            <a href="{{ url_for('etiqueta.etiqueta') }}">
+                <span class="icon"><i class="bi bi-tags-fill"></i></span>
+                <span class="txt-link">Etiquetas</span>
             </a>
         </li>
     </ul>
