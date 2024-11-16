@@ -195,6 +195,28 @@ def comentarios_pergunta(pergunta_id):
 
     return render_template('detalhes_pergunta.html', pergunta=pergunta, comentarios=comentarios)
 
+@pergunta_route.route('/comentario/<int:comentario_id>/verificar', methods=['POST'])
+def verificar_comentario(comentario_id):
+    comentario = comentariosPerguntas.query.get_or_404(comentario_id)
+    pergunta = comentario.pergunta_relacionada 
+
+    if current_user.codigo != pergunta.codUsuario:
+        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo))
+
+    # Impede que comentários denunciados sejam verificados como a melhor resposta
+    if comentario.denuncias and len(comentario.denuncias) > 0:
+        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo, sucesso="comentario_verificado_denunciado"))
+
+    # Redefine todos os comentários da pergunta para não serem a melhor resposta
+    for c in pergunta.comentarios:
+        c.melhor_resposta = False
+
+    # Define o comentário atual como a melhor resposta
+    comentario.melhor_resposta = True
+    db.session.commit()
+
+    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo, sucesso="comentario_verificado"))
+
 @pergunta_route.route('/comentario/<int:comentario_id>/excluir', methods=['POST'])
 @login_required
 def excluir_comentario_pergunta(comentario_id):

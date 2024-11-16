@@ -198,7 +198,11 @@
                                 {% if comentario.denuncias|length > 0 %}
                                 <button class="badge bg-danger text-white" style="margin-left: 10px; border: 0px;"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modalVerDenuncias{{ comentario.codigo }}">Denunciado</button>
+                                    data-bs-target="#modalVerDenuncias{{ comentario.codigo }}"><i class="bi bi-exclamation-triangle-fill me-1"></i>Denunciado</button>
+                                {% endif %}
+
+                                {% if comentario.melhor_resposta %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Melhor resposta</span>
                                 {% endif %}
                             </p>
                             <p class="mb-1"><em>{{ comentario.data_criacao.strftime('%d/%m/%y') }}</em></p>
@@ -230,6 +234,15 @@
                         </button>
                     </form>
                     <span>{{ comentario.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
+
+                    {% if current_user.codigo == pergunta.codUsuario %}
+                    <form action="{{ url_for('pergunta_route.verificar_comentario', comentario_id=comentario.codigo) }}"
+                        method="POST" style="display: inline;">
+                        <button type="submit" class="btn_melhor_comentario">
+                            Melhor comentário
+                        </button>
+                    </form>
+                    {% endif %}
 
 
                     <!-- Botão de Denunciar -->

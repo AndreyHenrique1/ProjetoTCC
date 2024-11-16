@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blogs</title>
-    <!--Link do CSS-->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
-
     <!--Link do bootstrap-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!--Link do CSS-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
 
     <!--Link do favicoon-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
@@ -165,7 +165,7 @@
                 </div>
             </div>
 
-            <!--Cards dos blogs-->
+            <!-- Cards dos blogs -->
             <div class="container mt-5">
                 {% if blogs %}
                 <div class="row justify-content-center">
@@ -188,11 +188,24 @@
                     </div>
                     {% endfor %}
                 </div>
+
+                <!-- Paginação -->
+                <div class="pagination">
+                    {% for page_num in pagination.iter_pages() %}
+                    {% if page_num %}
+                    <a href="{{ url_for('blog_route.listar_blogs', page=page_num) }}"
+                        class="btn pagination-btn {% if page_num == pagination.page %}active{% endif %}">
+                        {{ page_num }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
                 {% else %}
                 <h2 style="text-align: center;">Não encontramos resultados para '{{ pesquisa }}'. Experimente ajustar os
-                    termos da pesquisa ou explore outras perguntas!</h2>
+                    termos da pesquisa ou explore outros blogs!</h2>
                 {% endif %}
             </div>
+
             {% if pesquisa %}
             <!-- Botão para voltar à lista completa -->
             <br>
@@ -200,7 +213,6 @@
                 <a href="{{ url_for('blog_route.listar_blogs') }}" class="btn_roxo">Voltar para todos os blogs</a>
             </div>
             {% endif %}
-        </div>
     </main>
 
     {% include 'footer.html' %}

@@ -9,13 +9,14 @@ from sqlalchemy import func
 
 homePergunta_route = Blueprint('home', __name__, template_folder='../../front-end/templates')
 
-# Rota home das perguntas
 @homePergunta_route.route('/')
 def homePergunta():
     categorias_selecionadas = request.args.getlist('categorias')
     etiquetas_selecionadas = request.args.get('etiquetas')
-    ordenar_por = request.args.get('ordenar', 'recentes')  
-    perguntas = Pergunta.query  
+    ordenar_por = request.args.get('ordenar', 'recentes')
+    page = request.args.get('page', 1, type=int)  
+    
+    perguntas = Pergunta.query
 
     # Filtra por categorias
     if categorias_selecionadas:
@@ -37,8 +38,12 @@ def homePergunta():
     elif ordenar_por == 'sem_respostas':
         perguntas = perguntas.filter(Pergunta.respostas == 0)
 
-    perguntas = perguntas.all()
-    categorias = Categoria.query.all()
-    etiquetas = Etiqueta.query.all()  
+    # Paginando as perguntas
+    per_page = 10  # Define quantas perguntas você quer por página
+    perguntas_paginadas = perguntas.paginate(page=page, per_page=per_page, error_out=False)  
 
-    return render_template('homePergunta.html', perguntas=perguntas, categorias=categorias, etiquetas=etiquetas)
+    categorias = Categoria.query.all()
+    etiquetas = Etiqueta.query.all()
+
+    return render_template('homePergunta.html', perguntas=perguntas_paginadas.items, 
+                           pagination=perguntas_paginadas, categorias=categorias, etiquetas=etiquetas)

@@ -455,6 +455,19 @@ nav ul {
     transition: .2s;
 }
 
+.btn_melhor_comentario {
+    background-color: var(--cor0);
+    border: 0px;
+    padding: 5px;
+}
+
+.btn_melhor_comentario:hover {
+    background-color: rgba(0, 128, 0, 0.907);
+    border-radius: 20px;
+    color: var(--cor0);
+    transition: .2s;
+}
+
 /* Botão "Marcar como lida" */
 .btn-marcar-lida {
     background-color: #fff;
@@ -751,6 +764,33 @@ section {
 .tabs button.active {
     background-color: var(--cor3);
 }
+
+.pagination-btn {
+    color: #6356e5;
+    border-color: #6356e5;
+}
+
+.pagination-btn.active {
+    background-color: #6356e5;
+    color: #fff;
+}
+
+.pagination-btn:hover{
+    background-color: #6356e5;
+    color: #fff;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; 
+}
+
+.pagination-btn {
+    margin: 0 2px; /* Espaçamento entre os botões */
+}
+
 
 
 

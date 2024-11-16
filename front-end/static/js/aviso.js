@@ -44,6 +44,12 @@ window.onload = function() {
             case "comentario_ja_denunciado":
                 alert("Você já denunciou este comentário!! Você não pode denunciar novamente!!")
                 break;
+            case "comentario_verificado":
+                alert("O comentário foi marcado como a melhor resposta com sucesso!")
+                break;
+            case "comentario_verificado_denunciado":
+                alert("Este comentário não pode ser verificado, pois não é possível que um comentário seja verificado e denunciado ao mesmo tempo!!!")
+                break;
             case "blog_denunciado":
                 alert("Blog denunciado com sucesso! Obrigado por ajudar a manter nossa comunidade segura e confiável!!!")
                 break;

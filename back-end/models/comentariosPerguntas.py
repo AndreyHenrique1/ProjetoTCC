@@ -12,6 +12,7 @@ class comentariosPerguntas(db.Model):
     codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
     quantidadeCurtidas = db.Column(db.Integer, default=0)  # quantidade total de curtidas (likes)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    melhor_resposta = db.Column(db.Boolean, default=False)
 
     # Relacionamentos de tabelas
     usuario_relacionado = db.relationship('Usuario', backref='comentariosPerguntas', lazy=True)
