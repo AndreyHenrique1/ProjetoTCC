@@ -52,12 +52,12 @@
                     <img src="{{ usuario.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
                         alt="Foto de Perfil" width="150" height="150" class="rounded-3">
                 </div>
-            
+
                 <!-- Informações do usuário -->
                 <div class="text-center text-sm-start">
                     <div class="d-flex align-items-center justify-content-center justify-content-sm-start mb-2">
                         <h2 class="me-2">{{ usuario.nomeUsuario }}</h2>
-            
+
                         <!-- Se o usuário for o dono do perfil, poderá editar e fazer o logout -->
                         {% if current_user.is_authenticated and current_user.codigo == usuario.codigo %}
                         <div class="d-flex">
@@ -67,16 +67,17 @@
                                 <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
                             </button>
                             <!-- Icone de Logout -->
-                            <a href="{{ url_for('login_route.logout') }}" class="btn btn-link p-0 ms-2" style="color: black;">
+                            <a href="{{ url_for('login_route.logout') }}" class="btn btn-link p-0 ms-2"
+                                style="color: black;">
                                 <i class="bi bi-box-arrow-left" style="font-size: 22px;"></i>
                             </a>
                         </div>
                         {% endif %}
                     </div>
-            
+
                     <!-- Desde quando o usuário está no DevSolve -->
                     <p class="mb-3">Membro do DevSolve desde {{ usuario.data_criacao.strftime('%Y') }}</p>
-            
+
                     <!-- Contagem de estatísticas -->
                     <div class="d-flex justify-content-center justify-content-sm-start gap-3">
                         <div>{{ perguntas_count or 0 }} Perguntas</div>
@@ -88,7 +89,7 @@
                     </div>
                 </div>
             </div>
-            
+
 
             <!-- Medalha de classificação -->
             <div class="position-absolute end-4" style="right: 20px; top: 50%; transform: translateY(-50%);">
@@ -101,8 +102,10 @@
             </div>
         </div>
 
+        <h2 style="text-align: center;">{% if moderador == 1 %}Moderador do DevSolve{% endif %}</h2>
+        
         <!-- Seção "Sobre Mim" -->
-        <h2 class="mt-5">Sobre mim</h2>
+        <h2 class="mt-4">Sobre mim</h2>
         <p>{{ usuario.sobre if usuario.sobre else 'Nada aqui ainda.' }}</p>
 
         <!-- Modal de edição de usuário -->
@@ -141,7 +144,6 @@
                 </div>
             </div>
         </div>
-
 
         <!-- Minhas Perguntas -->
         <h2 class="mt-5">Minhas Perguntas</h2>
@@ -192,4 +194,5 @@
     <!--Link do JS do menu lateral-->
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
+
 </html>

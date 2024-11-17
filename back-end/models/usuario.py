@@ -22,6 +22,7 @@ class Usuario(db.Model, UserMixin):
     foto_perfil = db.Column(db.Text, nullable=True)
     cor_avatar = db.Column(db.String(7), nullable=True)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    moderador = db.Column(db.Boolean, default=False)
 
     # Relacionamentos de tabelas
     blog_relacionado = db.relationship("Blog", back_populates="usuario_relacionado")

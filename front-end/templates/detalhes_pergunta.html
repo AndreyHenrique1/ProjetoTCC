@@ -197,12 +197,13 @@
                                     }}</strong>
                                 {% if comentario.denuncias|length > 0 %}
                                 <button class="badge bg-danger text-white" style="margin-left: 10px; border: 0px;"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalVerDenuncias{{ comentario.codigo }}"><i class="bi bi-exclamation-triangle-fill me-1"></i>Denunciado</button>
+                                    data-bs-toggle="modal" data-bs-target="#modalVerDenuncias{{ comentario.codigo }}"><i
+                                        class="bi bi-exclamation-triangle-fill me-1"></i>Denunciado</button>
                                 {% endif %}
 
                                 {% if comentario.melhor_resposta %}
-                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Melhor resposta</span>
+                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Melhor
+                                    resposta</span>
                                 {% endif %}
                             </p>
                             <p class="mb-1"><em>{{ comentario.data_criacao.strftime('%d/%m/%y') }}</em></p>
@@ -276,7 +277,7 @@
                             </div>
                             <div class="modal-body">
                                 <p class="mb-3 text-muted">
-                                    Este comentário recebeu denúncias. Verifique abaixo os detalhes da denúncia
+                                    Este comentário recebeu denúncias. Verifique abaixo os detalhes da denúncia.
                                 </p>
                                 <ul class="list-group">
                                     {% if comentario.denuncias|length > 0 %}

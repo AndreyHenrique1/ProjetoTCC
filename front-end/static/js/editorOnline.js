@@ -38,18 +38,27 @@ document.addEventListener("DOMContentLoaded", function () {
         form.onsubmit = function (event) {
             event.preventDefault(); // Prevenir envio até que os valores sejam atualizados
 
-            if (form.querySelector('#comentario')) {
-                form.querySelector('#comentario').value = quillComentario.root.innerHTML;
+            // Verificar se os elementos de texto existem antes de atribuir os valores
+            const comentarioElement = form.querySelector('#comentario');
+            const descricaoElement = form.querySelector('#descricao');
+            
+            if (comentarioElement) {
+                comentarioElement.value = quillComentario.root.innerHTML;
             }
-            if (form.querySelector('#descricao')) {
-                form.querySelector('#descricao').value = quillEdicao.root.innerHTML;
+            if (descricaoElement) {
+                descricaoElement.value = quillEdicao.root.innerHTML;
             }
 
             // Enviar o formulário após atualizar os valores necessários
-            this.submit(); 
+            form.submit(); 
         };
     });
 
-    // Adicionar listener para mudança de texto no Quill
+    // Adicionar listener para mudança de texto no Quill (definindo a função updatePreview)
+    function updatePreview(delta, oldDelta, source) {
+        // Lógica para atualizar a visualização do preview
+        console.log("Texto alterado no editor", delta);
+    }
+
     quillEdicao.on('text-change', updatePreview);
 });

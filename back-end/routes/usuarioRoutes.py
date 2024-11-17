@@ -10,6 +10,7 @@ from models.etiqueta import Etiqueta
 from models.comentariosPerguntas import comentariosPerguntas
 from models.denuncia import Denuncia
 import cloudinary.uploader
+from models.notificacao import enviar_notificacao
 from collections import Counter
 from sqlalchemy import desc
 
@@ -31,10 +32,17 @@ def obter_ranking_e_medalha(user_id):
             return posicao, medalha
     return None, None
 
-# Rota para exibir o perfil do usuário
 @usuario_route.route('/perfil')
 @login_required
 def perfil():
+    # Verifica se o usuário possui 300 pontos ou mais para se tornar moderador
+    if current_user.quantidadePontos >= 300 and not current_user.moderador:
+        current_user.moderador = True
+        db.session.commit()
+    
+    else:
+        current_user.moderador = False
+
     sobre_usuario = current_user.sobre
     tags_mais_usadas = obter_etiquetas_mais_usadas(current_user.codigo)
 
@@ -64,7 +72,8 @@ def perfil():
         ranking=ranking,
         medalha=medalha,
         etiquetas_mais_usadas=tags_mais_usadas,
-        usuario=current_user  
+        usuario=current_user, 
+        moderador=current_user.moderador 
     )
 
 # Rota para atualizar as novas atualizações de informações do usuário 

@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputEtiquetas = document.getElementById('etiquetas_input');
     const listaSugestoes = document.getElementById('etiquetas_sugestoes');
 
+    if (!inputEtiquetas || !listaSugestoes) {
+        return;
+    }
+
     // Função para carregar as cinco primeiras etiquetas
     function carregarEtiquetasIniciais() {
         fetch('/etiquetas_iniciais')
