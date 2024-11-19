@@ -27,8 +27,10 @@
 
     <!--Arquivo JS da pesquisa de etiquetas-->
     <script src="{{ url_for('static', filename='js/etiquetas.js') }}"></script>
-</head>
 
+    <!--Arquivo JS do Editor Online-->
+    <script src="{{ url_for('static', filename='js/editorOnline.js') }}"></script>
+</head>
 <body>
     <header>
         <div class="logo">
@@ -263,7 +265,6 @@
                     {% endif %}
                 </div>
 
-                <!-- Modal para ver as denúncias -->
                 <div class="modal fade" id="modalVerDenuncias{{ comentario.codigo }}" tabindex="-1"
                     aria-labelledby="modalDenunciasLabel{{ comentario.codigo }}" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -286,6 +287,17 @@
                                         <p class="mb-1"><strong>Motivo:</strong> {{ denuncia.descricao | safe }}</p>
                                         <small class="text-muted">Denunciado em: {{
                                             denuncia.data_criacao.strftime('%d/%m/%Y') }}</small>
+
+                                        {% if current_user.quantidadePontos >= 300 %}
+                                        <div class="mt-2">
+                                            <form class="form-denunciar" method="POST" action="{{ url_for('denuncia_route.resolver_denuncia', denuncia_id=denuncia.codigo) }}">
+                                                <button type="submit" name="acao" value="concordar" class="btn btn-success btn-sm">Concordar</button>
+                                                <button type="submit" name="acao" value="discordar" class="btn btn-danger btn-sm">Discordar</button>
+                                            </form>                                                                          
+                                        </div>         
+                                        {% elif denuncia.resolvida %}
+                                        <p class="text-success mt-2">Denúncia verificada por um moderador.</p>
+                                        {% endif %}
                                     </li>
                                     {% endfor %}
                                     {% else %}
@@ -301,6 +313,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Modal de Denunciar -->
                 <div class="modal fade" id="modalDenunciar{{ comentario.codigo }}" tabindex="-1"
@@ -382,9 +395,5 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!--Arquivo JS do Editor Online-->
-    <script src="{{ url_for('static', filename='js/editorOnline.js') }}"></script>
 </body>
-
 </html>
