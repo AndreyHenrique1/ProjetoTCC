@@ -177,12 +177,6 @@ def comentarios_pergunta(pergunta_id):
             db.session.add(novo_comentario)
             db.session.commit()
 
-            # Aumentar 1 ponto para o dono do comentário
-            usuario_comentario = Usuario.query.get(current_user.codigo)  # Pega o usuário que fez o comentário
-            if usuario_comentario:  # Verifica se o usuário existe
-                usuario_comentario.quantidadePontos += 1  # Adiciona 1 ponto
-                db.session.commit()
-
             # Enviar notificação para o dono da pergunta, se for um comentário
             if current_user.codigo != pergunta.codUsuario:  # Evita notificar o próprio usuário
                 mensagem = f"Nova resposta para sua pergunta: {pergunta.titulo}"
@@ -230,12 +224,6 @@ def excluir_comentario_pergunta(comentario_id):
         # Excluir o comentário
         db.session.delete(comentario)
         db.session.commit()
-
-        # Diminuir 1 ponto do usuário que excluiu o comentário
-        usuario_comentario = Usuario.query.get(comentario.codUsuario)  # Usuário que fez o comentário
-        if usuario_comentario:  # Verifica se o usuário existe
-            usuario_comentario.quantidadePontos -= 1  # Subtrai 1 ponto
-            db.session.commit()
 
     except IntegrityError:
         # Caso tenha um erro, volta novamente

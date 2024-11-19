@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Inicialização do editor Quill para os comentários
+    // Inicialização dos editores Quill
     var quillComentario = new Quill('#editor-comentario', {
         theme: 'snow',
         placeholder: 'Explique e escreva aqui sua resposta de forma clara e objetiva...',
@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     });
 
-    // Inicialização do editor Quill para as perguntas e blogs
     var quillEdicao = new Quill('#editor-geral', {
         theme: 'snow',
         placeholder: 'Escreva aqui de forma clara e objetiva...',
@@ -33,15 +32,14 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     });
 
-    // Função para lidar com o envio dos formulários de comentários e edições
-    document.querySelectorAll('form').forEach(form => {
+    // Apenas formularios com Quill devem ser manipulados
+    document.querySelectorAll('.form-com-quill').forEach(form => {
         form.onsubmit = function (event) {
             event.preventDefault(); // Prevenir envio até que os valores sejam atualizados
 
-            // Verificar se os elementos de texto existem antes de atribuir os valores
             const comentarioElement = form.querySelector('#comentario');
             const descricaoElement = form.querySelector('#descricao');
-            
+
             if (comentarioElement) {
                 comentarioElement.value = quillComentario.root.innerHTML;
             }
@@ -50,13 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Enviar o formulário após atualizar os valores necessários
-            form.submit(); 
+            form.submit();
         };
     });
 
     // Adicionar listener para mudança de texto no Quill (definindo a função updatePreview)
     function updatePreview(delta, oldDelta, source) {
-        // Lógica para atualizar a visualização do preview
         console.log("Texto alterado no editor", delta);
     }
 

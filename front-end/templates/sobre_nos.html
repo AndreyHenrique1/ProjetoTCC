@@ -3,31 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajuda - DevSolve</title>
+    <title>Sobre Nós - DevSolve</title>
 
-    <!--Link do favicoon-->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
-        type="image/x-icon">
-
-    <!--Link do CSS-->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
-
-    <!--Link do bootstrap-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!--Arquivo JS dos avisos-->
-    <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
-
-    <!--Arquivo JS das etiquetas-->
-    <script src="{{ url_for('static', filename='js/etiquetas.js') }}"></script>
-
-    <style>
-        h1, h2 {
-            color: #6356e5;
-        }
-    </style>
+    <!--Arquivos extenos-->
+    {% include 'arquivos_externos.html' %}
 </head>
 <body>
     <header>
@@ -43,50 +22,15 @@
             </div>
         </div>
 
-        <!-- Ícones e imagem de usuário à direita -->
-        <div class="header-right">
-            {% if current_user.is_authenticated %}
-
-            <!--Barra de pesquisa-->
-            <form action="{{ url_for('pergunta_route.pergunta_pesquisar') }}" method="POST" class="pesquisar">
-                <input type="search" name="pesquisar" id="inputPesquisar" placeholder="O que você procura?"
-                    autocomplete="on">
-
-                <label for="inputPesquisar">
-                    <span class="icon"></span>
-                </label>
-            </form>
-
-            <div class="notificacao">
-                <a href="{{ url_for('notificacao_route.listar_notificacoes') }}">
-                    <i class="bi bi-bell-fill" style="font-size: 25px; color: black; position: relative;">
-                        {% if notificacoes_nao_lidas %}
-                        <!-- Ponto vermelho indicando notificações não lidas -->
-                        <span class="badge-notificacao"></span>
-                        {% endif %}
-                    </i>
-                </a>
-            </div>
-
-
-            <div class="img_usuario">
-                <!-- Adicionar o redirecionamento para o perfil do usuário -->
-                <a href="{{ url_for('usuario_route.perfil') }}">
-                    <img src="{{ current_user.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                        alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
-                </a>
-            </div>
-            {% else %}
-            <li><a href="{{ url_for('cadastrar_route.cadastrar') }}" class="btn_cinza">Cadastrar</a></li>
-            <li><a href="{{ url_for('login_route.login') }}" class="btn_cinza">Entrar</a></li>
-            {% endif %}
-        </div>
+        <!--Icone de notificação e perfil-->
+        {% include 'icone_notificacao_perfil.html' %}
     </header>
 
     <main class="main-conteudo">
         <!-- Chamando o arquivo menu_lateral.html -->
         {% include 'menu_lateral.html' %}
 
+        <!--Explicação de quem é a DevSolve-->
         <section>
             <h1>Quem Somos Nós?</h1>
             <p><strong>DevSolve</strong> é uma comunidade dinâmica e colaborativa feita por programadores, para programadores. Nossa missão é proporcionar um espaço onde você pode aprender, ensinar, solucionar dúvidas e explorar o mundo da programação, tudo em um ambiente estimulante e amigável.</p>
@@ -105,13 +49,13 @@
         </section>
 
         <hr>
-    
+        
+        <!--Explicação do sistema de pontos-->
         <section>
             <h2>Como Funciona o Sistema de Pontos?</h2>
             <p>No <strong>DevSolve</strong>, sua participação é sempre recompensada. Nosso sistema de pontos foi projetado para incentivar a colaboração e premiar quem mais contribui para a comunidade. Aqui está como você pode ganhar e perder pontos:</p>
     
             <ul>
-                <li><strong>1 ponto</strong> por cada comentário relevante que você fizer.</li>
                 <li><strong>3 pontos</strong> por criar perguntas ou blogs que ajudem outros membros da comunidade.</li>
                 <li><strong>-5 pontos</strong> se o seu blog ou comentário for denunciado e aprovado, por violar as normas ou passar informações incorretas.</li>
                 <li><strong>1 ponto</strong> por cada curtida que seu comentário ou blog receber de outros usuários.</li>
@@ -122,7 +66,8 @@
         </section>
 
         <hr>
-    
+        
+        <!--Explicação de como seus prêmios podem ser resgatados em prêmios-->
         <section>
             <h2>Ganhe Prêmios com Seus Pontos!</h2>
             <p>Acumular pontos no <strong>DevSolve</strong> é uma maneira de demonstrar seu envolvimento com a comunidade, e também de ser recompensado! Veja o que você pode conquistar:</p>
@@ -139,7 +84,8 @@
         </section>
 
         <hr>
-    
+        
+        <!--Explicão de como se tornar um moderador-->
         <section>
             <h2>Como me Torno um Moderador?</h2>
             <p>Ao atingir <strong>300 pontos</strong>, você se torna um moderador do DevSolve! Isso significa que você será um membro ativo e influente da comunidade, com responsabilidades especiais. Veja o que isso inclui:</p>
@@ -152,7 +98,8 @@
         </section>
 
         <hr>
-    
+        
+        <!--Explicação dos benefícios de ser moderador-->
         <section>
             <h2>Benefícios Exclusivos para Moderadores</h2>
             <p>Moderadores têm um papel essencial no <strong>DevSolve</strong>, com poder de influenciar a qualidade da plataforma. Além de responsabilidades importantes, os moderadores têm acesso a benefícios exclusivos:</p>
@@ -167,13 +114,12 @@
         </section>
 
         <hr>
-    
+        
         <section>
             <h2>Como Começar?</h2>
             <p>Agora que você conhece todos os benefícios e o funcionamento do <strong>DevSolve</strong>, é hora de começar! Participe da comunidade, faça perguntas, escreva blogs e interaja com outros programadores.</p>
             <p>Quanto mais você contribui, mais aprende e ganha pontos. Não espere mais, junte-se a nós no <strong>DevSolve</strong> e comece a compartilhar seu conhecimento agora mesmo!</p>
         </section>
     </main>    
-    
 </body>
 </html>

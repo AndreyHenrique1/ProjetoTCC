@@ -6,23 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de {{ usuario.nomeUsuario }} - DevSolve</title>
 
-    <!--Link do bootstrap-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!--Link do CSS-->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
-
-    <!--Icones-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <!--Link do favicoon-->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
-        type="image/x-icon">
-
-    <!--Arquivo JS dos avisos-->
-    <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
+    <!--Arquivos extenos-->
+    {% include 'arquivos_externos.html' %}
 </head>
 
 <body>
@@ -44,7 +29,6 @@
         <!--Chamando o arquivo menu_lateral.html-->
         {% include 'menu_lateral.html' %}
 
-        <!--Foto do usuário-->
         <div class="d-flex align-items-center mb-4 justify-content-between position-relative">
             <div class="d-flex flex-column flex-sm-row align-items-center">
                 <!-- Foto de Perfil -->
@@ -102,13 +86,14 @@
             </div>
         </div>
 
+        <!--Mensagem de usuários que são moderadores do site-->
         <h2 style="text-align: center;">{% if moderador == 1 %}Moderador do DevSolve{% endif %}</h2>
         
         <!-- Seção "Sobre Mim" -->
         <h2 class="mt-4">Sobre mim</h2>
         <p>{{ usuario.sobre if usuario.sobre else 'Nada aqui ainda.' }}</p>
 
-        <!-- Modal de edição de usuário -->
+        <!-- Modal de edição das informações do usuário -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -150,13 +135,15 @@
         <ul class="list-group mb-5">
             {% for pergunta in perguntas %}
             <li class="list-group-item">
+                <!--Titulo da pergunta-->
                 <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}">
                     {{ pergunta.titulo }}
                 </a>
+                <!--Ano que a pergunta foi publicada-->
                 <small class="text-muted"> - Publicada em {{ pergunta.data_criacao.strftime('%d/%m/%Y') }}</small>
             </li>
             {% else %}
-            <p class="text-muted">Você ainda não fez nenhuma pergunta.</p>
+            <p class="text-muted">Você ainda não fez nenhuma pergunta.</p> <!--Mensagem caso não tenha perguntas-->
             {% endfor %}
         </ul>
 
@@ -165,13 +152,15 @@
         <ul class="list-group mb-5">
             {% for blog in blogs %}
             <li class="list-group-item">
+                <!--Titulo do blog-->
                 <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}">
                     {{ blog.titulo }}
                 </a>
+                <!--Ano da publicação-->
                 <small class="text-muted"> - Publicado em {{ blog.data_criacao.strftime('%d/%m/%Y') }}</small>
             </li>
             {% else %}
-            <p class="text-muted">Você ainda não escreveu nenhum blog.</p>
+            <p class="text-muted">Você ainda não escreveu nenhum blog.</p> <!--Msg caso não tenha nenhum blog no banco de dados ou pesquisa-->
             {% endfor %}
         </ul>
 
@@ -180,6 +169,7 @@
         <ul class="list-group mb-5">
             {% for etiqueta, count in etiquetas_mais_usadas %}
             <li class="list-group-item">
+                <!--Contagem-->
                 <p>{{ etiqueta }} foi usado {{ count }} {{ 'vez' if count == 1 else 'vezes' }}</p>
             </li>
             {% else %}
@@ -187,12 +177,5 @@
             {% endfor %}
         </ul>
     </main>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!--Link do JS do menu lateral-->
-    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
-
 </html>

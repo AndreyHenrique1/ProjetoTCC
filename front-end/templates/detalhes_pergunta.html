@@ -4,32 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ pergunta.titulo }}</title>
+    <title>{{ pergunta.titulo }} - DevSolve</title>
 
-    <!-- Link do CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
-
-    <!-- Link do bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!-- Link do favicon -->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
-        type="image/x-icon">
-
-    <!-- Link do Quill.js, editor de texto online -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-
-    <!--Arquivo JS dos avisos-->
-    <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
-
-    <!--Arquivo JS da pesquisa de etiquetas-->
-    <script src="{{ url_for('static', filename='js/etiquetas.js') }}"></script>
-
-    <!--Arquivo JS do Editor Online-->
-    <script src="{{ url_for('static', filename='js/editorOnline.js') }}"></script>
+    <!--Arquivos extenos-->
+    {% include 'arquivos_externos.html' %}
 </head>
 <body>
     <header>
@@ -45,6 +23,7 @@
             <!-- Esquerda: Foto, Nome e Data -->
             <div class="d-flex align-items-center">
                 <div class="p-2">
+                    <!--Foto do usuário-->
                     <a
                         href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=pergunta.usuario_relacionado.codigo) }}">
                         <img src="{{ pergunta.usuario_relacionado.foto_perfil if pergunta.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
@@ -52,13 +31,18 @@
                     </a>
                 </div>
                 <div class="p-2">
+                    <!--Nome do usuário-->
                     <p class="mb-0"><strong>{{ pergunta.usuario_relacionado.nomeUsuario }}</strong></p>
+                    <!--Data da criação da pergunta-->
                     <p class="mb-0"><em>{{ pergunta.data_criacao.strftime('%d/%m/%y') }}</em></p>
                 </div>
             </div>
+
             <!-- Direita: Ícones de edição e exclusão -->
             <div class="d-flex align-items-center p-2">
+                <!--Somente para usuário autenticados-->
                 {% if current_user.codigo == pergunta.codUsuario %}
+                <!--Icone de editar pergunta-->
                 <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal"
                     style="color: black;">
                     <i class="bi bi-pencil-square icon_roxo" style="font-size: 25px;"></i>
@@ -135,6 +119,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary"
                                     data-bs-dismiss="modal">Cancelar</button>
+                                <!--Formulario de exclusão da pergunta-->
                                 <form
                                     action="{{ url_for('pergunta_route.excluir_pergunta', pergunta_id=pergunta.codigo) }}"
                                     method="POST" style="display:inline;">
@@ -158,10 +143,10 @@
         </div>
         <br>
 
-        <!-- Cadastrar usuários, para que possa colocar comentários -->
         {% if current_user.is_authenticated %}
+        <!--Campo de adicionar comentario-->
         <h3>Deixe seu Comentário</h3>
-        <form action="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}" method="POST">
+        <form action="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}" method="POST" class="form-com-quill">
             <label for="comentario"></label>
             <br>
             <div id="editor-comentario" style="height: 300px;"></div>
@@ -175,6 +160,9 @@
         <a href="{{ url_for('login_route.login') }}" class="btn_roxo">Faça login para comentar</a>
         {% endif %}
 
+        <!--Imagens de patrocinio de cursos online, lojas...-->
+        {% include 'Img_patrocinio.html' %}
+
         <!-- Comentários dos usuários -->
         <h2 style="margin-top: 20px;">Comentários</h2>
         <br>
@@ -186,6 +174,7 @@
                     <!-- Esquerda: Foto, Nome e Data -->
                     <div class="d-flex align-items-center">
                         <div class="me-2">
+                            <!--Foto de usuário-->
                             <a
                                 href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=comentario.usuario_relacionado.codigo if comentario.usuario_relacionado else 0) }}">
                                 <img src="{{ comentario.usuario_relacionado.foto_perfil if comentario.usuario_relacionado and comentario.usuario_relacionado.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
@@ -195,19 +184,23 @@
                         </div>
                         <div>
                             <p class="mb-1">
+                                <!--Nome do usuário dono do comentário-->
                                 <strong>{{ comentario.usuario_relacionado.nomeUsuario if comentario.usuario_relacionado
                                     }}</strong>
+                                
+                                <!--Se no comentario tiver denuncias-->
                                 {% if comentario.denuncias|length > 0 %}
                                 <button class="badge bg-danger text-white" style="margin-left: 10px; border: 0px;"
                                     data-bs-toggle="modal" data-bs-target="#modalVerDenuncias{{ comentario.codigo }}"><i
                                         class="bi bi-exclamation-triangle-fill me-1"></i>Denunciado</button>
                                 {% endif %}
 
+                                <!--Se no comentario tiver como melhor resposta/comentario-->
                                 {% if comentario.melhor_resposta %}
-                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Melhor
-                                    resposta</span>
+                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Melhor resposta</span>
                                 {% endif %}
                             </p>
+                            <!--Data criação do comentario-->
                             <p class="mb-1"><em>{{ comentario.data_criacao.strftime('%d/%m/%y') }}</em></p>
                         </div>
                     </div>
@@ -227,7 +220,8 @@
                             <i class="bi bi-hand-thumbs-up icon_roxo" style="font-size: 20px;"></i>
                         </button>
                     </form>
-                    <span>{{ comentario.quantidade_likes }}</span> <!-- Exibe a quantidade de likes -->
+                    <!-- Exibe a quantidade de likes -->
+                    <span>{{ comentario.quantidade_likes }}</span> 
 
                     <!-- Botão de Descurtir -->
                     <form action="{{ url_for('pergunta_route.deslike_comentario', comentario_id=comentario.codigo) }}"
@@ -236,9 +230,12 @@
                             <i class="bi bi-hand-thumbs-down icon_vermelho" style="font-size: 20px;"></i>
                         </button>
                     </form>
-                    <span>{{ comentario.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
+                    <!-- Exibe a quantidade de deslikes -->
+                    <span>{{ comentario.quantidade_deslikes }}</span> 
 
+                    <!--Caso o usuário seja o dono da pergunta-->
                     {% if current_user.codigo == pergunta.codUsuario %}
+                    <!--Pode adicionar um comentario como melhor resposta/comentario-->
                     <form action="{{ url_for('pergunta_route.verificar_comentario', comentario_id=comentario.codigo) }}"
                         method="POST" style="display: inline;">
                         <button type="submit" class="btn_melhor_comentario">
@@ -265,6 +262,7 @@
                     {% endif %}
                 </div>
 
+                <!--Modal de ver denuncias-->
                 <div class="modal fade" id="modalVerDenuncias{{ comentario.codigo }}" tabindex="-1"
                     aria-labelledby="modalDenunciasLabel{{ comentario.codigo }}" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -284,23 +282,26 @@
                                     {% if comentario.denuncias|length > 0 %}
                                     {% for denuncia in comentario.denuncias %}
                                     <li class="list-group-item">
+                                        <!--Motivo da denuncia-->
                                         <p class="mb-1"><strong>Motivo:</strong> {{ denuncia.descricao | safe }}</p>
+                                        <!--Data da denuncia-->
                                         <small class="text-muted">Denunciado em: {{
                                             denuncia.data_criacao.strftime('%d/%m/%Y') }}</small>
 
+                                        <!--Se o usuário tiver mais de 300 pontos-->
                                         {% if current_user.quantidadePontos >= 300 %}
                                         <div class="mt-2">
+                                            <!--Consegue concordar ou discordar a denuncia-->
                                             <form class="form-denunciar" method="POST" action="{{ url_for('denuncia_route.resolver_denuncia', denuncia_id=denuncia.codigo) }}">
                                                 <button type="submit" name="acao" value="concordar" class="btn btn-success btn-sm">Concordar</button>
                                                 <button type="submit" name="acao" value="discordar" class="btn btn-danger btn-sm">Discordar</button>
-                                            </form>                                                                          
+                                            </form>
                                         </div>         
-                                        {% elif denuncia.resolvida %}
-                                        <p class="text-success mt-2">Denúncia verificada por um moderador.</p>
                                         {% endif %}
                                     </li>
                                     {% endfor %}
                                     {% else %}
+                                    <!--Caso não tenha nenhuma denuncia registrada-->
                                     <li class="list-group-item text-center text-muted">
                                         Nenhuma denúncia registrada para este comentário.
                                     </li>
@@ -338,6 +339,7 @@
                                     method="POST">
                                     <div class="form-group">
                                         <label for="descricao_denuncia" class="form-label">Motivo da denúncia:</label>
+                                        <!--Motivo da denuncia-->
                                         <textarea class="form-control" id="descricao_denuncia" name="descricao_denuncia"
                                             rows="4" required
                                             placeholder="Explique por que este comentário é inadequado ou falso..."></textarea>
@@ -375,6 +377,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary"
                                     data-bs-dismiss="modal">Cancelar</button>
+                                <!--Formulario de exclusão do comentario-->
                                 <form
                                     action="{{ url_for('pergunta_route.excluir_comentario_pergunta', comentario_id=comentario.codigo) }}"
                                     method="POST">
@@ -388,12 +391,10 @@
             </li>
             {% endfor %}
             {% else %}
+            <!--Caso não tenha nenhum comentario-->
             <p>Não há comentários ainda. Seja o primeiro a comentar!</p>
             {% endif %}
         </ul>
     </main>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

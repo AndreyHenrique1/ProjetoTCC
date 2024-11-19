@@ -791,6 +791,14 @@ section {
     margin: 0 2px; /* Espaçamento entre os botões */
 }
 
+h1, h2 {
+    color: #6356e5;
+}
+
+a {
+    text-decoration: none;
+}
+
 
 
 

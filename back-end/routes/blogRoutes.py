@@ -224,12 +224,6 @@ def comentario_blog(blog_id):
             db.session.add(novo_comentario)
             db.session.commit()
 
-            # Atualizando a quantidade de pontos do usuário que fez o comentário (1 ponto)
-            usuario_comentario = Usuario.query.get(current_user.codigo)
-            if usuario_comentario:
-                usuario_comentario.quantidadePontos += 1  # Adiciona 1 ponto ao usuário
-                db.session.commit()
-
             # Enviar notificação para o dono do blog
             if current_user.codigo != blog.codUsuario:  # Evita notificar o próprio usuário
                 mensagem = f"Novo comentário no seu blog: {blog.titulo}"
@@ -253,23 +247,14 @@ def excluir_comentario_blog(comentario_id):
     if comentario.codUsuario != current_user.codigo:
         return redirect(url_for('home.homePergunta'))
 
-    try:
-        # Decrementa 1 ponto do usuário que excluiu o comentário
-        usuario_comentario = Usuario.query.get(comentario.codUsuario)
-        if usuario_comentario:
-            usuario_comentario.quantidadePontos -= 1  # Remove 1 ponto do usuário
-            db.session.commit()
 
-        # Excluir registros relacionados na tabela 'likes_deslikes'
-        db.session.query(Likes_deslikes).filter(Likes_deslikes.codComentarioBlog == comentario_id).delete()
 
-        # Excluir comentário do blog
-        db.session.delete(comentario)
-        db.session.commit()
+    # Excluir registros relacionados na tabela 'likes_deslikes'
+    db.session.query(Likes_deslikes).filter(Likes_deslikes.codComentarioBlog == comentario_id).delete()
 
-    except IntegrityError:
-        # Caso tenha um erro na hora de excluir, volta o comentário novamente
-        db.session.rollback()
+    # Excluir comentário do blog
+    db.session.delete(comentario)
+    db.session.commit()
 
     return redirect(url_for('blog_route.detalhes_blog', blog_id=comentario.codBlog, sucesso="comentario_excluido"))
 

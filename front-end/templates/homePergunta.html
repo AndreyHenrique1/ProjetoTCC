@@ -6,25 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - DevSolve</title>
 
-    <!--Link do favicoon-->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
-        type="image/x-icon">
-
-    <!--Link do bootstrap-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!--Link do CSS-->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
-
-    <!--Arquivo JS dos avisos-->
-    <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
-
-    <!--Arquivo JS das etiquetas-->
-    <script src="{{ url_for('static', filename='js/etiquetas.js') }}"></script>
+    <!--Arquivos extenos-->
+    {% include 'arquivos_externos.html' %}
 </head>
-
 <body>
     <header>
         <!-- Botão de expandir e logo alinhados à esquerda -->
@@ -39,28 +23,8 @@
             </div>
         </div>
 
-        <!-- Ícones e imagem de usuário à direita -->
-        <div class="header-right">
-            {% if current_user.is_authenticated %}
-            <div class="notificacao">
-                <a href="{{ url_for('notificacao_route.listar_notificacoes') }}">
-                    <i class="bi bi-bell-fill" style="font-size: 25px; color: black; position: relative;"></i>
-                </a>
-            </div>
-
-
-            <div class="img_usuario">
-                <!-- Adicionar o redirecionamento para o perfil do usuário -->
-                <a href="{{ url_for('usuario_route.perfil') }}">
-                    <img src="{{ current_user.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                        alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
-                </a>
-            </div>
-            {% else %}
-            <li><a href="{{ url_for('cadastrar_route.cadastrar') }}" class="btn_cinza">Cadastrar</a></li>
-            <li><a href="{{ url_for('login_route.login') }}" class="btn_cinza">Entrar</a></li>
-            {% endif %}
-        </div>
+        <!--Icone de notificação e perfil-->
+        {% include 'icone_notificacao_perfil.html' %}
     </header>
 
     <main class="main-conteudo">
@@ -78,6 +42,7 @@
         <!-- Se o usuário estiver logado -->
         <div class="mt-3" style="margin-bottom: 25px;">
             {% if current_user.is_authenticated %}
+            <!--Consegue adicionar pergunta-->
             <a href="{{ url_for('pergunta_route.perguntar') }}" class="btn_roxo">Adicionar pergunta</a>
             {% endif %}
         </div>
@@ -101,6 +66,7 @@
                         <form method="GET" action="{{ url_for('home.homePergunta') }}" id="filter-form">
                             <!-- Filtro por categorias -->
                             <div class="mb-3">
+                                <!--Categorias-->
                                 <h6>Categorias</h6>
                                 <div class="form-check">
                                     {% for categoria in categorias %}
@@ -116,6 +82,7 @@
                                 </div>
                             </div>
 
+                            <!--Etiquetas-->
                             <div style="position: relative;">
                                 <label for="etiquetas_input">Etiquetas</label>
                                 <input type="text" id="etiquetas_input" name="etiquetas"
@@ -129,16 +96,19 @@
                             <div class="mb-3">
                                 <h6>Ordenar por</h6>
                                 <div class="form-check">
+                                    <!--Mais recentes-->
                                     <input class="form-check-input" type="radio" name="ordenar" value="recentes" {% if
                                         request.args.get('ordenar')=='recentes' or request.args.get('ordenar') is none
                                         %}checked{% endif %}>
                                     <label class="form-check-label">Mais Recentes</label>
                                 </div>
+                                <!--Mais recentes-->
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="ordenar" value="antigas" {% if
                                         request.args.get('ordenar')=='antigas' %}checked{% endif %}>
                                     <label class="form-check-label">Mais Antigas</label>
                                 </div>
+                                <!--Sem respostas-->
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="ordenar" value="sem_respostas" {%
                                         if request.args.get('ordenar')=='sem_respostas' %}checked{% endif %}>
@@ -165,6 +135,7 @@
             <ul>
                 {% for pergunta in perguntas %}
                 <li class="pergunta-item">
+                    <!--Foto de perfil-->
                     <div class="img_usuario">
                         <a
                             href="{{ url_for('usuario_route.perfil_outro_usuario', user_id=pergunta.usuario_relacionado.codigo) }}">
@@ -174,12 +145,16 @@
                     </div>
                     <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}"
                         class="links">
+                        <!--Titulo da pergunta-->
                         <strong>{{ pergunta.titulo }}</strong>
+                        <!--Descrição resumida da pergunta-->
                         <p>{{ pergunta.descricao[:80] | safe }}{% if pergunta.descricao|length > 100 %}...{% endif %}
                         </p>
                         <p>Leia mais</p>
                         <br>
+                        <!--Categoria-->
                         <p>{{ pergunta.categoria_relacionada.nome }}</p>
+                        <!--Etiqueta da pergunta-->
                         {% for rel in pergunta.etiquetas %}
                         <p>{{ rel.nome }}</p>
                         {% endfor %}
@@ -188,12 +163,12 @@
                 {% endfor %}
             </ul>
             {% else %}
-            <h2 style="text-align: center;">Não encontramos resultados para '{{ pesquisa }}'. Experimente ajustar os
-                termos da pesquisa ou explore outras perguntas!</h2>
+            <!--Caso na pesquisa não apareça resultados-->
+            <h2 style="text-align: center;">Não encontramos resultados para '{{ pesquisa }}'. Experimente ajustar os termos da pesquisa ou explore outras perguntas!</h2>
             {% endif %}
 
             {% if pesquisa %}
-            <!-- Botão para voltar à lista completa -->
+            <!-- Botão para voltar à lista completa, depois de o usuário realizar a pesquisa -->
             <br>
             <div style="text-align: center; margin-top: 20px;">
                 <a href="{{ url_for('home.homePergunta') }}" class="btn_roxo">Voltar para todas as perguntas</a>
@@ -214,14 +189,7 @@
         </div>
     </main>
 
+    <!--Icone de ajuda-->
     {% include 'footer.html' %}
-
-
-    <!--Menu lateral JS-->
-    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-
-    <!--Bootstrap-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

@@ -48,12 +48,8 @@ def denunciar_comentario(comentario_id):
 @denuncia_route.route('/resolver/denuncia/<int:denuncia_id>', methods=['POST'])
 @login_required
 def resolver_denuncia(denuncia_id):
-    print("A rota foi acessada")
-    print("Formulário enviado:", request.form)  # Verifica os dados do formulário
-    
     # Buscar a denúncia usando o denuncia_id
     denuncia = Denuncia.query.get_or_404(denuncia_id)
-    print(f"Denúncia encontrada: {denuncia}")
 
     # Verificar se o usuário atual é moderador (300 pontos ou mais)
     if current_user.quantidadePontos < 300:
@@ -71,10 +67,9 @@ def resolver_denuncia(denuncia_id):
     # Ações baseadas na escolha
     if acao == "concordar":
         # Marcar a denúncia como verificada
-        denuncia.verificada = True
+        denuncia.verificadas = True
         db.session.commit()
-        print("Denúncia marcada como verificada")
-        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta, sucesso="denuncia_verificada"))
+        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta, sucesso="denuncia_verificada", verificada="Comentário verificado por moderador"))
 
     elif acao == "discordar":
         # Recuperar o comentário relacionado à denúncia
@@ -95,11 +90,9 @@ def resolver_denuncia(denuncia_id):
             db.session.commit()
             print(f"Pontos restaurados para o usuário: {usuario_comentario.quantidadePontos}")
 
-        db.session.commit()  # Confirmar alterações
+        db.session.commit()  
         return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta, sucesso="denuncia_removida"))
 
-    # Caso nenhuma ação seja tomada
-    print("Nenhuma ação válida recebida")
     return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta))
 
 

@@ -4,24 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blogs</title>
-    <!--Link do bootstrap-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Blogs - DevSolve</title>
 
-    <!--Link do CSS-->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilo.css') }}">
-
-    <!--Link do favicoon-->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='Imagens/Foto_logo_Icone.ico') }}"
-        type="image/x-icon">
-
-    <!--Arquivo JS das etiquetas-->
-    <script src="{{ url_for('static', filename='js/etiquetas.js') }}"></script>
-
-    <!--Arquivo JS dos avisos-->
-    <script src="{{ url_for('static', filename='js/aviso.js') }}"></script>
+    <!--Arquivos extenos-->
+    {% include 'arquivos_externos.html' %}
 </head>
 
 <body>
@@ -38,40 +24,14 @@
             </div>
         </div>
 
-        <!-- Ícones e imagem de usuário à direita -->
-        <div class="header-right">
-            {% if current_user.is_authenticated %}
-            <div class="notificacao">
-                <a href="{{ url_for('notificacao_route.listar_notificacoes') }}">
-                    <i class="bi bi-bell-fill" style="font-size: 25px; color: black; position: relative;">
-                        {% if notificacoes_nao_lidas %}
-                        <!-- Ponto vermelho indicando notificações não lidas -->
-                        <span class="badge-notificacao"></span>
-                        {% endif %}
-                    </i>
-                </a>
-            </div>
-
-
-            <div class="img_usuario">
-                <!-- Adicionar o redirecionamento para o perfil do usuário -->
-                <a href="{{ url_for('usuario_route.perfil') }}">
-                    <img src="{{ current_user.foto_perfil if current_user.foto_perfil else url_for('static', filename='Imagens/default_user.png') }}"
-                        alt="Foto de perfil" width="52" height="52" class="rounded-circle mb-3">
-                </a>
-            </div>
-            {% else %}
-            <li><a href="{{ url_for('cadastrar_route.cadastrar') }}" class="btn_cinza">Cadastrar</a></li>
-            <li><a href="{{ url_for('login_route.login') }}" class="btn_cinza">Entrar</a></li>
-            {% endif %}
-        </div>
+        <!--Icone de notificação e perfil-->
+        {% include 'icone_notificacao_perfil.html' %}
     </header>
-
-    <!--Chamando o arquivo menu_lateral.html-->
-    {% include 'menu_lateral.html' %}
 
     <main class="main-conteudo" style="max-width: 1200px;">
         <div class="conteudo">
+            <!--Chamando o arquivo menu_lateral.html-->
+            {% include 'menu_lateral.html' %}
 
             <!-- Barra de Pesquisa -->
             <form class="d-flex" role="search" action="{{ url_for('blog_route.blog_pesquisar') }}" method="POST"
@@ -83,6 +43,7 @@
 
             <!-- Se o usuário estiver logado -->
             {% if current_user.is_authenticated %}
+            <!--Consegue adicionar blog-->
             <div class="mt-3" style="margin-bottom: 25px;">
                 <a href="{{ url_for('blog_route.criar_blog') }}" class="btn_roxo">Adicionar Blog</a>
             </div>
@@ -172,15 +133,19 @@
                     {% for blog in blogs %}
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex">
                         <div class="card flex-fill">
+                            <!--Foto capa do blog-->
                             <img src="{{ blog.fotoCapa_blog if blog.fotoCapa_blog else url_for('static', filename='Imagens/default_blog_cover.png') }}"
                                 alt="Foto da Capa do Blog" class="img-fluid card-img-top">
                             <div class="card-body d-flex flex-column">
                                 <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}"
                                     class="card-title">
+                                    <!--Titulo do blog-->
                                     <h5>{{ blog.titulo }}</h5>
                                 </a>
+                                <!--Descrição resumida do blog-->
                                 <p class="card-text">{{ blog.descricao[:40] | safe }}{% if blog.descricao|length > 40
                                     %}...{% endif %} Leia mais</p>
+                                <!--Categoria do blog-->
                                 <p><i class="bi bi-bookmark-fill icon_categoria"></i>{{ blog.categoria_relacionada.nome
                                     }}</p>
                             </div>
@@ -206,6 +171,7 @@
                 {% endif %}
             </div>
 
+            <!--Se caso o usuário pesquisar aparece um botão no final para voltar para todos os blogs-->
             {% if pesquisa %}
             <!-- Botão para voltar à lista completa -->
             <br>
@@ -215,13 +181,8 @@
             {% endif %}
     </main>
 
+    <!--Icone de ajuda-->
     {% include 'footer.html' %}
-
-    <!--Menu lateral JS-->
-    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-
-    <!--Bootstrap-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
