@@ -23,7 +23,8 @@ body {
 body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* Impede a rolagem horizontal */
+    overflow-x: hidden;
+    /* Impede a rolagem horizontal */
 }
 
 /* Esconde o menu lateral em telas menores que 1250px */
@@ -51,19 +52,19 @@ body {
     .formulario form {
         padding: 30px !important;
         width: 100% !important;
-        
+
     }
 }
 
 /* Cabeçalho do projeto */
 header {
     display: flex;
-    background-color: var(--cor2); 
-    width: 100%; 
+    background-color: var(--cor2);
+    width: 100%;
     height: 80px;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
-    padding: 0 20px; 
+    padding: 0 20px;
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.262);
     position: fixed;
     z-index: 1000;
@@ -84,19 +85,19 @@ header {
 }
 
 footer {
-    width: 100%; 
-    position: fixed; 
-    bottom: 0; 
-    left: 0; 
-    text-align: center; 
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    text-align: center;
     padding: 10px;
 }
 
 .icon_ajuda {
-    color: black; 
-    font-size: 30px; 
-    position: fixed; 
-    bottom: 20px; 
+    color: black;
+    font-size: 30px;
+    position: fixed;
+    bottom: 20px;
     right: 30px;
     cursor: pointer;
 }
@@ -220,7 +221,8 @@ footer {
 
 /*Menu lateral*/
 .menu-lateral {
-    width: 70px; /* Largura inicial do menu lateral */
+    width: 70px;
+    /* Largura inicial do menu lateral */
     height: 100%;
     background-color: #fff;
     border-right: solid 3px var(--cor1);
@@ -234,11 +236,11 @@ footer {
 }
 
 .main-conteudo.expandido {
-    margin-left: 250px; 
+    margin-left: 250px;
 }
 
 .menu-lateral.expandir {
-    width: 250px; 
+    width: 250px;
 }
 
 .btn-expandir {
@@ -247,17 +249,18 @@ footer {
     padding-left: 10px;
 }
 
-.btn-expandir > i {
+.btn-expandir>i {
     font-size: 30px;
     cursor: pointer;
     color: var(--cor0);
 }
 
-ul, li {
+ul,
+li {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    width: 100%; 
+    width: 100%;
 }
 
 ul li.ativo {
@@ -283,8 +286,8 @@ ul li.item-menu a {
     padding: 10px 4%;
     display: flex;
     line-height: 40px;
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
 }
 
 ul li.item-menu a .txt-link {
@@ -293,14 +296,14 @@ ul li.item-menu a .txt-link {
 }
 
 .menu-lateral .txt-link {
-    transition: margin-left 0.5s ease; 
+    transition: margin-left 0.5s ease;
 }
 
 .menu-lateral.expandir .txt-link {
     margin-left: 40px;
 }
 
-ul li.item-menu a .icon > i {
+ul li.item-menu a .icon>i {
     font-size: 25px;
 }
 
@@ -319,7 +322,7 @@ main {
 /* Estilizando a logo */
 .logo img {
     flex: 1;
-    height: 65px; 
+    height: 65px;
     padding-left: 30px;
     justify-content: center;
     cursor: pointer;
@@ -336,10 +339,11 @@ main {
 
 .img_usuario {
     display: inline-block;
-    border-radius: 50%; 
-    width: 50px; 
-    height: 50px; 
-    object-fit: cover; /* Faz com que a imagem preencha o elemento sem distorção */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    /* Faz com que a imagem preencha o elemento sem distorção */
     margin-right: 50px;
     cursor: pointer;
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.462);
@@ -357,24 +361,25 @@ nav ul {
 
 .centralizar {
     display: flex;
-    justify-content: center; 
-    align-items: center; 
-    height: 100vh; 
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .formulario {
-    display: flex; 
-    width: 90%; 
-    height: 110%; 
-    background-color: var(--cor0); 
-    border-radius: 10px; 
-    box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.2); 
-    align-items: flex-start; /* Alinha o conteúdo no topo */
+    display: flex;
+    width: 90%;
+    height: 110%;
+    background-color: var(--cor0);
+    border-radius: 10px;
+    box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.2);
+    align-items: flex-start;
+    /* Alinha o conteúdo no topo */
 }
 
 .formulario form {
-    width: 70%; 
-    padding-top: 50px; 
+    width: 70%;
+    padding-top: 50px;
     padding-left: 50px;
 }
 
@@ -384,62 +389,67 @@ nav ul {
     height: 100%;
     border-radius: 0px 10px 10px 0px;
     background-color: var(--cor2);
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    text-align: center; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     flex-direction: column;
     margin-left: 50px;
 }
 
-.retangulo h1, 
+.retangulo h1,
 .retangulo p {
     color: var(--cor0);
 }
 
 .btn_roxo {
-    background-color: var(--cor2); 
-    color: var(--cor0); 
-    border: none; 
-    padding: 10px 20px; 
-    border-radius: 5px; 
-    text-align: center; 
-    cursor: pointer; 
-    font-size: 16px; 
-    transition: background-color 0.3s ease; 
+    background-color: var(--cor2);
+    color: var(--cor0);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
     text-decoration: none;
 }
 
 .btn_roxo:hover {
-    background-color: var(--cor3); 
+    background-color: var(--cor3);
 }
 
 .btn_filtro {
     background-color: #fff;
-    border: solid 3px var(--cor2);
+    border: solid 2px var(--cor2);
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn_filtro:hover {
+    background-color: var(--cor2);
+    color: var(--cor0);
     transition: background-color 0.3s ease;
-    padding: 5px 10px; 
-    border-radius: 5px; 
-    text-align: center; 
-    cursor: pointer; 
-    font-size: 16px;  
 }
 
 .btn_cinza {
-    background-color: var(--cor4); 
-    color: black; 
-    border: none; 
-    padding: 10px 20px; 
-    border-radius: 5px; 
-    text-align: center; 
-    cursor: pointer; 
-    font-size: 16px; 
-    transition: background-color 0.3s ease; 
+    background-color: var(--cor4);
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
     text-decoration: none;
 }
 
 .btn_cinza:hover {
-    background-color: var(--cor1); 
+    background-color: var(--cor1);
 }
 
 .btn_denunciar_excluir {
@@ -494,23 +504,12 @@ nav ul {
     box-shadow: 0px 0px 5px rgba(58, 42, 222, 0.4);
 }
 
-/* Visualização em tempo real */
-#Visualizacao-tempoReal {
-    flex: 1;
-    border: 1px solid #ddd;
-    padding: 10px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    overflow: auto; 
-    max-height: 600px; 
-}
-
 .pergunta-item {
     display: flex;
-    padding: 20px; 
-    margin: 10px 0; 
-    border: solid 1px var(--cor1); 
-    border-radius: 8px; 
+    padding: 20px;
+    margin: 10px 0;
+    border: solid 1px var(--cor1);
+    border-radius: 8px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.386);
 }
 
@@ -518,13 +517,13 @@ nav ul {
 /* Remover a borda superior do primeiro item e a borda inferior do último item */
 .container_perguntas ul {
     padding: 0;
-    list-style-type: none; 
+    list-style-type: none;
     margin: 0;
 }
 
 /* Remove a borda inferior do último item */
 .container_perguntas ul li:last-child {
-    border-bottom: none; 
+    border-bottom: none;
 }
 
 /* Parte de clicavel de acesso a página exclusiva de perguntas*/
@@ -537,11 +536,11 @@ nav ul {
     flex-direction: column;
 }
 
-.links:hover > strong {
+.links:hover>strong {
     text-decoration: underline;
 }
 
-.links > p {
+.links>p {
     display: contents;
     font-size: 14px;
     text-decoration: none;
@@ -549,8 +548,8 @@ nav ul {
 
 .container {
     display: flex;
-    justify-content: center; 
-    flex-wrap: wrap; 
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .card {
@@ -565,7 +564,8 @@ nav ul {
 
 .card img {
     width: 100%;
-    height: 180px; /* Define a altura da imagem para manter a proporção */
+    height: 180px;
+    /* Define a altura da imagem para manter a proporção */
     object-fit: cover;
     border-bottom: 1px solid #ddd;
 }
@@ -580,7 +580,7 @@ nav ul {
     text-decoration: none;
 }
 
-.card .card-title:hover > h5 {
+.card .card-title:hover>h5 {
     text-decoration: underline;
 }
 
@@ -606,15 +606,15 @@ nav ul {
     width: 300px;
     padding: 0;
     margin: 0;
-    position: absolute;  
+    position: absolute;
     max-height: 250px;
     overflow-y: auto;
     background-color: white;
     z-index: 1000;
     border-radius: 10px;
-    left: 50%;          
-    transform: translateX(-50%); 
-    top: 100%;          
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
 }
 
 #etiquetas_sugestoes li {
@@ -732,13 +732,22 @@ section {
     margin-bottom: 20px;
 }
 
-.introducao p, .como-funciona p, .premios-e-beneficios p, .como-moderador p, .beneficios-moderadores p, .como-participar p {
+.introducao p,
+.como-funciona p,
+.premios-e-beneficios p,
+.como-moderador p,
+.beneficios-moderadores p,
+.como-participar p {
     font-size: 1.1rem;
     line-height: 1.6;
 }
 
 
-.introducao ul li, .como-funciona ul li, .premios-e-beneficios ul li, .como-moderador ul li, .beneficios-moderadores ul li {
+.introducao ul li,
+.como-funciona ul li,
+.premios-e-beneficios ul li,
+.como-moderador ul li,
+.beneficios-moderadores ul li {
     font-size: 1.1rem;
 }
 
@@ -775,7 +784,7 @@ section {
     color: #fff;
 }
 
-.pagination-btn:hover{
+.pagination-btn:hover {
     background-color: #6356e5;
     color: #fff;
 }
@@ -784,14 +793,16 @@ section {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px; 
+    margin-top: 20px;
 }
 
 .pagination-btn {
-    margin: 0 2px; /* Espaçamento entre os botões */
+    margin: 0 2px;
+    /* Espaçamento entre os botões */
 }
 
-h1, h2 {
+h1,
+h2 {
     color: #6356e5;
 }
 
@@ -799,8 +810,51 @@ a {
     text-decoration: none;
 }
 
+/* Estilo para o botão circular */
+.btn-circle {
+    border-radius: 50%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
+.btn-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(99, 86, 229, 0.4);
+}
 
+/* Filtro de foco para botão de filtro */
+.btn-outline-primary:hover {
+    background-color: #6356e5;
+    color: #fff;
+    border-color: #6356e5;
+}
 
+/* Estilo da barra de pesquisa */
+form.d-flex input.form-control {
+    border: 1px solid var(--cor4);
+    border-radius: 30px;
+    padding: 10px 20px;
+    transition: border-color 0.3s;
+}
 
+form.d-flex input.form-control:focus {
+    border-color: #6356e5;
+    box-shadow: 0 0 5px rgba(99, 86, 229, 0.5);
+}
 
+.btn_adicionar_pergunta_blog {
+    width: 50px;
+    height: 50px;
+    background-color: var(--cor2);
+    color: var(--cor0);
+    text-decoration: none;
+    border-radius: 50%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s, background-color 0.3s; 
+}
+
+.btn_adicionar_pergunta_blog:hover {
+    background-color: var(--cor3);
+    transform: scale(1.1); 
+}

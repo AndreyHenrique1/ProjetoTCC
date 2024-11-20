@@ -11,6 +11,7 @@ class Denuncia(db.Model):
     codUsuario = db.Column(db.Integer, db.ForeignKey('usuario.codigo'), nullable=False)
     descricao = db.Column(db.String(500), nullable=False)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    verificada = db.Column(db.Boolean, default=False)
 
     # Relacionamentos
     pergunta_relacionada = db.relationship('Pergunta', backref='denuncias', lazy=True)

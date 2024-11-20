@@ -9,6 +9,7 @@
     <!--Arquivos extenos-->
     {% include 'arquivos_externos.html' %}
 </head>
+
 <body>
     <header>
         <div class="logo">
@@ -146,7 +147,8 @@
         {% if current_user.is_authenticated %}
         <!--Campo de adicionar comentario-->
         <h3>Deixe seu Comentário</h3>
-        <form action="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}" method="POST" class="form-com-quill">
+        <form action="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo) }}" method="POST"
+            class="form-com-quill">
             <label for="comentario"></label>
             <br>
             <div id="editor-comentario" style="height: 300px;"></div>
@@ -187,7 +189,7 @@
                                 <!--Nome do usuário dono do comentário-->
                                 <strong>{{ comentario.usuario_relacionado.nomeUsuario if comentario.usuario_relacionado
                                     }}</strong>
-                                
+
                                 <!--Se no comentario tiver denuncias-->
                                 {% if comentario.denuncias|length > 0 %}
                                 <button class="badge bg-danger text-white" style="margin-left: 10px; border: 0px;"
@@ -197,7 +199,8 @@
 
                                 <!--Se no comentario tiver como melhor resposta/comentario-->
                                 {% if comentario.melhor_resposta %}
-                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Melhor resposta</span>
+                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Melhor
+                                    resposta</span>
                                 {% endif %}
                             </p>
                             <!--Data criação do comentario-->
@@ -221,7 +224,7 @@
                         </button>
                     </form>
                     <!-- Exibe a quantidade de likes -->
-                    <span>{{ comentario.quantidade_likes }}</span> 
+                    <span>{{ comentario.quantidade_likes }}</span>
 
                     <!-- Botão de Descurtir -->
                     <form action="{{ url_for('pergunta_route.deslike_comentario', comentario_id=comentario.codigo) }}"
@@ -231,7 +234,7 @@
                         </button>
                     </form>
                     <!-- Exibe a quantidade de deslikes -->
-                    <span>{{ comentario.quantidade_deslikes }}</span> 
+                    <span>{{ comentario.quantidade_deslikes }}</span>
 
                     <!--Caso o usuário seja o dono da pergunta-->
                     {% if current_user.codigo == pergunta.codUsuario %}
@@ -288,15 +291,24 @@
                                         <small class="text-muted">Denunciado em: {{
                                             denuncia.data_criacao.strftime('%d/%m/%Y') }}</small>
 
-                                        <!--Se o usuário tiver mais de 300 pontos-->
+                                        <!--Exibir mensagem se a denúncia for verificada-->
+                                        {% if denuncia.verificada %}
+                                        <p class="mt-2 text-success"><strong>Denúncia verificada por moderador</strong>
+                                        </p>
+                                        {% else %}
+                                        <!--Se o usuário tiver mais de 300 pontos, exibe os botões de ação-->
                                         {% if current_user.quantidadePontos >= 300 %}
                                         <div class="mt-2">
                                             <!--Consegue concordar ou discordar a denuncia-->
-                                            <form class="form-denunciar" method="POST" action="{{ url_for('denuncia_route.resolver_denuncia', denuncia_id=denuncia.codigo) }}">
-                                                <button type="submit" name="acao" value="concordar" class="btn btn-success btn-sm">Concordar</button>
-                                                <button type="submit" name="acao" value="discordar" class="btn btn-danger btn-sm">Discordar</button>
+                                            <form class="form-denunciar" method="POST"
+                                                action="{{ url_for('denuncia_route.resolver_denuncia', denuncia_id=denuncia.codigo) }}">
+                                                <button type="submit" name="acao" value="concordar"
+                                                    class="btn btn-success btn-sm">Concordar</button>
+                                                <button type="submit" name="acao" value="discordar"
+                                                    class="btn btn-danger btn-sm">Discordar</button>
                                             </form>
-                                        </div>         
+                                        </div>
+                                        {% endif %}
                                         {% endif %}
                                     </li>
                                     {% endfor %}
@@ -397,4 +409,5 @@
         </ul>
     </main>
 </body>
+
 </html>

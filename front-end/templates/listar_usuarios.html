@@ -9,6 +9,7 @@
     <!--Arquivos extenos-->
     {% include 'arquivos_externos.html' %}
 </head>
+
 <body>
     <header>
         <div class="header-left">
@@ -32,11 +33,19 @@
     <main class="main-conteudo">
         <h1>Ranking dos Usuários</h1>
 
-        <!--Barra de pesquisa para procurar usuários-->
-        <form class="d-flex" role="search" action="{{ url_for('usuario_route.listar_usuarios') }}" method="GET">
-            <input class="input_roxo me-2" type="search" name="search" placeholder="Pesquisar usuário" aria-label="">
-            <button class="btn btn-outline-success" type="submit">Pesquisar</button>
+        <br>
+
+        <!-- Barra de Pesquisa para Listar Usuários -->
+        <form class="d-flex align-items-center" role="search" action="{{ url_for('usuario_route.listar_usuarios') }}"
+            method="GET" style="margin-bottom: 25px;">
+            <input class="form-control me-2" type="search" name="search" placeholder="Pesquisar usuário"
+                autocomplete="on" aria-label="Pesquisar">
+            <button class="btn btn-primary px-4" style="background-color: #6356e5; border-color: #6356e5;"
+                type="submit">
+                Pesquisar
+            </button>
         </form>
+
 
         <!--Tabela de usuários-->
         <table class="table table-hover">
@@ -71,41 +80,41 @@
 
         <br>
 
-        <!--Recompensas que podem ser resgatadas pelos usuários-->
-        <!-- Falta fazer funcionar back-end -->
         <section class="recompensas mb-5">
             <h2 class="mb-3">Recompensas Disponíveis</h2>
             <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center" data-pontos="50">
-                    <strong>50 pontos</strong> 10% de desconto no curso "Aprenda do zero HTML e CSS"
-                    <button class="btn btn-success btn-sm resgatar">Resgatar</button>
-                    <span class="msg-error" style="display: none; color: red;">Você não tem pontos suficientes</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center" data-pontos="80">
-                    <strong>80 pontos</strong>  30% de desconto no curso "Aprendendo Python"
-                    <button class="btn btn-success btn-sm resgatar">Resgatar</button>
-                    <span class="msg-error" style="display: none; color: red;">Você não tem pontos suficientes</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center" data-pontos="100">
-                    <strong>100 pontos</strong>  Acesso gratuito a um eBook de JavaScript
-                    <button class="btn btn-success btn-sm resgatar">Resgatar</button>
-                    <span class="msg-error" style="display: none; color: red;">Você não tem pontos suficientes</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center" data-pontos="150">
-                    <strong>150 pontos</strong>  20% de desconto no curso "Desenvolvimento Web com Flask"
-                    <button class="btn btn-success btn-sm resgatar">Resgatar</button>
-                    <span class="msg-error" style="display: none; color: red;">Você não tem pontos suficientes</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center" data-pontos="300">
-                    <strong>300 pontos</strong>  Curso avançado de "React e Redux" com 50% de desconto
-                    <button class="btn btn-success btn-sm resgatar">Resgatar</button>
-                    <span class="msg-error" style="display: none; color: red;">Você não tem pontos suficientes</span>
-                </li>
+                {% for recompensa in recompensas %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center" data-pontos="{{ recompensa.pontos }}">
+                        <strong>{{ recompensa.pontos }} pontos</strong> {{ recompensa.descricao }}
+            
+                        {% if usuario_autenticado %}
+                            {% if recompensa.codigo in recompensas_resgatadas_ids %}
+                                <!-- Caso a recompensa já tenha sido resgatada -->
+                                <span class="btn text-muted">Resgatado</span>
+                            {% else %}
+                                <!-- Caso a recompensa ainda não tenha sido resgatada -->
+                                <form action="{{ url_for('usuario_route.resgatar_recompensa') }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="pontos" value="{{ recompensa.pontos }}">
+                                    <input type="hidden" name="recompensa_id" value="{{ recompensa.codigo }}">
+                                    <button type="submit" class="btn_roxo">
+                                        <span>Resgatar</span>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">Faça login para resgatar recompensas</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
             </ul>
         </section>
+        
+
+
     </main>
 
     <!--Icone de ajuda-->
     {% include 'footer.html' %}
 </body>
+
 </html>

@@ -9,6 +9,7 @@
     <!--Arquivos extenos-->
     {% include 'arquivos_externos.html' %}
 </head>
+
 <body>
     <header>
         <div class="logo">
@@ -166,7 +167,8 @@
                                             placeholder="Explique por que este blog é inadequado ou falso..."></textarea>
                                     </div>
                                     <small class="text-muted d-block mt-2">
-                                        Todas as denúncias são analisadas por nossos moderadores. Relatos falsos ou sem fundamento podem levar a penalidades.
+                                        Todas as denúncias são analisadas por nossos moderadores. Relatos falsos ou sem
+                                        fundamento podem levar a penalidades.
                                     </small>
                             </div>
                             <div class="modal-footer">
@@ -206,15 +208,36 @@
                     </div>
                     <div class="modal-body">
                         <p class="mb-3 text-muted">
-                            Este blog recebeu denúncias. Verifique abaixo os detalhes da denúncia
+                            Este blog recebeu denúncias. Verifique abaixo os detalhes da denúncia.
                         </p>
                         <ul class="list-group">
                             {% if blog.denuncias|length > 0 %}
                             {% for denuncia in blog.denuncias %}
                             <li class="list-group-item">
+                                <!-- Motivo da denúncia -->
                                 <p class="mb-1"><strong>Motivo:</strong> {{ denuncia.descricao | safe }}</p>
-                                <small class="text-muted">Denunciado em: {{
-                                    denuncia.data_criacao.strftime('%d/%m/%Y') }}</small>
+                                <!-- Data da denúncia -->
+                                <small class="text-muted">Denunciado em: {{ denuncia.data_criacao.strftime('%d/%m/%Y')
+                                    }}</small>
+
+                                <!-- Exibir mensagem se a denúncia for verificada -->
+                                {% if denuncia.verificada %}
+                                <p class="mt-2 text-success"><strong>Denúncia verificada por moderador</strong></p>
+                                {% else %}
+                                <!-- Se o usuário tiver mais de 300 pontos, exibe os botões de ação -->
+                                {% if current_user.quantidadePontos >= 300 %}
+                                <div class="mt-2">
+                                    <!-- Botões de Concordar e Discordar -->
+                                    <form class="form-denunciar" method="POST"
+                                        action="{{ url_for('denuncia_route.resolver_denuncia', denuncia_id=denuncia.codigo) }}">
+                                        <button type="submit" name="acao" value="concordar"
+                                            class="btn btn-success btn-sm">Concordar</button>
+                                        <button type="submit" name="acao" value="discordar"
+                                            class="btn btn-danger btn-sm">Discordar</button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                                {% endif %}
                             </li>
                             {% endfor %}
                             {% else %}
@@ -391,4 +414,5 @@
         </ul>
     </main>
 </body>
+
 </html>

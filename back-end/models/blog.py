@@ -1,9 +1,7 @@
 from database.db import db
 from datetime import datetime
-from sqlalchemy.orm import relationship
 from models.likes_deslikes import Likes_deslikes
 
-# Modelo Blog
 class Blog(db.Model):
     __tablename__ = 'blog'
 

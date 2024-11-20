@@ -26,9 +26,11 @@ class Usuario(db.Model, UserMixin):
 
     # Relacionamentos de tabelas
     blog_relacionado = db.relationship("Blog", back_populates="usuario_relacionado")
-    comentario_feito_relacionado = db.relationship('comentariosPerguntas', backref='autor_comentario', lazy=True)  # Usando string aqui
+    comentario_feito_relacionado = db.relationship('comentariosPerguntas', backref='autor_comentario', lazy=True)  
     notificacao_relacionada = db.relationship('Notificacao', back_populates='usuario_relacionado')
     pergunta_relacionada = db.relationship('Pergunta', backref='autor', lazy=True)
+    recompensas_resgatadas = db.relationship('RecompensasResgatadas', back_populates='usuario')
+
 
     def __init__(self, email, nomeCompleto, nomeUsuario, senha, foto_perfil=None, quantidadePontos=0, cor_avatar=None, sobre=None):
         self.email = email

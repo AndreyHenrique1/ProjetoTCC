@@ -9,6 +9,8 @@ from models.perguntasEtiquetas import PerguntasEtiquetas
 from models.etiqueta import Etiqueta
 from models.comentariosPerguntas import comentariosPerguntas
 from models.denuncia import Denuncia
+from models.recompensas import Recompensa
+from models.recompensasResgatadas import RecompensasResgatadas
 import cloudinary.uploader
 from models.notificacao import enviar_notificacao
 from collections import Counter
@@ -110,17 +112,29 @@ def editar_perfil():
 # Rota da lista de usuários
 @usuario_route.route('/usuarios')
 def listar_usuarios():
+    recompensas = Recompensa.query.all()  # Obter todas as recompensas do banco de dados
     search_query = request.args.get('search')  # Obtém o nome do usuário a partir da query string
     
-    # Obtém todos os usuários ordenados pela quantidade de pontos
-    usuarios = Usuario.query.order_by(desc(Usuario.quantidadePontos)).all()
+    usuarios = Usuario.query.order_by(desc(Usuario.quantidadePontos)).all()  # Usuários ordenados por pontos
 
-    # Se houver uma pesquisa, filtra os usuários pela string de pesquisa no nome
+    # Obter IDs das recompensas já resgatadas pelo usuário autenticado
+    recompensas_resgatadas_ids = []
+    if current_user.is_authenticated:
+        recompensas_resgatadas_ids = [
+            resgatada.codRecompensa for resgatada in current_user.recompensas_resgatadas
+        ]
+
     if search_query:
         usuarios = [usuario for usuario in usuarios if search_query.lower() in usuario.nomeUsuario.lower()]
     
-    # Passa a função 'obter_ranking_e_medalha' para o template
-    return render_template('listar_usuarios.html', usuarios=usuarios, obter_ranking_e_medalha=obter_ranking_e_medalha)
+    return render_template(
+        'listar_usuarios.html',
+        usuarios=usuarios,
+        recompensas=recompensas,
+        recompensas_resgatadas_ids=recompensas_resgatadas_ids,
+        obter_ranking_e_medalha=obter_ranking_e_medalha,
+        usuario_autenticado=current_user.is_authenticated
+    )
 
 
 # Função para obter as etiquetas mais usadas
@@ -180,4 +194,40 @@ def perfil_outro_usuario(user_id):
         etiquetas_mais_usadas=tags_mais_usadas
     )
 
+@usuario_route.route('/resgatar_recompensa', methods=['POST'])
+def resgatar_recompensa():
+    pontos_necessarios = request.form.get('pontos', '').strip()
+    recompensa_id = request.form.get('recompensa_id', '').strip()
 
+    if not pontos_necessarios or not recompensa_id:
+        flash('Dados inválidos ou incompletos.', 'error')
+        return redirect(url_for('usuario_route.listar_usuarios'))
+
+    try:
+        pontos_necessarios = int(pontos_necessarios)
+        recompensa_id = int(recompensa_id)
+    except ValueError:
+        flash('Erro ao processar os dados. Tente novamente.', 'error')
+        return redirect(url_for('usuario_route.listar_usuarios'))
+
+    # Verifica se o usuário já resgatou a recompensa
+    recompensa_resgatada = RecompensasResgatadas.query.filter_by(
+        codUsuario=current_user.codigo, codRecompensa=recompensa_id).first()
+
+    if recompensa_resgatada:
+        flash('Você já resgatou essa recompensa.', 'warning')
+        return redirect(url_for('usuario_route.listar_usuarios'))
+
+    if current_user.quantidadePontos >= pontos_necessarios:
+        current_user.quantidadePontos -= pontos_necessarios
+
+        nova_recompensa_resgatada = RecompensasResgatadas(
+            codUsuario=current_user.codigo,
+            codRecompensa=recompensa_id
+        )
+        db.session.add(nova_recompensa_resgatada)
+        db.session.commit()
+
+        return redirect(url_for('usuario_route.listar_usuarios', sucesso="recompesa_resgatada"))
+
+    return redirect(url_for('usuario_route.listar_usuarios', recompensa_resgatada=recompensa_resgatada))

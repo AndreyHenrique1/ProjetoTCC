@@ -53,47 +53,77 @@ def resolver_denuncia(denuncia_id):
 
     # Verificar se o usuário atual é moderador (300 pontos ou mais)
     if current_user.quantidadePontos < 300:
-        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta))
+        # Verificar se a denúncia é de uma pergunta
+        if denuncia.codPergunta:
+            return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta))
+        else:
+            return redirect(url_for('blog_route.detalhes_blog', blog_id=denuncia.codBlog))
 
     # Identificar a ação do formulário
     acao = request.form.get('acao')
-    print(f"Ação recebida: {acao}")
-
-    # Verificando se a ação foi recebida
     if acao is None:
-        print("Nenhuma ação foi recebida!")
-        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta))
+        # Se não houver ação, redireciona para a pergunta ou blog
+        if denuncia.codPergunta:
+            return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta))
+        else:
+            return redirect(url_for('blog_route.detalhes_blog', blog_id=denuncia.codBlog))
 
-    # Ações baseadas na escolha
     if acao == "concordar":
         # Marcar a denúncia como verificada
-        denuncia.verificadas = True
+        denuncia.verificada = True
         db.session.commit()
-        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta, sucesso="denuncia_verificada", verificada="Comentário verificado por moderador"))
+
+        # Redirecionar com mensagem de sucesso para pergunta ou blog
+        if denuncia.codPergunta:
+            return redirect(url_for(
+                'pergunta_route.detalhes_pergunta',
+                pergunta_id=denuncia.codPergunta,
+                sucesso="denuncia_verificada",
+                verificada="Denúncia verificada por moderador"
+            ))
+        else:
+            return redirect(url_for(
+                'blog_route.detalhes_blog',
+                blog_id=denuncia.codBlog,
+                sucesso="denuncia_verificada",
+                verificada="Denúncia verificada por moderador"
+            ))
 
     elif acao == "discordar":
-        # Recuperar o comentário relacionado à denúncia
-        comentario = comentariosPerguntas.query.get_or_404(denuncia.codComentario)
-        print(f"Comentário encontrado: {comentario}")
+        # Se a denúncia for de comentário
+        if denuncia.codComentario:
+            comentario = comentariosPerguntas.query.get_or_404(denuncia.codComentario)
+            usuario_comentario = Usuario.query.get(comentario.codUsuario)
+            db.session.delete(denuncia)
 
-        # Recuperar o usuário do comentário
-        usuario_comentario = Usuario.query.get(comentario.codUsuario)
-        print(f"Usuário do comentário: {usuario_comentario}")
+            # Restaurar pontos ao autor do comentário, se existir
+            if usuario_comentario:
+                usuario_comentario.quantidadePontos += 5
+                db.session.commit()
 
-        # Excluir a denúncia
-        db.session.delete(denuncia)
-        print(f"Denúncia excluída: {denuncia}")
-
-        # Restaurar pontos ao autor do comentário
-        if usuario_comentario:
-            usuario_comentario.quantidadePontos += 5
+            # Redirecionar com mensagem de denúncia removida para a pergunta
+            return redirect(url_for(
+                'pergunta_route.detalhes_pergunta',
+                pergunta_id=denuncia.codPergunta,
+                sucesso="denuncia_removida"
+            ))
+        # Se a denúncia for de blog
+        elif denuncia.codBlog:
+            db.session.delete(denuncia)
             db.session.commit()
-            print(f"Pontos restaurados para o usuário: {usuario_comentario.quantidadePontos}")
 
-        db.session.commit()  
-        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta, sucesso="denuncia_removida"))
+            # Redirecionar com mensagem de denúncia removida para o blog
+            return redirect(url_for(
+                'blog_route.detalhes_blog',
+                blog_id=denuncia.codBlog,
+                sucesso="denuncia_removida"
+            ))
 
-    return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta))
+    # Redirecionamento padrão caso nenhuma ação seja válida
+    if denuncia.codPergunta:
+        return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta))
+    else:
+        return redirect(url_for('blog_route.detalhes_blog', blog_id=denuncia.codBlog))
 
 
 # Rota para enviar uma denúncia de blog

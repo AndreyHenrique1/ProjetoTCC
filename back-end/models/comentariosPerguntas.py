@@ -1,6 +1,5 @@
 from database.db import db
 from datetime import datetime
-from sqlalchemy.orm import aliased
 from models.likes_deslikes import Likes_deslikes
 
 class comentariosPerguntas(db.Model):
