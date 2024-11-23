@@ -109,11 +109,6 @@
                                         request.args.get('ordenar')=='antigas' %}checked{% endif %}>
                                     <label class="form-check-label text-dark">Mais Antigas</label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ordenar" value="sem_respostas" {%
-                                        if request.args.get('ordenar')=='sem_respostas' %}checked{% endif %}>
-                                    <label class="form-check-label text-dark">Sem Respostas</label>
-                                </div>
                             </div>
 
                             <!-- Botões de Ação -->
@@ -129,6 +124,7 @@
             </div>
         </div>
 
+        {% include 'Img_patrocinio.html' %}
 
         <br>
 

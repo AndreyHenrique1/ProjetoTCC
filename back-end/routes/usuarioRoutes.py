@@ -1,4 +1,3 @@
-from io import BytesIO
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_required
 from database.db import db
@@ -11,8 +10,8 @@ from models.comentariosPerguntas import comentariosPerguntas
 from models.denuncia import Denuncia
 from models.recompensas import Recompensa
 from models.recompensasResgatadas import RecompensasResgatadas
+from models.likes_deslikes import Likes_deslikes
 import cloudinary.uploader
-from models.notificacao import enviar_notificacao
 from collections import Counter
 from sqlalchemy import desc
 
@@ -34,6 +33,7 @@ def obter_ranking_e_medalha(user_id):
             return posicao, medalha
     return None, None
 
+# Rota de perfil do usuario logado
 @usuario_route.route('/perfil')
 @login_required
 def perfil():
@@ -56,7 +56,6 @@ def perfil():
     perguntas_count = Pergunta.query.filter_by(codUsuario=current_user.codigo).count()
     blogs_count = Blog.query.filter_by(codUsuario=current_user.codigo).count()
     respostas_count = comentariosPerguntas.query.filter_by(codUsuario=current_user.codigo).count()
-    denuncias_count = Denuncia.query.filter_by(codUsuario=current_user.codigo).count()
 
     # Obtém o ranking e a medalha do usuário atual
     ranking, medalha = obter_ranking_e_medalha(current_user.codigo)
@@ -69,7 +68,6 @@ def perfil():
         perguntas_count=perguntas_count,
         blogs_count=blogs_count,
         respostas_count=respostas_count,
-        denuncias_count=denuncias_count,
         sobre=sobre_usuario,
         ranking=ranking,
         medalha=medalha,
@@ -112,17 +110,9 @@ def editar_perfil():
 # Rota da lista de usuários
 @usuario_route.route('/usuarios')
 def listar_usuarios():
-    recompensas = Recompensa.query.all()  # Obter todas as recompensas do banco de dados
-    search_query = request.args.get('search')  # Obtém o nome do usuário a partir da query string
+    search_query = request.args.get('search')  
     
     usuarios = Usuario.query.order_by(desc(Usuario.quantidadePontos)).all()  # Usuários ordenados por pontos
-
-    # Obter IDs das recompensas já resgatadas pelo usuário autenticado
-    recompensas_resgatadas_ids = []
-    if current_user.is_authenticated:
-        recompensas_resgatadas_ids = [
-            resgatada.codRecompensa for resgatada in current_user.recompensas_resgatadas
-        ]
 
     if search_query:
         usuarios = [usuario for usuario in usuarios if search_query.lower() in usuario.nomeUsuario.lower()]
@@ -130,8 +120,6 @@ def listar_usuarios():
     return render_template(
         'listar_usuarios.html',
         usuarios=usuarios,
-        recompensas=recompensas,
-        recompensas_resgatadas_ids=recompensas_resgatadas_ids,
         obter_ranking_e_medalha=obter_ranking_e_medalha,
         usuario_autenticado=current_user.is_authenticated
     )
@@ -139,7 +127,6 @@ def listar_usuarios():
 
 # Função para obter as etiquetas mais usadas
 def obter_etiquetas_mais_usadas(user_id):
-    # Obter todas as perguntas do usuário
     perguntas = Pergunta.query.filter_by(codUsuario=user_id).all()
     
     # Coletar todas as etiquetas associadas a essas perguntas
@@ -155,17 +142,17 @@ def obter_etiquetas_mais_usadas(user_id):
     # Criar uma lista com as 5 etiquetas mais comuns
     etiquetas_mais_usadas = []
     for codEtiqueta, count in contagem_etiquetas.most_common(5):
-        etiqueta = Etiqueta.query.get(codEtiqueta)  # Obter a etiqueta pelo código
+        etiqueta = Etiqueta.query.get(codEtiqueta)  
         if etiqueta:
-            etiquetas_mais_usadas.append((etiqueta.nome, count))  # Adicionar o nome da etiqueta e a contagem
+            etiquetas_mais_usadas.append((etiqueta.nome, count))  
     
     return etiquetas_mais_usadas
 
+# Rota para ver o perfil de outro usuário do site
 @usuario_route.route('/perfil/<int:user_id>')
 def perfil_outro_usuario(user_id):
     usuario = Usuario.query.get(user_id)
     if not usuario:
-        flash("Usuário não encontrado.", "danger")
         return redirect(url_for('home.homePergunta'))
     
     # Obtendo informações do usuário que está sendo visualizado
@@ -177,6 +164,7 @@ def perfil_outro_usuario(user_id):
     perguntas_count = Pergunta.query.filter_by(codUsuario=usuario.codigo).count()
     blogs_count = Blog.query.filter_by(codUsuario=usuario.codigo).count()
     respostas_count = comentariosPerguntas.query.filter_by(codUsuario=usuario.codigo).count()
+    denuncias_count = Denuncia.query.filter_by(codUsuario=current_user.codigo).count()
 
     ranking, medalha = obter_ranking_e_medalha(usuario.codigo)
 
@@ -190,44 +178,7 @@ def perfil_outro_usuario(user_id):
         blogs_count=blogs_count,
         respostas_count=respostas_count,
         ranking=ranking,
+        denuncias_count=denuncias_count,
         medalha=medalha,
         etiquetas_mais_usadas=tags_mais_usadas
     )
-
-@usuario_route.route('/resgatar_recompensa', methods=['POST'])
-def resgatar_recompensa():
-    pontos_necessarios = request.form.get('pontos', '').strip()
-    recompensa_id = request.form.get('recompensa_id', '').strip()
-
-    if not pontos_necessarios or not recompensa_id:
-        flash('Dados inválidos ou incompletos.', 'error')
-        return redirect(url_for('usuario_route.listar_usuarios'))
-
-    try:
-        pontos_necessarios = int(pontos_necessarios)
-        recompensa_id = int(recompensa_id)
-    except ValueError:
-        flash('Erro ao processar os dados. Tente novamente.', 'error')
-        return redirect(url_for('usuario_route.listar_usuarios'))
-
-    # Verifica se o usuário já resgatou a recompensa
-    recompensa_resgatada = RecompensasResgatadas.query.filter_by(
-        codUsuario=current_user.codigo, codRecompensa=recompensa_id).first()
-
-    if recompensa_resgatada:
-        flash('Você já resgatou essa recompensa.', 'warning')
-        return redirect(url_for('usuario_route.listar_usuarios'))
-
-    if current_user.quantidadePontos >= pontos_necessarios:
-        current_user.quantidadePontos -= pontos_necessarios
-
-        nova_recompensa_resgatada = RecompensasResgatadas(
-            codUsuario=current_user.codigo,
-            codRecompensa=recompensa_id
-        )
-        db.session.add(nova_recompensa_resgatada)
-        db.session.commit()
-
-        return redirect(url_for('usuario_route.listar_usuarios', sucesso="recompesa_resgatada"))
-
-    return redirect(url_for('usuario_route.listar_usuarios', recompensa_resgatada=recompensa_resgatada))

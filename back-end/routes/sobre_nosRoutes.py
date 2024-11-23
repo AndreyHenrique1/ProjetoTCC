@@ -1,4 +1,4 @@
-from flask import request, render_template, Blueprint
+from flask import render_template, Blueprint
 
 sobreNos_route = Blueprint('sobreNos', __name__, template_folder='../../front-end/templates')
 

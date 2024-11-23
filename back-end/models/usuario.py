@@ -17,7 +17,7 @@ class Usuario(db.Model, UserMixin):
     nomeCompleto = db.Column(db.String(50))
     nomeUsuario = db.Column(db.String(50), nullable=False, unique=True)
     senha = db.Column(db.String(255), nullable=False)
-    sobre = db.Column(db.String(500), nullable=True)
+    sobre = db.Column(db.String(1000), nullable=True)
     quantidadePontos = db.Column(db.Integer, default=0)
     foto_perfil = db.Column(db.Text, nullable=True)
     cor_avatar = db.Column(db.String(7), nullable=True)
@@ -27,9 +27,16 @@ class Usuario(db.Model, UserMixin):
     # Relacionamentos de tabelas
     blog_relacionado = db.relationship("Blog", back_populates="usuario_relacionado")
     comentario_feito_relacionado = db.relationship('comentariosPerguntas', backref='autor_comentario', lazy=True)  
-    notificacao_relacionada = db.relationship('Notificacao', back_populates='usuario_relacionado')
     pergunta_relacionada = db.relationship('Pergunta', backref='autor', lazy=True)
     recompensas_resgatadas = db.relationship('RecompensasResgatadas', back_populates='usuario')
+
+    # Relacionamento com notificações, especificando a junção
+    notificacao_relacionada = db.relationship(
+        'Notificacao',
+        primaryjoin="Usuario.codigo == Notificacao.codUsuario",  # Especificação explícita
+        backref='usuario_relacionado',
+        lazy=True
+    )
 
 
     def __init__(self, email, nomeCompleto, nomeUsuario, senha, foto_perfil=None, quantidadePontos=0, cor_avatar=None, sobre=None):

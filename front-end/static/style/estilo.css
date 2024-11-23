@@ -4,11 +4,13 @@ body {
     font-family: var(--fonte-padrao);
 }
 
+/*Configurações gerais*/
 * {
     margin: 0px;
     padding: 0px;
 }
 
+/*Cores*/
 :root {
     --cor0: #ffffff;
     --cor1: #D9D9D9;
@@ -19,27 +21,26 @@ body {
     --fonte-padrao: Arial, Verdana, Helvetica, sans-serif;
 }
 
-/* Remove a rolagem lateral */
 body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    /* Impede a rolagem horizontal */
 }
 
 /* Esconde o menu lateral em telas menores que 1250px */
 @media (max-width: 1250px) {
+    /* Esconde o menu lateral */
     .menu-lateral {
         display: none;
-        /* Esconde o menu lateral */
     }
 
     .menu-lateral.expandir {
-        display: block;
         /* Exibe o menu lateral quando a classe 'expandir' for adicionada */
+        display: block;
     }
 }
 
+/*Para telas menores que 750px*/
 @media screen and (max-width: 750px) {
     .retangulo {
         display: none !important;
@@ -70,7 +71,7 @@ header {
     z-index: 1000;
 }
 
-/* Botão de expandir e logo alinhados à esquerda */
+/*Alinhamento a esquerda*/
 .header-left {
     display: flex;
     align-items: center;
@@ -84,6 +85,7 @@ header {
     gap: 40px;
 }
 
+/*Cabeçalho*/
 footer {
     width: 100%;
     position: fixed;
@@ -118,111 +120,9 @@ footer {
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.39);
 }
 
-/*Barra de pesquisa*/
-.pesquisar {
-    position: relative;
-    display: flex;
-    align-items: center;
-    background-color: var(--cor0);
-    border-radius: 30px;
-    min-width: 50px;
-    height: 50px;
-    overflow: hidden;
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.403);
-}
-
-.pesquisar input {
-    border: 0;
-    outline: 0;
-    background-color: transparent;
-    width: 50px;
-    font-size: 1rem;
-    transition: width .2 ease-in-out;
-    padding-left: 16px;
-
-    transition: .5s;
-}
-
-.pesquisar input:focus {
-    width: 380px;
-    transition: .5s;
-}
-
-.pesquisar label {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    right: 0;
-
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-
-    background-color: var(--cor0);
-    cursor: pointer;
-}
-
-/*Icone da barra de pesquisa*/
-.pesquisar .icon {
-    position: relative;
-    display: block;
-    width: 20px;
-    height: 20px;
-}
-
-.pesquisar .icon::before,
-.pesquisar .icon::after {
-    content: "";
-    position: absolute;
-    display: block;
-}
-
-.pesquisar .icon::before {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    top: 0;
-    left: 0;
-    border: 3px solid black;
-}
-
-.pesquisar .icon::after {
-    width: 10px;
-    height: 2px;
-
-    transform: rotate(50deg);
-
-    border-radius: 2px;
-    background-color: black;
-
-    right: -2px;
-    bottom: 0;
-}
-
-.pesquisar input:focus+label .icon::after,
-.pesquisar input:focus+label .icon::before {
-    width: 100%;
-    height: 3px;
-    top: 50%;
-    left: 50%;
-    border: 0;
-    border-radius: 3px;
-    background-color: black;
-}
-
-.pesquisar input:focus+label .icon::before {
-    transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.pesquisar input:focus+label .icon::after {
-    transform: translate(-50%, -50%) rotate(45deg);
-}
-
 /*Menu lateral*/
 .menu-lateral {
     width: 70px;
-    /* Largura inicial do menu lateral */
     height: 100%;
     background-color: #fff;
     border-right: solid 3px var(--cor1);
@@ -343,7 +243,6 @@ main {
     width: 50px;
     height: 50px;
     object-fit: cover;
-    /* Faz com que a imagem preencha o elemento sem distorção */
     margin-right: 50px;
     cursor: pointer;
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.462);
@@ -374,7 +273,6 @@ nav ul {
     border-radius: 10px;
     box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.2);
     align-items: flex-start;
-    /* Alinha o conteúdo no topo */
 }
 
 .formulario form {
@@ -501,7 +399,6 @@ nav ul {
 
 .btn-marcar-lida:focus {
     outline: none;
-    box-shadow: 0px 0px 5px rgba(58, 42, 222, 0.4);
 }
 
 .pergunta-item {
@@ -511,19 +408,6 @@ nav ul {
     border: solid 1px var(--cor1);
     border-radius: 8px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.386);
-}
-
-
-/* Remover a borda superior do primeiro item e a borda inferior do último item */
-.container_perguntas ul {
-    padding: 0;
-    list-style-type: none;
-    margin: 0;
-}
-
-/* Remove a borda inferior do último item */
-.container_perguntas ul li:last-child {
-    border-bottom: none;
 }
 
 /* Parte de clicavel de acesso a página exclusiva de perguntas*/
@@ -565,7 +449,6 @@ nav ul {
 .card img {
     width: 100%;
     height: 180px;
-    /* Define a altura da imagem para manter a proporção */
     object-fit: cover;
     border-bottom: 1px solid #ddd;
 }
@@ -632,55 +515,6 @@ em {
     font-size: 14px;
 }
 
-
-/* Estilo para o contêiner principal da IA */
-.ia-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Estilo para o campo de entrada da pergunta */
-.ia-input {
-    margin-bottom: 20px;
-}
-
-.ia-input label {
-    font-size: 1.2em;
-    color: #333;
-}
-
-#pergunta {
-    width: 100%;
-    height: 100px;
-    padding: 10px;
-    font-size: 1em;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-top: 8px;
-}
-
-/* Estilo para a resposta da IA */
-.ia-resposta {
-    margin-top: 20px;
-}
-
-.ia-resposta h2 {
-    font-size: 1.5em;
-    color: #333;
-}
-
-#resposta {
-    font-size: 1.1em;
-    color: #555;
-    background-color: #f1f1f1;
-    padding: 15px;
-    border-radius: 4px;
-}
-
 /*Input de lista de usuários*/
 .input_roxo {
     border: 2px solid #6356e5;
@@ -727,31 +561,6 @@ section {
     margin-bottom: 40px;
 }
 
-.introducao h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-}
-
-.introducao p,
-.como-funciona p,
-.premios-e-beneficios p,
-.como-moderador p,
-.beneficios-moderadores p,
-.como-participar p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-}
-
-
-.introducao ul li,
-.como-funciona ul li,
-.premios-e-beneficios ul li,
-.como-moderador ul li,
-.beneficios-moderadores ul li {
-    font-size: 1.1rem;
-}
-
-
 .tabs {
     margin: 20px 0;
     display: flex;
@@ -774,19 +583,20 @@ section {
     background-color: var(--cor3);
 }
 
+/*Estilo das paginações*/
 .pagination-btn {
-    color: #6356e5;
-    border-color: #6356e5;
+    color: var(--cor2);
+    border-color: var(--cor2);
 }
 
 .pagination-btn.active {
-    background-color: #6356e5;
-    color: #fff;
+    background-color: var(--cor2);
+    color: var(--cor0);
 }
 
 .pagination-btn:hover {
-    background-color: #6356e5;
-    color: #fff;
+    background-color: var(--cor2);
+    color: var(--cor0);
 }
 
 .pagination-container {
@@ -796,36 +606,28 @@ section {
     margin-top: 20px;
 }
 
+/* Espaçamento entre os botões */
 .pagination-btn {
     margin: 0 2px;
-    /* Espaçamento entre os botões */
 }
 
-h1,
-h2 {
-    color: #6356e5;
+section > h1{
+    color: var(--cor2);
+}
+
+section > h2{
+    color: var(--cor2);
 }
 
 a {
     text-decoration: none;
 }
 
-/* Estilo para o botão circular */
-.btn-circle {
-    border-radius: 50%;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.btn-circle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 5px 15px rgba(99, 86, 229, 0.4);
-}
-
 /* Filtro de foco para botão de filtro */
 .btn-outline-primary:hover {
-    background-color: #6356e5;
-    color: #fff;
-    border-color: #6356e5;
+    background-color: var(--cor2);
+    color: var(--cor0);
+    border-color: var(--cor2);
 }
 
 /* Estilo da barra de pesquisa */

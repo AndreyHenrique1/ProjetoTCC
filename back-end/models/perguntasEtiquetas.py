@@ -9,6 +9,3 @@ class PerguntasEtiquetas(db.Model):
     # Relacionamentos de tabelas
     pergunta_relacionada = db.relationship('Pergunta', backref='perguntasEtiquetas', lazy=True)
     etiqueta_relacionada = db.relationship('Etiqueta', backref='perguntasEtiquetas', lazy=True)
-
-    def __repr__(self):
-        return f'<PerguntasEtiquetas {self.codPergunta}, {self.codEtiqueta}>'

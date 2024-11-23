@@ -40,8 +40,6 @@ def listar_blogs():
         blogs = blogs.order_by(Blog.data_criacao.desc())
     elif ordenar_por == 'antigas':
         blogs = blogs.order_by(Blog.data_criacao.asc())
-    elif ordenar_por == 'sem_respostas':
-        blogs = blogs.filter(Blog.respostas == 0)
 
     # Pagina os blogs
     per_page = 16  
@@ -207,7 +205,7 @@ def excluir_blog(blog_id):
 # Rota para comentários do blog
 @blog_route.route('/blog/<int:blog_id>', methods=['GET', 'POST'])
 def comentario_blog(blog_id):
-    blog = Blog.query.get_or_404(blog_id)  
+    blog = Blog.query.get_or_404(blog_id)
 
     if request.method == 'POST':
         conteudo_comentario = request.form.get('conteudo_comentario')
@@ -221,14 +219,22 @@ def comentario_blog(blog_id):
             db.session.commit()
 
             # Enviar notificação para o dono do blog
-            if current_user.codigo != blog.codUsuario:  
+            if current_user.codigo != blog.codUsuario:
                 mensagem = f"Novo comentário no seu blog: {blog.titulo}"
                 link_blog = url_for('blog_route.detalhes_blog', blog_id=blog_id)
-                enviar_notificacao(blog.codUsuario, mensagem, link_blog, blog.codigo)
+
+                # Passar codBlog para a notificação e codPergunta como None
+                enviar_notificacao(
+                    blog.codUsuario, 
+                    mensagem, 
+                    link_blog, 
+                    codBlog=blog.codigo, 
+                    codPergunta=None
+                )
 
             return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id, sucesso="comentario_realizado"))
 
-    comentarios = comentariosBlog.query.filter_by(codBlog=blog_id).all()  
+    comentarios = comentariosBlog.query.filter_by(codBlog=blog_id).all()
 
     return render_template('detalhes_blog.html', blog=blog, comentarios=comentarios)
 

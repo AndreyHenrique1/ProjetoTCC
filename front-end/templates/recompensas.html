@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+
+    <!--Arquivos extenos-->
+    {% include 'arquivos_externos.html' %}
+</head>
+
+<body>
+    <header>
+        <div class="header-left">
+            <div class="btn-expandir">
+                <i class="bi bi-list" id="btn-exp"></i>
+            </div>
+            <div class="logo">
+                <a href="{{ url_for('home.homePergunta') }}">
+                    <img src="{{ url_for('static', filename='Imagens/Foto_logo.png') }}" alt="Logo do site">
+                </a>
+            </div>
+        </div>
+
+        <!--Icone de notificação e perfil-->
+        {% include 'icone_notificacao_perfil.html' %}
+    </header>
+
+    <!-- Chamando o arquivo menu_lateral.html -->
+    {% include 'menu_lateral.html' %}
+
+    <main class="main-conteudo">
+        <section class="recompensas mb-5">
+            <h2 class="mb-3">Recompensas Disponíveis</h2>
+            <ul class="list-group">
+                {% for recompensa in recompensas %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center" data-pontos="{{ recompensa.pontos }}">
+                        <strong>{{ recompensa.pontos }} pontos</strong> {{ recompensa.descricao }}
+            
+                        {% if usuario_autenticado %}
+                            {% if recompensa.codigo in recompensas_resgatadas_ids %}
+                                <!-- Caso a recompensa já tenha sido resgatada -->
+                                <span class="btn text-muted">Resgatado</span>
+                            {% else %}
+                                <!-- Caso a recompensa ainda não tenha sido resgatada -->
+                                <form action="{{ url_for('recompensas.resgatar_recompensa') }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="pontos" value="{{ recompensa.pontos }}">
+                                    <input type="hidden" name="recompensa_id" value="{{ recompensa.codigo }}">
+                                    <button type="submit" class="btn_roxo">
+                                        <span>Resgatar</span>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">Faça login para resgatar recompensas</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+
+    <!--Icone de ajuda-->
+    {% include 'footer.html' %}
+</body>
+
+</html>

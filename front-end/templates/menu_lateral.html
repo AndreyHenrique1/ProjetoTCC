@@ -36,4 +36,13 @@
             </a>
         </li>
     </ul>
+    <ul>
+        <!--Recompensas-->
+        <li class="item-menu {% if request.endpoint == 'recompensas.recompensas' %}ativo{% endif %}">
+            <a href="{{ url_for('recompensas.recompensas') }}">
+                <span class="icon"><i class="bi bi-award-fill"></i></span>
+                <span class="txt-link">Recompensas</span>
+            </a>
+        </li>
+    </ul>
 </nav>

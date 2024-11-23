@@ -110,12 +110,6 @@
                                             if request.args.get('ordenar')=='antigas' %}checked{% endif %}>
                                         <label class="form-check-label">Mais Antigas</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="ordenar"
-                                            value="sem_respostas" {% if request.args.get('ordenar')=='sem_respostas'
-                                            %}checked{% endif %}>
-                                        <label class="form-check-label">Sem Respostas</label>
-                                    </div>
                                 </div>
 
                                 <!-- Botão Aplicar Filtros -->
@@ -128,6 +122,10 @@
                     </div>
                 </div>
             </div>
+
+            {% include 'Img_patrocinio.html' %}
+
+            <br>
 
             <!-- Cards dos blogs -->
             <div class="container mt-5">

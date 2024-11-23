@@ -9,6 +9,7 @@ from sqlalchemy import func
 
 homePergunta_route = Blueprint('home', __name__, template_folder='../../front-end/templates')
 
+# Rota da página inicial
 @homePergunta_route.route('/')
 def homePergunta():
     categorias_selecionadas = request.args.getlist('categorias')
@@ -35,8 +36,6 @@ def homePergunta():
         perguntas = perguntas.order_by(Pergunta.data_criacao.desc())
     elif ordenar_por == 'antigas':
         perguntas = perguntas.order_by(Pergunta.data_criacao.asc())
-    elif ordenar_por == 'sem_respostas':
-        perguntas = perguntas.filter(Pergunta.respostas == 0)
 
     # Paginando as perguntas
     per_page = 10  # Define quantas perguntas você quer por página

@@ -33,19 +33,28 @@
 
                     <!--Botões das notificações-->
                     <div class="actions" style="margin-right: 10px; text-align: center;">
-                        <form action="{{ url_for('notificacao_route.marcar_como_lida', notificacao_id=notificacao.codigo) }}"
-                              method="POST" style="display:inline;">
-                              <!--Marcar como lida para excluir notificação-->
+                        <form
+                            action="{{ url_for('notificacao_route.marcar_como_lida', notificacao_id=notificacao.codigo) }}"
+                            method="POST" style="display:inline;">
+                            <!--Marcar como lida para excluir notificação-->
                             <button type="submit" class="btn-marcar-lida">Marcar como lida</button>
                         </form>
-                        <!--Ver perguntas para ser redirecionado para a pergunta relacionada-->
+
+                        {% if notificacao.codPergunta %}
+                        <!-- Link para a pergunta, caso a notificação seja de pergunta -->
                         <a href="{{ url_for('pergunta_route.detalhes_pergunta', pergunta_id=notificacao.codPergunta) }}"
-                           class="btn_roxo">Ver Pergunta</a>
+                            class="btn_roxo">Ver Pergunta</a>
+                        {% elif notificacao.codBlog %}
+                        <!-- Link para o blog, caso a notificação seja de blog -->
+                        <a href="{{ url_for('blog_route.detalhes_blog', blog_id=notificacao.codBlog) }}"
+                            class="btn_roxo">Ver Blog</a>
+                        {% endif %}
                     </div>
                 </li>
             </div>
             {% endfor %}
         </ul>
-    </main>    
+    </main>
 </body>
+
 </html>

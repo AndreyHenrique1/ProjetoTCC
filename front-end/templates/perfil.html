@@ -48,12 +48,12 @@
                             <!-- Icone de Editar -->
                             <button type="button" class="btn btn-link p-0" style="color: black;" data-bs-toggle="modal"
                                 data-bs-target="#exampleModal">
-                                <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
+                                <i class="bi bi-pencil-square icon_roxo" style="font-size: 22px;"></i></i>
                             </button>
                             <!-- Icone de Logout -->
                             <a href="{{ url_for('login_route.logout') }}" class="btn btn-link p-0 ms-2"
                                 style="color: black;">
-                                <i class="bi bi-box-arrow-left" style="font-size: 22px;"></i>
+                                <i class="bi bi-box-arrow-left icon_vermelho" style="font-size: 22px;"></i>
                             </a>
                         </div>
                         {% endif %}
@@ -66,9 +66,7 @@
                     <div class="d-flex justify-content-center justify-content-sm-start gap-3">
                         <div>{{ perguntas_count or 0 }} Perguntas</div>
                         <div>{{ respostas_count or 0 }} Respostas</div>
-                        <div>{{ usuario.votos_verificados or 0 }} Verificados</div>
                         <div>{{ blogs_count or 0 }} Blogs</div>
-                        <div>{{ usuario.denuncias_count or 0 }} Denúncias</div>
                         <div>{{ usuario.quantidadePontos or 0 }} Pontos</div>
                     </div>
                 </div>

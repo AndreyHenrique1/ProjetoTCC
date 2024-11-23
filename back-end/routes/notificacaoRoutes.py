@@ -9,7 +9,6 @@ notificacao_route = Blueprint('notificacao_route', __name__)
 @notificacao_route.route('/notificacoes')
 @login_required
 def listar_notificacoes():
-    # Busca apenas notificações não lidas
     notificacoes = Notificacao.query.filter_by(codUsuario=current_user.codigo, lida=False).order_by(Notificacao.data_criacao.desc()).all()
     return render_template('notificacoes.html', notificacoes=notificacoes)
 
@@ -21,9 +20,8 @@ def marcar_como_lida(notificacao_id):
     if notificacao:
         # Marcando como lida
         notificacao.lida = True
-        db.session.commit()  # Persistindo a mudança no banco de dados
-    
-    # Retornando para a lista de notificações
+        db.session.commit()  
+
     return redirect(url_for('notificacao_route.listar_notificacoes'))
 
 

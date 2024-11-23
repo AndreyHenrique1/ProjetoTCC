@@ -57,7 +57,7 @@
                             </div>
                             <div class="modal-body">
                                 <form action="{{ url_for('blog_route.editar_blog', blog_id=blog.codigo) }}"
-                                    method="POST">
+                                    method="POST" class="form-com-quill">
                                     <input type="text" name="titulo" id="titulo" class="form-control"
                                         value="{{ blog.titulo }}"><br>
                                     <div id="editor-geral" style="height: 300px;">{{ blog.descricao | safe }}</div>
@@ -112,6 +112,7 @@
 
                 {% else %}
 
+                {% if current_user.is_authenticated %}
                 <!-- Exibir os botões de Like e Deslike apenas para quem não é o dono do blog -->
                 <form action="{{ url_for('blog_route.like_blog', blog_id=blog.codigo) }}" method="POST"
                     style="display:inline;">
@@ -121,7 +122,9 @@
                 </form>
                 <span style="margin-right: 12px;">{{ blog.quantidade_likes }}</span>
                 <!-- Exibe a quantidade de likes -->
+                {% endif %}
 
+                {% if current_user.is_authenticated %}
                 <form action="{{ url_for('blog_route.deslike_blog', blog_id=blog.codigo) }}" method="POST"
                     style="display:inline;">
                     <button type="submit" class="btn p-0" style="border: 0; background-color: transparent;">
@@ -129,6 +132,7 @@
                     </button>
                 </form>
                 <span style="margin-left: 10px;">{{ blog.quantidade_deslikes }}</span>
+                {% endif %}
                 <!-- Exibe a quantidade de deslikes -->
                 {% endif %}
 
@@ -267,7 +271,7 @@
         {% if current_user.is_authenticated %}
         <h3>Deixe seu Comentário</h3>
         <!--Formulario para o usuário adicionar seu comentario no site-->
-        <form action="{{ url_for('blog_route.comentario_blog', blog_id=blog.codigo) }}" method="POST">
+        <form action="{{ url_for('blog_route.comentario_blog', blog_id=blog.codigo) }}" method="POST" class="form-com-quill">
             <label for="comentario"></label>
             <div id="editor-comentario" style="height: 300px;"></div>
             <input type="hidden" name="conteudo_comentario" id="comentario">
@@ -278,8 +282,6 @@
         <!--Caso o usuário ainda não esteja logado, para conseguir escrever comentarios-->
         <a href="{{ url_for('login_route.login') }}" class="btn_roxo">Faça login para comentar.</a>
         {% endif %}
-
-        <br>
 
         <!-- Imagens de patrocinio de cursos online, lojas... -->
         {% include 'Img_patrocinio.html' %}
@@ -323,6 +325,7 @@
 
                 <!-- Botões de curtida, descurtir e denúncia -->
                 <div class="d-flex align-items-center ms-5" style="gap: 10px;">
+                    {% if current_user.is_authenticated %}
                     <!-- Botão de Curtir para Comentário do Blog -->
                     <form action="{{ url_for('blog_route.like_comentario_blog', comentario_id=comentario.codigo) }}"
                         method="POST" style="display:inline;">
@@ -340,6 +343,7 @@
                         </button>
                     </form>
                     <span>{{ comentario.quantidade_deslikes }}</span> <!-- Exibe a quantidade de deslikes -->
+                    {% endif %}
 
                     <!-- Botão de Excluir comentario (se o usuário for dono do comentário) -->
                     {% if current_user.codigo == comentario.codUsuario %}
@@ -414,5 +418,4 @@
         </ul>
     </main>
 </body>
-
 </html>

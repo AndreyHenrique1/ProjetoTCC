@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from database.db import db
 from models.pergunta import Pergunta
 from models.comentariosPerguntas import comentariosPerguntas
@@ -15,6 +15,7 @@ from sqlalchemy.exc import IntegrityError
 
 pergunta_route = Blueprint('pergunta_route', __name__)
 
+# Rota para adicionar uma pergunta ao banco de dados
 @pergunta_route.route('/perguntar', methods=['GET', 'POST'])
 @login_required
 def perguntar():
@@ -32,6 +33,9 @@ def perguntar():
         nova_pergunta = Pergunta(titulo=titulo, descricao=descricao, codCategoria=codCategoria, codUsuario=codUsuario)
         db.session.add(nova_pergunta)
 
+        # Commit para garantir que o código da nova pergunta seja gerado
+        db.session.commit()  # Garantir que o código da pergunta seja atribuído
+
         # Adicionar etiquetas à pergunta
         for nome_etiqueta in etiquetas_lista:
             etiqueta_objeto = Etiqueta.query.filter_by(nome=nome_etiqueta).first()
@@ -45,7 +49,7 @@ def perguntar():
             nova_pergunta_etiqueta = PerguntasEtiquetas(codPergunta=nova_pergunta.codigo, codEtiqueta=etiqueta_objeto.codigo)
             db.session.add(nova_pergunta_etiqueta)
 
-        # Commit para salvar pergunta e etiquetas associadas
+        # Commit para salvar etiquetas associadas
         db.session.commit()
 
         # Atualizando a quantidade de pontos do dono da pergunta (dando 3 pontos)
@@ -54,10 +58,8 @@ def perguntar():
             dono_pergunta.quantidadePontos += 3  # Adiciona 3 pontos ao dono da pergunta
             db.session.commit()
 
-        # Retorna para a página de detalhes da pergunta com as etiquetas atualizadas
         return redirect(url_for('home.homePergunta', pergunta_id=nova_pergunta.codigo, sucesso="pergunta_enviada"))
 
-    # Carregar todas as etiquetas para exibição no formulário
     etiquetas = Etiqueta.query.all()
     categorias = Categoria.query.all()
 
@@ -161,7 +163,6 @@ def excluir_pergunta(pergunta_id):
     
     return redirect(url_for('home.homePergunta', sucesso="pergunta_excluida"))
 
-# Comentario da pergunta
 @pergunta_route.route('/pergunta/<int:pergunta_id>', methods=['GET', 'POST'])
 def comentarios_pergunta(pergunta_id):
     pergunta = Pergunta.query.get_or_404(pergunta_id)
@@ -181,7 +182,7 @@ def comentarios_pergunta(pergunta_id):
             if current_user.codigo != pergunta.codUsuario:  # Evita notificar o próprio usuário
                 mensagem = f"Nova resposta para sua pergunta: {pergunta.titulo}"
                 link_pergunta = url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id)
-                enviar_notificacao(pergunta.codUsuario, mensagem, link_pergunta, pergunta.codigo)
+                enviar_notificacao(pergunta.codUsuario, mensagem, link_pergunta, codPergunta=pergunta_id)
 
             return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta_id, sucesso="comentario_realizado"))
 
@@ -189,6 +190,7 @@ def comentarios_pergunta(pergunta_id):
 
     return render_template('detalhes_pergunta.html', pergunta=pergunta, comentarios=comentarios)
 
+# Rota para o usuário dono da pergunta colocar o melhor comentario/resposta
 @pergunta_route.route('/comentario/<int:comentario_id>/verificar', methods=['POST'])
 def verificar_comentario(comentario_id):
     comentario = comentariosPerguntas.query.get_or_404(comentario_id)
@@ -211,6 +213,7 @@ def verificar_comentario(comentario_id):
 
     return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=pergunta.codigo, sucesso="comentario_verificado"))
 
+# Rota para excluir comentario da pergunta
 @pergunta_route.route('/comentario/<int:comentario_id>/excluir', methods=['POST'])
 @login_required
 def excluir_comentario_pergunta(comentario_id):
@@ -231,6 +234,7 @@ def excluir_comentario_pergunta(comentario_id):
     
     return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="comentario_excluido"))
 
+# Rota para dar like em um comentario
 @pergunta_route.route('/comentario/<int:comentario_id>/curtir', methods=['POST'])
 @login_required
 def like_comentario(comentario_id):
@@ -239,28 +243,28 @@ def like_comentario(comentario_id):
     # Verifica se o usuário já curtiu o comentário
     curtida_existente = Likes_deslikes.query.filter_by(
         codUsuario=current_user.codigo,
-        codComentarioPergunta=comentario_id,  # Como é um comentário de pergunta
+        codComentarioPergunta=comentario_id,  
         tipo='like',
-        origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
+        origem='comentario_pergunta'  
     ).first()
 
     # Verifica se o usuário já deu deslike no comentário
     descurtida_existente = Likes_deslikes.query.filter_by(
         codUsuario=current_user.codigo,
-        codComentarioPergunta=comentario_id,  # Como é um comentário de pergunta
+        codComentarioPergunta=comentario_id,  
         tipo='deslike',
-        origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
+        origem='comentario_pergunta'  
     ).first()
 
     if curtida_existente:
-        # Se o usuário já deu like, retira o like e não faz nada
+        # Se o usuário já deu like, retira o like 
         db.session.delete(curtida_existente)
         comentario.quantidadeCurtidas -= 1
         db.session.commit()
 
         # Decrementa pontos ao dono do comentário
         dono_comentario = Usuario.query.get(comentario.codUsuario)
-        dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+        dono_comentario.quantidadePontos -= 1  
         db.session.commit()
 
     if descurtida_existente:
@@ -271,15 +275,15 @@ def like_comentario(comentario_id):
 
         # Incrementa pontos ao dono do comentário
         dono_comentario = Usuario.query.get(comentario.codUsuario)
-        dono_comentario.quantidadePontos += 1  # Ajuste conforme a lógica de pontos
+        dono_comentario.quantidadePontos += 1 
         db.session.commit()
 
     # Adiciona uma nova curtida
     nova_curtida = Likes_deslikes(
-        codComentarioPergunta=comentario_id,  # Associando ao comentário de pergunta
+        codComentarioPergunta=comentario_id,  
         codUsuario=current_user.codigo,
         tipo='like',
-        origem='comentario_pergunta'  # Definindo a origem como comentário de pergunta
+        origem='comentario_pergunta' 
     )
     db.session.add(nova_curtida)
 
@@ -294,6 +298,7 @@ def like_comentario(comentario_id):
 
     return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="like_realizado"))
 
+# Rota de deslike dos comentarios das perguntas
 @pergunta_route.route('/comentario/<int:comentario_id>/descurtir', methods=['POST'])
 @login_required
 def deslike_comentario(comentario_id):
@@ -302,47 +307,47 @@ def deslike_comentario(comentario_id):
     # Verifica se o usuário já deu deslike no comentário
     descurtida_existente = Likes_deslikes.query.filter_by(
         codUsuario=current_user.codigo,
-        codComentarioPergunta=comentario_id,  # Como é um comentário de pergunta
+        codComentarioPergunta=comentario_id,  
         tipo='deslike',
-        origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
+        origem='comentario_pergunta'  
     ).first()
 
     # Verifica se o usuário já deu like no comentário
     curtida_existente = Likes_deslikes.query.filter_by(
         codUsuario=current_user.codigo,
-        codComentarioPergunta=comentario_id,  # Como é um comentário de pergunta
+        codComentarioPergunta=comentario_id,  
         tipo='like',
-        origem='comentario_pergunta'  # Definindo que a origem é comentário de pergunta
+        origem='comentario_pergunta'  
     ).first()
 
     if descurtida_existente:
-        # Se o usuário já deu deslike, retira o deslike e não faz nada
+        # Se o usuário já deu deslike, retira o deslike 
         db.session.delete(descurtida_existente)
-        comentario.quantidadeCurtidas += 1  # Incrementa a quantidade de curtidas
+        comentario.quantidadeCurtidas += 1  
         db.session.commit()
 
         # Incrementa pontos ao dono do comentário
         dono_comentario = Usuario.query.get(comentario.codUsuario)
-        dono_comentario.quantidadePontos += 1  # Ajuste conforme a lógica de pontos
+        dono_comentario.quantidadePontos += 1  
         db.session.commit()
 
     if curtida_existente:
         # Se o usuário já deu like, retira o like e adiciona o deslike
         db.session.delete(curtida_existente)  # Exclui o like
-        comentario.quantidadeCurtidas -= 1  # Decrementa a quantidade de curtidas
+        comentario.quantidadeCurtidas -= 1  
         db.session.commit()
 
-        # Decrementa pontos ao dono do comentário (se necessário)
+        # Decrementa pontos ao dono do comentário 
         dono_comentario = Usuario.query.get(comentario.codUsuario)
-        dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+        dono_comentario.quantidadePontos -= 1  
         db.session.commit()
 
     # Adiciona uma nova descurtida
     nova_descurtida = Likes_deslikes(
-        codComentarioPergunta=comentario_id,  # Associando ao comentário de pergunta
+        codComentarioPergunta=comentario_id,  
         codUsuario=current_user.codigo,
         tipo='deslike',
-        origem='comentario_pergunta'  # Definindo a origem como comentário de pergunta
+        origem='comentario_pergunta'  
     )
     db.session.add(nova_descurtida)
 
@@ -352,7 +357,7 @@ def deslike_comentario(comentario_id):
 
     # Decrementa pontos ao dono do comentário (se necessário)
     dono_comentario = Usuario.query.get(comentario.codUsuario)
-    dono_comentario.quantidadePontos -= 1  # Ajuste conforme a lógica de pontos
+    dono_comentario.quantidadePontos -= 1  
     db.session.commit()
 
     return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="deslike_realizado"))

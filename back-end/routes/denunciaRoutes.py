@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import current_user, login_required
 from models.denuncia import Denuncia
 from models.comentariosPerguntas import comentariosPerguntas
@@ -39,12 +39,18 @@ def denunciar_comentario(comentario_id):
         usuario_comentario = Usuario.query.get(comentario.codUsuario)
         if usuario_comentario:
             usuario_comentario.quantidadePontos -= 5  # Remove 5 pontos
+
+            # Garante que a quantidade de pontos não seja menor que zero
+            if usuario_comentario.quantidadePontos < 0:
+                usuario_comentario.quantidadePontos = 0
+
             db.session.commit()
 
         return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=comentario.codPergunta, sucesso="comentario_denunciado"))
 
     return render_template('detalhes_pergunta.html', comentario=comentario)
 
+# Rota para moderadores concorda ou discorda de uma denuncia
 @denuncia_route.route('/resolver/denuncia/<int:denuncia_id>', methods=['POST'])
 @login_required
 def resolver_denuncia(denuncia_id):
@@ -56,6 +62,7 @@ def resolver_denuncia(denuncia_id):
         # Verificar se a denúncia é de uma pergunta
         if denuncia.codPergunta:
             return redirect(url_for('pergunta_route.detalhes_pergunta', pergunta_id=denuncia.codPergunta))
+        # Ou de um blog
         else:
             return redirect(url_for('blog_route.detalhes_blog', blog_id=denuncia.codBlog))
 
@@ -146,8 +153,13 @@ def denunciar_blog(blog_id):
         db.session.commit()
 
         # Reduz 5 pontos do usuário que criou o blog
-        if blog.usuario_relacionado:  # Verifica se existe um usuário associado ao blog
-            blog.usuario_relacionado.pontos -= 5
+        if blog.usuario_relacionado:  
+            blog.usuario_relacionado.quantidadePontos -= 5
+
+            # Garante que a quantidade de pontos não seja menor que zero
+            if blog.usuario_relacionado.quantidadePontos < 0:
+                blog.usuario_relacionado.quantidadePontos = 0
+
             db.session.commit()
 
         return redirect(url_for('blog_route.detalhes_blog', blog_id=blog_id, sucesso="blog_denunciado"))

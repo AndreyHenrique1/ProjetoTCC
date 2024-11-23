@@ -20,7 +20,7 @@
     </header>
 
     <main>
-        <form action="{{ url_for('pergunta_route.perguntar') }}" method="POST">
+        <form action="{{ url_for('pergunta_route.perguntar') }}" method="POST" class="form-com-quill">
             <input type="text" name="titulo" id="titulo" class="form-control"
                 placeholder="Descreva em poucas palavras a sua pergunta" required>
             <br>
@@ -44,10 +44,12 @@
                 <ul id="etiquetas_sugestoes" style="display: none;"></ul>
             </div>
             <br>
+            <!--Adicionar a descrição da pergunta-->
             <label for="descricao">Descrição:</label>
             <div id="editor-geral" style="height: 300px;"></div>
             <input type="hidden" name="descricao" id="descricao" required>
             <br>
+            <!--Btn de enviar pergunta-->
             <button type="submit" class="btn_roxo" style="width: 100%;">Enviar Pergunta</button>
         </form>
     </main>

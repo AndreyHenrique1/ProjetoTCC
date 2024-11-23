@@ -62,8 +62,8 @@ window.onload = function() {
             case "usuario_editado":
                 alert("Usuário editado com sucesso!!!")
                 break;
-            case "recompesa_resgatada":
-                alert("Recompensa resgatada com sucesso!!")
+            case "recompensa_recusada":
+                alert("Você não tem pontos suficientes para essa recompensa!!!")
                 break;
             default:
                 break;
