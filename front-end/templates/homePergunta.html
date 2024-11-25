@@ -35,7 +35,7 @@
         <!-- Barra de Pesquisa -->
         <form class="d-flex align-items-center" role="search"
             action="{{ url_for('pergunta_route.pergunta_pesquisar') }}" method="POST" style="margin-bottom: 25px;">
-            <input class="form-control me-2" type="search" name="query" placeholder="O que você procura?"
+            <input class="form-control me-2" type="search" name="pesquisar" placeholder="O que você procura?"
                 autocomplete="on" aria-label="Pesquisar">
             <button class="btn btn-primary px-4" style="background-color: #6356e5; border-color: #6356e5;"
                 type="submit">
@@ -172,7 +172,8 @@
             <div style="text-align: center; margin-top: 20px;">
                 <a href="{{ url_for('home.homePergunta') }}" class="btn_roxo">Voltar para todas as perguntas</a>
             </div>
-            {% endif %}
+
+            {% else %}
 
             <!-- Paginação -->
             <div class="pagination-container">
@@ -184,6 +185,7 @@
                 </a>
                 {% endif %}
                 {% endfor %}
+                {% endif %}
             </div>
         </div>
     </main>

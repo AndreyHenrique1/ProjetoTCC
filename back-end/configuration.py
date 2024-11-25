@@ -37,7 +37,7 @@ def configure_routes(app):
     app.register_blueprint(recompensas_route)
     
 def configure_db(app):
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost:3308/projetotcc'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:''@localhost/projetotcc'
     db.init_app(app)
 
 def configure_cloudinary():

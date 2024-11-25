@@ -36,7 +36,7 @@
             <!-- Barra de Pesquisa para Blogs -->
             <form class="d-flex align-items-center" role="search" action="{{ url_for('blog_route.blog_pesquisar') }}"
                 method="POST" style="margin-bottom: 25px;">
-                <input class="form-control me-2" type="search" name="query" placeholder="O que você procura?"
+                <input class="form-control me-2" type="search" name="pesquisar" placeholder="O que você procura?"
                     autocomplete="on" aria-label="Pesquisar">
                 <button class="btn btn-primary px-4" style="background-color: #6356e5; border-color: #6356e5;"
                     type="submit">
@@ -64,7 +64,7 @@
             <div class="modal fade" id="filtroBlog" tabindex="-1" aria-labelledby="filtroBloglLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-header"  style="background-color: #6356e5; color: #fff;">
+                        <div class="modal-header" style="background-color: #6356e5; color: #fff;">
                             <h5 class="modal-title" id="filterModalLabel">Filtrar Perguntas</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
@@ -134,27 +134,38 @@
                     {% for blog in blogs %}
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex">
                         <div class="card flex-fill">
-                            <!--Foto capa do blog-->
+                            <!-- Foto capa do blog -->
                             <img src="{{ blog.fotoCapa_blog if blog.fotoCapa_blog else url_for('static', filename='Imagens/default_blog_cover.png') }}"
                                 alt="Foto da Capa do Blog" class="img-fluid card-img-top">
                             <div class="card-body d-flex flex-column">
                                 <a href="{{ url_for('blog_route.detalhes_blog', blog_id=blog.codigo) }}"
                                     class="card-title">
-                                    <!--Titulo do blog-->
+                                    <!-- Titulo do blog -->
                                     <h5>{{ blog.titulo }}</h5>
                                 </a>
-                                <!--Descrição resumida do blog-->
-                                <p class="card-text">{{ blog.descricao[:40] | safe }}{% if blog.descricao|length > 40
-                                    %}...{% endif %} Leia mais</p>
-                                <!--Categoria do blog-->
-                                <p><i class="bi bi-bookmark-fill icon_categoria"></i>{{ blog.categoria_relacionada.nome
-                                    }}</p>
+                                <!-- Descrição resumida do blog -->
+                                <p class="card-text">
+                                    {{ blog.descricao[:40] | safe }}
+                                    {% if blog.descricao|length > 40 %}...{% endif %} Leia mais
+                                </p>
+                                <!-- Categoria do blog -->
+                                <p>
+                                    <i class="bi bi-bookmark-fill icon_categoria"></i>
+                                    {{ blog.categoria_relacionada.nome }}
+                                </p>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
 
+                <!-- Se o usuário realizou uma pesquisa, aparece um botão para voltar -->
+                {% if pesquisa %}
+                <br>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="{{ url_for('blog_route.listar_blogs') }}" class="btn_roxo">Voltar para todos os blogs</a>
+                </div>
+                {% else %}
                 <!-- Paginação -->
                 <div class="pagination">
                     {% for page_num in pagination.iter_pages() %}
@@ -166,20 +177,12 @@
                     {% endif %}
                     {% endfor %}
                 </div>
+                {% endif %}
                 {% else %}
                 <h2 style="text-align: center;">Não encontramos resultados para '{{ pesquisa }}'. Experimente ajustar os
                     termos da pesquisa ou explore outros blogs!</h2>
                 {% endif %}
             </div>
-
-            <!--Se caso o usuário pesquisar aparece um botão no final para voltar para todos os blogs-->
-            {% if pesquisa %}
-            <!-- Botão para voltar à lista completa -->
-            <br>
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="{{ url_for('blog_route.listar_blogs') }}" class="btn_roxo">Voltar para todos os blogs</a>
-            </div>
-            {% endif %}
     </main>
 
     <!--Icone de ajuda-->

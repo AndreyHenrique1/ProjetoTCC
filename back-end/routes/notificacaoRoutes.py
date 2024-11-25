@@ -23,9 +23,3 @@ def marcar_como_lida(notificacao_id):
         db.session.commit()  
 
     return redirect(url_for('notificacao_route.listar_notificacoes'))
-
-
-
-
-
-
